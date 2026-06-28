@@ -31,13 +31,49 @@ class LessonService(
     }
 
     fun getLessonsByCourseId(courseId: Long): List<LessonResponse> {
-        if (!courseRepository.existsById(courseId)) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
-        }
+        validateCourseExists(courseId)
 
         return lessonRepository.findByCourseId(courseId).map { lessonEntity ->
             lessonEntity.toLessonResponse()
         }
+    }
+
+    fun getLessonById(courseId: Long, lessonId: Long): LessonResponse =
+        findLessonEntityByIdAndCourseId(courseId, lessonId).toLessonResponse()
+
+    fun updateLesson(courseId: Long, lessonId: Long, lessonRequest: LessonRequest): LessonResponse {
+        val lessonEntity = findLessonEntityByIdAndCourseId(courseId, lessonId)
+
+        lessonEntity.title = lessonRequest.title
+        lessonEntity.content = lessonRequest.content
+
+        val updatedLesson = lessonRepository.save(lessonEntity)
+        return updatedLesson.toLessonResponse()
+    }
+
+    fun deleteLesson(courseId: Long, lessonId: Long) {
+        val lessonEntity = findLessonEntityByIdAndCourseId(courseId, lessonId)
+        lessonRepository.delete(lessonEntity)
+    }
+
+    private fun validateCourseExists(courseId: Long) {
+        if (!courseRepository.existsById(courseId)) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
+        }
+    }
+
+    private fun findLessonEntityByIdAndCourseId(courseId: Long, lessonId: Long): LessonEntity {
+        validateCourseExists(courseId)
+
+        val lessonEntity = lessonRepository.findById(lessonId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found")
+        }
+
+        if (lessonEntity.course?.id != courseId) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found in this course")
+        }
+
+        return lessonEntity
     }
 
     private fun LessonEntity.toLessonResponse(): LessonResponse =
