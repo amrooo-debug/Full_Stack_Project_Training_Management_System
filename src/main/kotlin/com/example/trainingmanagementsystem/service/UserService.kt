@@ -5,12 +5,14 @@ import com.example.trainingmanagementsystem.dto.UserResponse
 import com.example.trainingmanagementsystem.entity.UserEntity
 import com.example.trainingmanagementsystem.repository.UserRepository
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
 class UserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun createUser(userRequest: UserRequest): UserResponse {
@@ -21,6 +23,7 @@ class UserService(
         val userEntity = UserEntity(
             fullName = userRequest.fullName,
             email = userRequest.email,
+            password = passwordEncoder.encode(userRequest.password),
             role = userRequest.role
         )
 
@@ -39,12 +42,17 @@ class UserService(
     fun updateUser(userId: Long, userRequest: UserRequest): UserResponse {
         val userEntity = findUserEntityById(userId)
 
-        if (userEntity.email != userRequest.email && userRepository.existsByEmail(userRequest.email)) {
+        val emailUsedByAnotherUser = userRepository.findAll().any { existingUser ->
+            existingUser.email == userRequest.email && existingUser.id != userId
+        }
+
+        if (emailUsedByAnotherUser) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Email already exists")
         }
 
         userEntity.fullName = userRequest.fullName
         userEntity.email = userRequest.email
+        userEntity.password = passwordEncoder.encode(userRequest.password)
         userEntity.role = userRequest.role
 
         val updatedUser = userRepository.save(userEntity)

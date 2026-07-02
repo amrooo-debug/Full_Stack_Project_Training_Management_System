@@ -23,6 +23,9 @@ class UserEntity(
     @Column(nullable = false, unique = true)
     var email: String = "",
 
+    @Column(name = "password")
+    var password: String? = null,
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var role: UserRole = UserRole.TRAINEE
