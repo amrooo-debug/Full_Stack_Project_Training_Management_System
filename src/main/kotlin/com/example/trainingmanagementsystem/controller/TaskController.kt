@@ -5,6 +5,7 @@ import com.example.trainingmanagementsystem.dto.TaskResponse
 import com.example.trainingmanagementsystem.service.TaskService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -23,6 +24,7 @@ class TaskController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     fun createTask(
         @PathVariable courseId: Long,
         @Valid @RequestBody taskRequest: TaskRequest
@@ -43,6 +45,7 @@ class TaskController(
         taskService.getTaskById(courseId, taskId)
 
     @PutMapping("/{taskId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     fun updateTask(
         @PathVariable courseId: Long,
         @PathVariable taskId: Long,
@@ -52,6 +55,7 @@ class TaskController(
 
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     fun deleteTask(
         @PathVariable courseId: Long,
         @PathVariable taskId: Long

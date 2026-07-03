@@ -5,6 +5,7 @@ import com.example.trainingmanagementsystem.dto.SubmissionResponse
 import com.example.trainingmanagementsystem.service.SubmissionService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -21,6 +22,7 @@ class SubmissionController(
 
     @PostMapping("/tasks/{taskId}/submissions")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('TRAINEE')")
     fun createSubmission(
         @PathVariable taskId: Long,
         @Valid @RequestBody submissionRequest: SubmissionRequest
@@ -28,12 +30,14 @@ class SubmissionController(
         submissionService.createSubmission(taskId, submissionRequest)
 
     @GetMapping("/tasks/{taskId}/submissions")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     fun getSubmissionsByTaskId(
         @PathVariable taskId: Long
     ): List<SubmissionResponse> =
         submissionService.getSubmissionsByTaskId(taskId)
 
     @GetMapping("/tasks/{taskId}/submissions/{submissionId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'TRAINEE')")
     fun getSubmissionById(
         @PathVariable taskId: Long,
         @PathVariable submissionId: Long
@@ -41,12 +45,14 @@ class SubmissionController(
         submissionService.getSubmissionById(taskId, submissionId)
 
     @GetMapping("/users/{userId}/submissions")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'TRAINEE')")
     fun getSubmissionsByUserId(
         @PathVariable userId: Long
     ): List<SubmissionResponse> =
         submissionService.getSubmissionsByUserId(userId)
 
     @PutMapping("/tasks/{taskId}/submissions/{submissionId}")
+    @PreAuthorize("hasRole('TRAINEE')")
     fun updateSubmission(
         @PathVariable taskId: Long,
         @PathVariable submissionId: Long,
@@ -56,6 +62,7 @@ class SubmissionController(
 
     @DeleteMapping("/submissions/{submissionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     fun deleteSubmission(
         @PathVariable submissionId: Long
     ) {
