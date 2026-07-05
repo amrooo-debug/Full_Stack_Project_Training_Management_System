@@ -69,3 +69,202 @@
 .login-button:hover {
   background-color: #1d4ed8;
 }
+
+/* ---- Admin Dashboard ---- */
+
+/* Full-page light background, content aligned to the top */
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background-color: #f2f4f8;
+  padding: 2rem 1rem;
+}
+
+/* The white card that holds the dashboard, wider than the login card */
+.dashboard-card {
+  width: 100%;
+  max-width: 640px;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Title on the left, logout button on the right */
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dashboard-title {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1f2937;
+}
+
+.dashboard-welcome {
+  margin: 0.25rem 0 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.dashboard-subtitle {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1.1rem;
+  color: #374151;
+}
+
+/* The Create Course form: stack fields with a small gap */
+.course-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Make the textarea look like the text inputs */
+.login-label textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.login-label textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* The list of courses (no bullet points) */
+.course-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.course-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+}
+
+.course-id {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.course-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.course-description {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Row of buttons (Edit/Delete or Save/Cancel) under a course */
+.course-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Shared shape for the small buttons on a course card */
+.edit-button,
+.delete-button,
+.cancel-button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Blue Edit button */
+.edit-button {
+  background-color: #2563eb;
+}
+
+.edit-button:hover {
+  background-color: #1d4ed8;
+}
+
+.edit-button:disabled {
+  background-color: #93c5fd;
+  cursor: default;
+}
+
+/* Red Delete button */
+.delete-button {
+  background-color: #dc2626;
+}
+
+.delete-button:hover {
+  background-color: #b91c1c;
+}
+
+.delete-button:disabled {
+  background-color: #fca5a5;
+  cursor: default;
+}
+
+/* Grey Cancel button */
+.cancel-button {
+  background-color: #6b7280;
+}
+
+.cancel-button:hover {
+  background-color: #4b5563;
+}
+
+.cancel-button:disabled {
+  background-color: #d1d5db;
+  cursor: default;
+}
+
+/* Thin line separating the course list from the selected-course sections */
+.section-divider {
+  margin: 1.75rem 0 1rem;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Small note showing which course is currently being managed */
+.selected-course-note {
+  margin: 0 0 0.5rem;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+/* Grey text for the "will be added next" placeholder sections */
+.placeholder-note {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* A nested panel (submissions inside a task, feedback inside a submission) */
+.sub-panel {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-left: 3px solid #e5e7eb;
+  background-color: #f9fafb;
+  border-radius: 0 6px 6px 0;
+}
+
+/* Small heading inside a nested panel */
+.panel-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: #374151;
+}

@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import './App.css'
+import AdminDashboard from './AdminDashboard'
+import TrainerDashboard from './TrainerDashboard'
+import TraineeDashboard from './TraineeDashboard'
 
 function App() {
   // Form fields
@@ -67,18 +70,26 @@ function App() {
     setPassword('')
   }
 
-  // If we have a role, the user is logged in -> show the dashboard
+  // If we have a role, the user is logged in -> show the dashboard.
+  // Admins get the real courses dashboard; other roles get a simple placeholder for now.
   if (role) {
-    // Pick the dashboard title based on the role
-    let title = 'Dashboard'
-    if (role === 'ADMIN') title = 'Admin Dashboard'
-    else if (role === 'TRAINER') title = 'Trainer Dashboard'
-    else if (role === 'TRAINEE') title = 'Trainee Dashboard'
+    if (role === 'ADMIN') {
+      return <AdminDashboard fullName={fullName} onLogout={handleLogout} />
+    }
 
+    if (role === 'TRAINER') {
+      return <TrainerDashboard fullName={fullName} onLogout={handleLogout} />
+    }
+
+    if (role === 'TRAINEE') {
+      return <TraineeDashboard fullName={fullName} onLogout={handleLogout} />
+    }
+
+    // Fallback for any unexpected role
     return (
       <div className="login-page">
         <div className="login-card">
-          <h1 className="login-title">{title}</h1>
+          <h1 className="login-title">Dashboard</h1>
           <p>Welcome, {fullName}!</p>
           <button className="login-button" onClick={handleLogout}>
             Logout
