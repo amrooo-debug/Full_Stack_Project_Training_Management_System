@@ -1,51 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { apiGet, apiPost, apiPut, apiDelete } from './api'
-
-// ---- Types that match the backend responses ----
-
-type Course = {
-  id: number
-  title: string
-  description: string
-}
-
-type Lesson = {
-  id: number
-  title: string
-  content: string
-  courseId: number
-}
-
-type Task = {
-  id: number
-  title: string
-  description: string
-  courseId: number
-  courseTitle: string
-}
-
-type Submission = {
-  id: number
-  answer: string
-  submittedAt: string
-  taskId: number
-  taskTitle: string
-  userId: number
-  userFullName: string
-}
-
-type Feedback = {
-  id: number
-  comment: string
-  givenAt: string
-  submissionId: number
-  taskId: number
-  taskTitle: string
-  traineeId: number
-  traineeFullName: string
-  trainerId: number
-  trainerFullName: string
-}
+import type { Course, Lesson, Task, Submission, Feedback } from './types'
 
 // Props passed in from App
 type TrainerDashboardProps = {
@@ -73,7 +28,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   const [creatingLesson, setCreatingLesson] = useState(false)
   const [lessonCreateError, setLessonCreateError] = useState('')
 
-  // Edit lesson (which one is being edited + its working values)
+  // Edit lesson
   const [editingLessonId, setEditingLessonId] = useState<number | null>(null)
   const [editLessonTitle, setEditLessonTitle] = useState('')
   const [editLessonContent, setEditLessonContent] = useState('')
@@ -107,20 +62,17 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   const [taskDeleteError, setTaskDeleteError] = useState('')
 
   // ================= Submissions =================
-  // Which task's submissions are currently open (null = none). Only one at a time.
   const [openSubmissionsTaskId, setOpenSubmissionsTaskId] = useState<
-    number | null
+      number | null
   >(null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [submissionsLoading, setSubmissionsLoading] = useState(false)
   const [submissionsError, setSubmissionsError] = useState('')
 
   // ================= Feedback =================
-  // Which submission's feedback panel is open (null = none). Only one at a time.
   const [openFeedbackSubmissionId, setOpenFeedbackSubmissionId] = useState<
-    number | null
+      number | null
   >(null)
-  // The one feedback for the open submission, or null if there is none yet.
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [feedbackLoading, setFeedbackLoading] = useState(false)
   const [feedbackError, setFeedbackError] = useState('')
@@ -130,7 +82,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   const [creatingFeedback, setCreatingFeedback] = useState(false)
   const [feedbackCreateError, setFeedbackCreateError] = useState('')
 
-  // Edit feedback (there is only one, so a simple boolean is enough)
+  // Edit feedback
   const [editingFeedback, setEditingFeedback] = useState(false)
   const [editFeedbackComment, setEditFeedbackComment] = useState('')
   const [savingFeedback, setSavingFeedback] = useState(false)
@@ -140,16 +92,19 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   const [deletingFeedback, setDeletingFeedback] = useState(false)
   const [feedbackDeleteError, setFeedbackDeleteError] = useState('')
 
-  // ================= Load courses (once) =================
+  // ================= Load courses =================
   async function loadCourses() {
     setCoursesLoading(true)
     setCoursesError('')
+
     try {
       const response = await apiGet('/courses')
+
       if (!response.ok) {
         setCoursesError('Could not load courses. Please try again.')
         return
       }
+
       setCourses(await response.json())
     } catch {
       setCoursesError('Could not reach the server. Please try again.')
@@ -165,7 +120,6 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   // When a course is selected, load its lessons and tasks
   function handleSelectCourse(course: Course) {
     setSelectedCourse(course)
-    // Reset any edit modes / errors from a previous course
     setEditingLessonId(null)
     setEditingTaskId(null)
     loadLessons(course.id)
@@ -177,12 +131,15 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   async function loadLessons(courseId: number) {
     setLessonsLoading(true)
     setLessonsError('')
+
     try {
       const response = await apiGet(`/courses/${courseId}/lessons`)
+
       if (!response.ok) {
         setLessonsError('Could not load lessons. Please try again.')
         return
       }
+
       setLessons(await response.json())
     } catch {
       setLessonsError('Could not reach the server. Please try again.')
@@ -191,9 +148,12 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     }
   }
 
-  async function handleCreateLesson(event: React.FormEvent) {
+  async function handleCreateLesson(event: FormEvent) {
     event.preventDefault()
-    if (!selectedCourse) return
+
+    if (!selectedCourse) {
+      return
+    }
 
     if (newLessonTitle === '' || newLessonContent === '') {
       setLessonCreateError('Please enter both a title and content.')
@@ -202,15 +162,18 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     setLessonCreateError('')
     setCreatingLesson(true)
+
     try {
-      const response = await apiPost(
-        `/courses/${selectedCourse.id}/lessons`,
-        { title: newLessonTitle, content: newLessonContent }
-      )
+      const response = await apiPost(`/courses/${selectedCourse.id}/lessons`, {
+        title: newLessonTitle,
+        content: newLessonContent,
+      })
+
       if (!response.ok) {
         setLessonCreateError('Could not create the lesson. Please try again.')
         return
       }
+
       setNewLessonTitle('')
       setNewLessonContent('')
       await loadLessons(selectedCourse.id)
@@ -234,7 +197,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleSaveLesson(lessonId: number) {
-    if (!selectedCourse) return
+    if (!selectedCourse) {
+      return
+    }
 
     if (editLessonTitle === '' || editLessonContent === '') {
       setLessonSaveError('Please enter both a title and content.')
@@ -243,15 +208,21 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     setLessonSaveError('')
     setSavingLesson(true)
+
     try {
       const response = await apiPut(
-        `/courses/${selectedCourse.id}/lessons/${lessonId}`,
-        { title: editLessonTitle, content: editLessonContent }
+          `/courses/${selectedCourse.id}/lessons/${lessonId}`,
+          {
+            title: editLessonTitle,
+            content: editLessonContent,
+          }
       )
+
       if (!response.ok) {
         setLessonSaveError('Could not update the lesson. Please try again.')
         return
       }
+
       setEditingLessonId(null)
       await loadLessons(selectedCourse.id)
     } catch {
@@ -262,19 +233,27 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleDeleteLesson(lessonId: number) {
-    if (!selectedCourse) return
-    if (!window.confirm('Are you sure you want to delete this lesson?')) return
+    if (!selectedCourse) {
+      return
+    }
+
+    if (!window.confirm('Are you sure you want to delete this lesson?')) {
+      return
+    }
 
     setLessonDeleteError('')
     setDeletingLessonId(lessonId)
+
     try {
       const response = await apiDelete(
-        `/courses/${selectedCourse.id}/lessons/${lessonId}`
+          `/courses/${selectedCourse.id}/lessons/${lessonId}`
       )
+
       if (!response.ok) {
         setLessonDeleteError('Could not delete the lesson. Please try again.')
         return
       }
+
       await loadLessons(selectedCourse.id)
     } catch {
       setLessonDeleteError('Could not reach the server. Please try again.')
@@ -288,12 +267,15 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   async function loadTasks(courseId: number) {
     setTasksLoading(true)
     setTasksError('')
+
     try {
       const response = await apiGet(`/courses/${courseId}/tasks`)
+
       if (!response.ok) {
         setTasksError('Could not load tasks. Please try again.')
         return
       }
+
       setTasks(await response.json())
     } catch {
       setTasksError('Could not reach the server. Please try again.')
@@ -302,9 +284,12 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     }
   }
 
-  async function handleCreateTask(event: React.FormEvent) {
+  async function handleCreateTask(event: FormEvent) {
     event.preventDefault()
-    if (!selectedCourse) return
+
+    if (!selectedCourse) {
+      return
+    }
 
     if (newTaskTitle === '' || newTaskDescription === '') {
       setTaskCreateError('Please enter both a title and a description.')
@@ -313,15 +298,18 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     setTaskCreateError('')
     setCreatingTask(true)
+
     try {
-      const response = await apiPost(
-        `/courses/${selectedCourse.id}/tasks`,
-        { title: newTaskTitle, description: newTaskDescription }
-      )
+      const response = await apiPost(`/courses/${selectedCourse.id}/tasks`, {
+        title: newTaskTitle,
+        description: newTaskDescription,
+      })
+
       if (!response.ok) {
         setTaskCreateError('Could not create the task. Please try again.')
         return
       }
+
       setNewTaskTitle('')
       setNewTaskDescription('')
       await loadTasks(selectedCourse.id)
@@ -345,7 +333,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleSaveTask(taskId: number) {
-    if (!selectedCourse) return
+    if (!selectedCourse) {
+      return
+    }
 
     if (editTaskTitle === '' || editTaskDescription === '') {
       setTaskSaveError('Please enter both a title and a description.')
@@ -354,15 +344,21 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     setTaskSaveError('')
     setSavingTask(true)
+
     try {
       const response = await apiPut(
-        `/courses/${selectedCourse.id}/tasks/${taskId}`,
-        { title: editTaskTitle, description: editTaskDescription }
+          `/courses/${selectedCourse.id}/tasks/${taskId}`,
+          {
+            title: editTaskTitle,
+            description: editTaskDescription,
+          }
       )
+
       if (!response.ok) {
         setTaskSaveError('Could not update the task. Please try again.')
         return
       }
+
       setEditingTaskId(null)
       await loadTasks(selectedCourse.id)
     } catch {
@@ -373,19 +369,27 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleDeleteTask(taskId: number) {
-    if (!selectedCourse) return
-    if (!window.confirm('Are you sure you want to delete this task?')) return
+    if (!selectedCourse) {
+      return
+    }
+
+    if (!window.confirm('Are you sure you want to delete this task?')) {
+      return
+    }
 
     setTaskDeleteError('')
     setDeletingTaskId(taskId)
+
     try {
       const response = await apiDelete(
-        `/courses/${selectedCourse.id}/tasks/${taskId}`
+          `/courses/${selectedCourse.id}/tasks/${taskId}`
       )
+
       if (!response.ok) {
         setTaskDeleteError('Could not delete the task. Please try again.')
         return
       }
+
       await loadTasks(selectedCourse.id)
     } catch {
       setTaskDeleteError('Could not reach the server. Please try again.')
@@ -396,14 +400,12 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
   // ================= Submissions: toggle + load =================
 
-  // Open (or close) the submissions panel for a task.
   function handleToggleSubmissions(taskId: number) {
-    // Clicking the button of the already-open task closes it
     if (openSubmissionsTaskId === taskId) {
       setOpenSubmissionsTaskId(null)
       return
     }
-    // Opening a new task: close any open feedback panel first
+
     setOpenFeedbackSubmissionId(null)
     setOpenSubmissionsTaskId(taskId)
     loadSubmissions(taskId)
@@ -413,12 +415,15 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setSubmissionsLoading(true)
     setSubmissionsError('')
     setSubmissions([])
+
     try {
       const response = await apiGet(`/tasks/${taskId}/submissions`)
+
       if (!response.ok) {
         setSubmissionsError('Could not load submissions. Please try again.')
         return
       }
+
       setSubmissions(await response.json())
     } catch {
       setSubmissionsError('Could not reach the server. Please try again.')
@@ -429,13 +434,12 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
   // ================= Feedback: toggle + load / create / edit / delete =================
 
-  // Open (or close) the feedback panel for a submission.
   function handleToggleFeedback(submissionId: number) {
     if (openFeedbackSubmissionId === submissionId) {
       setOpenFeedbackSubmissionId(null)
       return
     }
-    // Reset the form + edit state when opening a different submission
+
     setEditingFeedback(false)
     setNewFeedbackComment('')
     setFeedbackCreateError('')
@@ -447,18 +451,20 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setFeedbackLoading(true)
     setFeedbackError('')
     setFeedback(null)
+
     try {
       const response = await apiGet(`/submissions/${submissionId}/feedback`)
 
-      // 404 simply means "no feedback yet" - not a real error
       if (response.status === 404) {
         setFeedback(null)
         return
       }
+
       if (!response.ok) {
         setFeedbackError('Could not load feedback. Please try again.')
         return
       }
+
       setFeedback(await response.json())
     } catch {
       setFeedbackError('Could not reach the server. Please try again.')
@@ -476,18 +482,19 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setFeedbackCreateError('')
     setCreatingFeedback(true)
 
-    // The backend needs the trainer's id; we saved it at login
     const trainerId = Number(localStorage.getItem('id'))
 
     try {
-      const response = await apiPost(
-        `/submissions/${submissionId}/feedback`,
-        { trainerId, comment: newFeedbackComment }
-      )
+      const response = await apiPost(`/submissions/${submissionId}/feedback`, {
+        trainerId,
+        comment: newFeedbackComment,
+      })
+
       if (!response.ok) {
         setFeedbackCreateError('Could not create feedback. Please try again.')
         return
       }
+
       setNewFeedbackComment('')
       await loadFeedback(submissionId)
     } catch {
@@ -498,7 +505,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   function handleStartEditFeedback() {
-    if (!feedback) return
+    if (!feedback) {
+      return
+    }
+
     setFeedbackSaveError('')
     setEditFeedbackComment(feedback.comment)
     setEditingFeedback(true)
@@ -522,13 +532,18 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     try {
       const response = await apiPut(
-        `/submissions/${submissionId}/feedback/${feedbackId}`,
-        { trainerId, comment: editFeedbackComment }
+          `/submissions/${submissionId}/feedback/${feedbackId}`,
+          {
+            trainerId,
+            comment: editFeedbackComment,
+          }
       )
+
       if (!response.ok) {
         setFeedbackSaveError('Could not update feedback. Please try again.')
         return
       }
+
       setEditingFeedback(false)
       await loadFeedback(submissionId)
     } catch {
@@ -539,16 +554,21 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleDeleteFeedback(feedbackId: number, submissionId: number) {
-    if (!window.confirm('Are you sure you want to delete this feedback?')) return
+    if (!window.confirm('Are you sure you want to delete this feedback?')) {
+      return
+    }
 
     setFeedbackDeleteError('')
     setDeletingFeedback(true)
+
     try {
       const response = await apiDelete(`/feedback/${feedbackId}`)
+
       if (!response.ok) {
         setFeedbackDeleteError('Could not delete feedback. Please try again.')
         return
       }
+
       await loadFeedback(submissionId)
     } catch {
       setFeedbackDeleteError('Could not reach the server. Please try again.')
@@ -559,538 +579,566 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
   // ================= Render =================
   return (
-    <div className="dashboard-page">
-      <div className="dashboard-card">
-        {/* ---- Header ---- */}
-        <div className="dashboard-header">
-          <div>
-            <h1 className="dashboard-title">Trainer Dashboard</h1>
-            <p className="dashboard-welcome">Welcome, {fullName}!</p>
-            <span className="user-role role-TRAINER">TRAINER</span>
+      <div className="dashboard-page">
+        <div className="dashboard-card">
+          {/* ---- Header ---- */}
+          <div className="dashboard-header">
+            <div>
+              <h1 className="dashboard-title">Trainer Dashboard</h1>
+              <p className="dashboard-welcome">Welcome, {fullName}!</p>
+              <span className="user-role role-TRAINER">TRAINER</span>
+            </div>
+
+            <button className="login-button" onClick={onLogout}>
+              Logout
+            </button>
           </div>
-          <button className="login-button" onClick={onLogout}>
-            Logout
-          </button>
-        </div>
 
-        {/* ---- Courses (view + select only; trainers can't edit courses) ---- */}
-        <h2 className="dashboard-subtitle">Courses</h2>
+          {/* ---- Courses ---- */}
+          <h2 className="dashboard-subtitle">Courses</h2>
 
-        {coursesLoading && <p>Loading courses...</p>}
-        {coursesError && <p className="login-error">{coursesError}</p>}
+          {coursesLoading && <p>Loading courses...</p>}
+          {coursesError && <p className="login-error">{coursesError}</p>}
 
-        {!coursesLoading && !coursesError && (
-          <>
-            {courses.length === 0 ? (
-              <p>No courses yet.</p>
-            ) : (
-              <ul className="course-list">
-                {courses.map((course) => (
-                  <li key={course.id} className="course-item">
-                    <div className="course-id">#{course.id}</div>
-                    <div className="course-title">{course.title}</div>
-                    <div className="course-description">{course.description}</div>
-                    <div className="course-actions">
-                      <button
-                        className="edit-button"
-                        onClick={() => handleSelectCourse(course)}
-                        disabled={selectedCourse?.id === course.id}
-                      >
-                        {selectedCourse?.id === course.id
-                          ? 'Selected'
-                          : 'Select Course'}
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
-
-        {/* ---- Everything below only shows once a course is selected ---- */}
-        {selectedCourse && (
-          <>
-            <hr className="section-divider" />
-            <p className="selected-course-note">
-              Managing: <strong>{selectedCourse.title}</strong>
-            </p>
-
-            {/* ============ Lessons ============ */}
-            <h2 className="dashboard-subtitle">Lessons</h2>
-
-            {/* Create lesson */}
-            <form className="course-form" onSubmit={handleCreateLesson}>
-              <label className="login-label">
-                Lesson title
-                <input
-                  type="text"
-                  value={newLessonTitle}
-                  onChange={(e) => setNewLessonTitle(e.target.value)}
-                  placeholder="e.g. Components and Props"
-                />
-              </label>
-              <label className="login-label">
-                Lesson content
-                <textarea
-                  value={newLessonContent}
-                  onChange={(e) => setNewLessonContent(e.target.value)}
-                  placeholder="What does this lesson cover?"
-                  rows={3}
-                />
-              </label>
-              {lessonCreateError && (
-                <p className="login-error">{lessonCreateError}</p>
-              )}
-              <button
-                type="submit"
-                className="login-button"
-                disabled={creatingLesson}
-              >
-                {creatingLesson ? 'Creating...' : 'Create Lesson'}
-              </button>
-            </form>
-
-            {/* List lessons */}
-            {lessonsLoading && <p>Loading lessons...</p>}
-            {lessonsError && <p className="login-error">{lessonsError}</p>}
-            {lessonDeleteError && (
-              <p className="login-error">{lessonDeleteError}</p>
-            )}
-
-            {!lessonsLoading && !lessonsError && (
+          {!coursesLoading && !coursesError && (
               <>
-                {lessons.length === 0 ? (
-                  <p>No lessons yet.</p>
+                {courses.length === 0 ? (
+                    <p>No courses yet.</p>
                 ) : (
-                  <ul className="course-list">
-                    {lessons.map((lesson) => (
-                      <li key={lesson.id} className="course-item">
-                        <div className="course-id">#{lesson.id}</div>
-
-                        {editingLessonId === lesson.id ? (
-                          // Edit mode
-                          <>
-                            <label className="login-label">
-                              Title
-                              <input
-                                type="text"
-                                value={editLessonTitle}
-                                onChange={(e) =>
-                                  setEditLessonTitle(e.target.value)
-                                }
-                              />
-                            </label>
-                            <label className="login-label">
-                              Content
-                              <textarea
-                                value={editLessonContent}
-                                onChange={(e) =>
-                                  setEditLessonContent(e.target.value)
-                                }
-                                rows={3}
-                              />
-                            </label>
-                            {lessonSaveError && (
-                              <p className="login-error">{lessonSaveError}</p>
-                            )}
-                            <div className="course-actions">
-                              <button
-                                className="login-button"
-                                onClick={() => handleSaveLesson(lesson.id)}
-                                disabled={savingLesson}
-                              >
-                                {savingLesson ? 'Saving...' : 'Save'}
-                              </button>
-                              <button
-                                className="cancel-button"
-                                onClick={handleCancelEditLesson}
-                                disabled={savingLesson}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          // View mode
-                          <>
-                            <div className="course-title">{lesson.title}</div>
+                    <ul className="course-list">
+                      {courses.map((course) => (
+                          <li key={course.id} className="course-item">
+                            <div className="course-id">#{course.id}</div>
+                            <div className="course-title">{course.title}</div>
                             <div className="course-description">
-                              {lesson.content}
+                              {course.description}
                             </div>
+
                             <div className="course-actions">
                               <button
-                                className="edit-button"
-                                onClick={() => handleStartEditLesson(lesson)}
+                                  className="edit-button"
+                                  onClick={() => handleSelectCourse(course)}
+                                  disabled={selectedCourse?.id === course.id}
                               >
-                                Edit
-                              </button>
-                              <button
-                                className="delete-button"
-                                onClick={() => handleDeleteLesson(lesson.id)}
-                                disabled={deletingLessonId === lesson.id}
-                              >
-                                {deletingLessonId === lesson.id
-                                  ? 'Deleting...'
-                                  : 'Delete'}
+                                {selectedCourse?.id === course.id
+                                    ? 'Selected'
+                                    : 'Select Course'}
                               </button>
                             </div>
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+                          </li>
+                      ))}
+                    </ul>
                 )}
               </>
-            )}
+          )}
 
-            {/* ============ Tasks ============ */}
-            <h2 className="dashboard-subtitle">Tasks</h2>
-
-            {/* Create task */}
-            <form className="course-form" onSubmit={handleCreateTask}>
-              <label className="login-label">
-                Task title
-                <input
-                  type="text"
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
-                  placeholder="e.g. Build a login page"
-                />
-              </label>
-              <label className="login-label">
-                Task description
-                <textarea
-                  value={newTaskDescription}
-                  onChange={(e) => setNewTaskDescription(e.target.value)}
-                  placeholder="What should the trainee do?"
-                  rows={3}
-                />
-              </label>
-              {taskCreateError && (
-                <p className="login-error">{taskCreateError}</p>
-              )}
-              <button
-                type="submit"
-                className="login-button"
-                disabled={creatingTask}
-              >
-                {creatingTask ? 'Creating...' : 'Create Task'}
-              </button>
-            </form>
-
-            {/* List tasks */}
-            {tasksLoading && <p>Loading tasks...</p>}
-            {tasksError && <p className="login-error">{tasksError}</p>}
-            {taskDeleteError && <p className="login-error">{taskDeleteError}</p>}
-
-            {!tasksLoading && !tasksError && (
+          {/* ---- Everything below only shows once a course is selected ---- */}
+          {selectedCourse && (
               <>
-                {tasks.length === 0 ? (
-                  <p>No tasks yet.</p>
-                ) : (
-                  <ul className="course-list">
-                    {tasks.map((task) => (
-                      <li key={task.id} className="course-item">
-                        <div className="course-id">#{task.id}</div>
+                <hr className="section-divider" />
 
-                        {editingTaskId === task.id ? (
-                          // Edit mode
-                          <>
-                            <label className="login-label">
-                              Title
-                              <input
-                                type="text"
-                                value={editTaskTitle}
-                                onChange={(e) =>
-                                  setEditTaskTitle(e.target.value)
-                                }
-                              />
-                            </label>
-                            <label className="login-label">
-                              Description
-                              <textarea
-                                value={editTaskDescription}
-                                onChange={(e) =>
-                                  setEditTaskDescription(e.target.value)
-                                }
-                                rows={3}
-                              />
-                            </label>
-                            {taskSaveError && (
-                              <p className="login-error">{taskSaveError}</p>
-                            )}
-                            <div className="course-actions">
-                              <button
-                                className="login-button"
-                                onClick={() => handleSaveTask(task.id)}
-                                disabled={savingTask}
-                              >
-                                {savingTask ? 'Saving...' : 'Save'}
-                              </button>
-                              <button
-                                className="cancel-button"
-                                onClick={handleCancelEditTask}
-                                disabled={savingTask}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          // View mode
-                          <>
-                            <div className="course-title">{task.title}</div>
-                            <div className="course-description">
-                              {task.description}
-                            </div>
-                            <div className="course-actions">
-                              <button
-                                className="edit-button"
-                                onClick={() => handleStartEditTask(task)}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="delete-button"
-                                onClick={() => handleDeleteTask(task.id)}
-                                disabled={deletingTaskId === task.id}
-                              >
-                                {deletingTaskId === task.id
-                                  ? 'Deleting...'
-                                  : 'Delete'}
-                              </button>
-                              <button
-                                className="edit-button"
-                                onClick={() => handleToggleSubmissions(task.id)}
-                              >
-                                {openSubmissionsTaskId === task.id
-                                  ? 'Hide Submissions'
-                                  : 'View Submissions'}
-                              </button>
-                            </div>
-                          </>
-                        )}
+                <p className="selected-course-note">
+                  Managing: <strong>{selectedCourse.title}</strong>
+                </p>
 
-                        {/* ---- Submissions panel for this task ---- */}
-                        {openSubmissionsTaskId === task.id && (
-                          <div className="sub-panel">
-                            <h3 className="panel-title">Submissions</h3>
+                {/* ============ Lessons ============ */}
+                <h2 className="dashboard-subtitle">Lessons</h2>
 
-                            {submissionsLoading && <p>Loading submissions...</p>}
-                            {submissionsError && (
-                              <p className="login-error">{submissionsError}</p>
-                            )}
+                <form className="course-form" onSubmit={handleCreateLesson}>
+                  <label className="login-label">
+                    Lesson title
+                    <input
+                        type="text"
+                        value={newLessonTitle}
+                        onChange={(event) => setNewLessonTitle(event.target.value)}
+                        placeholder="e.g. Components and Props"
+                    />
+                  </label>
 
-                            {!submissionsLoading &&
-                              !submissionsError &&
-                              (submissions.length === 0 ? (
-                                <p>No submissions yet</p>
-                              ) : (
-                                <ul className="course-list">
-                                  {submissions.map((submission) => (
-                                    <li
-                                      key={submission.id}
-                                      className="course-item"
-                                    >
-                                      <div className="course-id">
-                                        Submission #{submission.id} · Task #
-                                        {submission.taskId}
-                                      </div>
-                                      <div className="course-title">
-                                        {submission.userFullName} (User #
-                                        {submission.userId})
-                                      </div>
-                                      <div className="course-description">
-                                        {submission.answer}
-                                      </div>
+                  <label className="login-label">
+                    Lesson content
+                    <textarea
+                        value={newLessonContent}
+                        onChange={(event) => setNewLessonContent(event.target.value)}
+                        placeholder="What does this lesson cover?"
+                        rows={3}
+                    />
+                  </label>
 
-                                      <div className="course-actions">
-                                        <button
-                                          className="edit-button"
-                                          onClick={() =>
-                                            handleToggleFeedback(submission.id)
-                                          }
-                                        >
-                                          {openFeedbackSubmissionId ===
-                                          submission.id
-                                            ? 'Hide Feedback'
-                                            : 'View Feedback'}
-                                        </button>
-                                      </div>
+                  {lessonCreateError && (
+                      <p className="login-error">{lessonCreateError}</p>
+                  )}
 
-                                      {/* ---- Feedback panel for this submission ---- */}
-                                      {openFeedbackSubmissionId ===
-                                        submission.id && (
-                                        <div className="sub-panel">
-                                          <h4 className="panel-title">
-                                            Feedback
-                                          </h4>
+                  <button
+                      type="submit"
+                      className="login-button"
+                      disabled={creatingLesson}
+                  >
+                    {creatingLesson ? 'Creating...' : 'Create Lesson'}
+                  </button>
+                </form>
 
-                                          {feedbackLoading && (
-                                            <p>Loading feedback...</p>
-                                          )}
-                                          {feedbackError && (
-                                            <p className="login-error">
-                                              {feedbackError}
-                                            </p>
-                                          )}
-                                          {feedbackDeleteError && (
-                                            <p className="login-error">
-                                              {feedbackDeleteError}
-                                            </p>
-                                          )}
+                {lessonsLoading && <p>Loading lessons...</p>}
+                {lessonsError && <p className="login-error">{lessonsError}</p>}
+                {lessonDeleteError && (
+                    <p className="login-error">{lessonDeleteError}</p>
+                )}
 
-                                          {/* Feedback exists */}
-                                          {!feedbackLoading &&
-                                            !feedbackError &&
-                                            feedback && (
-                                              <>
-                                                {editingFeedback ? (
-                                                  // Edit feedback
-                                                  <>
-                                                    <label className="login-label">
-                                                      Comment
-                                                      <textarea
-                                                        value={
-                                                          editFeedbackComment
-                                                        }
-                                                        onChange={(e) =>
-                                                          setEditFeedbackComment(
-                                                            e.target.value
-                                                          )
-                                                        }
-                                                        rows={3}
-                                                      />
-                                                    </label>
-                                                    {feedbackSaveError && (
-                                                      <p className="login-error">
-                                                        {feedbackSaveError}
-                                                      </p>
-                                                    )}
-                                                    <div className="course-actions">
-                                                      <button
-                                                        className="login-button"
-                                                        onClick={() =>
-                                                          handleSaveFeedback(
-                                                            submission.id,
-                                                            feedback.id
-                                                          )
-                                                        }
-                                                        disabled={savingFeedback}
-                                                      >
-                                                        {savingFeedback
-                                                          ? 'Saving...'
-                                                          : 'Save'}
-                                                      </button>
-                                                      <button
-                                                        className="cancel-button"
-                                                        onClick={
-                                                          handleCancelEditFeedback
-                                                        }
-                                                        disabled={savingFeedback}
-                                                      >
-                                                        Cancel
-                                                      </button>
-                                                    </div>
-                                                  </>
-                                                ) : (
-                                                  // View feedback
-                                                  <>
-                                                    <div className="course-description">
-                                                      {feedback.comment}
-                                                    </div>
-                                                    <div className="course-id">
-                                                      by {feedback.trainerFullName}
-                                                    </div>
-                                                    <div className="course-actions">
-                                                      <button
-                                                        className="edit-button"
-                                                        onClick={
-                                                          handleStartEditFeedback
-                                                        }
-                                                      >
-                                                        Edit Feedback
-                                                      </button>
-                                                      <button
-                                                        className="delete-button"
-                                                        onClick={() =>
-                                                          handleDeleteFeedback(
-                                                            feedback.id,
-                                                            submission.id
-                                                          )
-                                                        }
-                                                        disabled={
-                                                          deletingFeedback
-                                                        }
-                                                      >
-                                                        {deletingFeedback
-                                                          ? 'Deleting...'
-                                                          : 'Delete Feedback'}
-                                                      </button>
-                                                    </div>
-                                                  </>
-                                                )}
-                                              </>
-                                            )}
+                {!lessonsLoading && !lessonsError && (
+                    <>
+                      {lessons.length === 0 ? (
+                          <p>No lessons yet.</p>
+                      ) : (
+                          <ul className="course-list">
+                            {lessons.map((lesson) => (
+                                <li key={lesson.id} className="course-item">
+                                  <div className="course-id">#{lesson.id}</div>
 
-                                          {/* No feedback yet -> show message + create form */}
-                                          {!feedbackLoading &&
-                                            !feedbackError &&
-                                            !feedback && (
-                                              <>
-                                                <p>No feedback yet</p>
-                                                <label className="login-label">
-                                                  Comment
-                                                  <textarea
-                                                    value={newFeedbackComment}
-                                                    onChange={(e) =>
-                                                      setNewFeedbackComment(
-                                                        e.target.value
-                                                      )
-                                                    }
-                                                    placeholder="Write feedback for this submission"
-                                                    rows={3}
-                                                  />
-                                                </label>
-                                                {feedbackCreateError && (
-                                                  <p className="login-error">
-                                                    {feedbackCreateError}
-                                                  </p>
-                                                )}
-                                                <button
-                                                  className="login-button"
-                                                  onClick={() =>
-                                                    handleCreateFeedback(
-                                                      submission.id
-                                                    )
-                                                  }
-                                                  disabled={creatingFeedback}
-                                                >
-                                                  {creatingFeedback
-                                                    ? 'Creating...'
-                                                    : 'Create Feedback'}
-                                                </button>
-                                              </>
-                                            )}
+                                  {editingLessonId === lesson.id ? (
+                                      <>
+                                        <label className="login-label">
+                                          Title
+                                          <input
+                                              type="text"
+                                              value={editLessonTitle}
+                                              onChange={(event) =>
+                                                  setEditLessonTitle(event.target.value)
+                                              }
+                                          />
+                                        </label>
+
+                                        <label className="login-label">
+                                          Content
+                                          <textarea
+                                              value={editLessonContent}
+                                              onChange={(event) =>
+                                                  setEditLessonContent(event.target.value)
+                                              }
+                                              rows={3}
+                                          />
+                                        </label>
+
+                                        {lessonSaveError && (
+                                            <p className="login-error">{lessonSaveError}</p>
+                                        )}
+
+                                        <div className="course-actions">
+                                          <button
+                                              className="login-button"
+                                              onClick={() => handleSaveLesson(lesson.id)}
+                                              disabled={savingLesson}
+                                          >
+                                            {savingLesson ? 'Saving...' : 'Save'}
+                                          </button>
+
+                                          <button
+                                              className="cancel-button"
+                                              onClick={handleCancelEditLesson}
+                                              disabled={savingLesson}
+                                          >
+                                            Cancel
+                                          </button>
                                         </div>
-                                      )}
-                                    </li>
-                                  ))}
-                                </ul>
-                              ))}
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+                                      </>
+                                  ) : (
+                                      <>
+                                        <div className="course-title">{lesson.title}</div>
+                                        <div className="course-description">
+                                          {lesson.content}
+                                        </div>
+
+                                        <div className="course-actions">
+                                          <button
+                                              className="edit-button"
+                                              onClick={() => handleStartEditLesson(lesson)}
+                                          >
+                                            Edit
+                                          </button>
+
+                                          <button
+                                              className="delete-button"
+                                              onClick={() => handleDeleteLesson(lesson.id)}
+                                              disabled={deletingLessonId === lesson.id}
+                                          >
+                                            {deletingLessonId === lesson.id
+                                                ? 'Deleting...'
+                                                : 'Delete'}
+                                          </button>
+                                        </div>
+                                      </>
+                                  )}
+                                </li>
+                            ))}
+                          </ul>
+                      )}
+                    </>
+                )}
+
+                {/* ============ Tasks ============ */}
+                <h2 className="dashboard-subtitle">Tasks</h2>
+
+                <form className="course-form" onSubmit={handleCreateTask}>
+                  <label className="login-label">
+                    Task title
+                    <input
+                        type="text"
+                        value={newTaskTitle}
+                        onChange={(event) => setNewTaskTitle(event.target.value)}
+                        placeholder="e.g. Build a login page"
+                    />
+                  </label>
+
+                  <label className="login-label">
+                    Task description
+                    <textarea
+                        value={newTaskDescription}
+                        onChange={(event) =>
+                            setNewTaskDescription(event.target.value)
+                        }
+                        placeholder="What should the trainee do?"
+                        rows={3}
+                    />
+                  </label>
+
+                  {taskCreateError && (
+                      <p className="login-error">{taskCreateError}</p>
+                  )}
+
+                  <button
+                      type="submit"
+                      className="login-button"
+                      disabled={creatingTask}
+                  >
+                    {creatingTask ? 'Creating...' : 'Create Task'}
+                  </button>
+                </form>
+
+                {tasksLoading && <p>Loading tasks...</p>}
+                {tasksError && <p className="login-error">{tasksError}</p>}
+                {taskDeleteError && <p className="login-error">{taskDeleteError}</p>}
+
+                {!tasksLoading && !tasksError && (
+                    <>
+                      {tasks.length === 0 ? (
+                          <p>No tasks yet.</p>
+                      ) : (
+                          <ul className="course-list">
+                            {tasks.map((task) => (
+                                <li key={task.id} className="course-item">
+                                  <div className="course-id">#{task.id}</div>
+
+                                  {editingTaskId === task.id ? (
+                                      <>
+                                        <label className="login-label">
+                                          Title
+                                          <input
+                                              type="text"
+                                              value={editTaskTitle}
+                                              onChange={(event) =>
+                                                  setEditTaskTitle(event.target.value)
+                                              }
+                                          />
+                                        </label>
+
+                                        <label className="login-label">
+                                          Description
+                                          <textarea
+                                              value={editTaskDescription}
+                                              onChange={(event) =>
+                                                  setEditTaskDescription(event.target.value)
+                                              }
+                                              rows={3}
+                                          />
+                                        </label>
+
+                                        {taskSaveError && (
+                                            <p className="login-error">{taskSaveError}</p>
+                                        )}
+
+                                        <div className="course-actions">
+                                          <button
+                                              className="login-button"
+                                              onClick={() => handleSaveTask(task.id)}
+                                              disabled={savingTask}
+                                          >
+                                            {savingTask ? 'Saving...' : 'Save'}
+                                          </button>
+
+                                          <button
+                                              className="cancel-button"
+                                              onClick={handleCancelEditTask}
+                                              disabled={savingTask}
+                                          >
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      </>
+                                  ) : (
+                                      <>
+                                        <div className="course-title">{task.title}</div>
+                                        <div className="course-description">
+                                          {task.description}
+                                        </div>
+
+                                        <div className="course-actions">
+                                          <button
+                                              className="edit-button"
+                                              onClick={() => handleStartEditTask(task)}
+                                          >
+                                            Edit
+                                          </button>
+
+                                          <button
+                                              className="delete-button"
+                                              onClick={() => handleDeleteTask(task.id)}
+                                              disabled={deletingTaskId === task.id}
+                                          >
+                                            {deletingTaskId === task.id
+                                                ? 'Deleting...'
+                                                : 'Delete'}
+                                          </button>
+
+                                          <button
+                                              className="edit-button"
+                                              onClick={() => handleToggleSubmissions(task.id)}
+                                          >
+                                            {openSubmissionsTaskId === task.id
+                                                ? 'Hide Submissions'
+                                                : 'View Submissions'}
+                                          </button>
+                                        </div>
+                                      </>
+                                  )}
+
+                                  {/* ---- Submissions panel for this task ---- */}
+                                  {openSubmissionsTaskId === task.id && (
+                                      <div className="sub-panel">
+                                        <h3 className="panel-title">Submissions</h3>
+
+                                        {submissionsLoading && <p>Loading submissions...</p>}
+                                        {submissionsError && (
+                                            <p className="login-error">{submissionsError}</p>
+                                        )}
+
+                                        {!submissionsLoading &&
+                                            !submissionsError &&
+                                            (submissions.length === 0 ? (
+                                                <p>No submissions yet</p>
+                                            ) : (
+                                                <ul className="course-list">
+                                                  {submissions.map((submission) => (
+                                                      <li
+                                                          key={submission.id}
+                                                          className="course-item"
+                                                      >
+                                                        <div className="course-id">
+                                                          Submission #{submission.id} - Task #
+                                                          {submission.taskId}
+                                                        </div>
+
+                                                        <div className="course-title">
+                                                          {submission.userFullName} - User #
+                                                          {submission.userId}
+                                                        </div>
+
+                                                        <div className="course-description">
+                                                          {submission.answer}
+                                                        </div>
+
+                                                        <div className="course-actions">
+                                                          <button
+                                                              className="edit-button"
+                                                              onClick={() =>
+                                                                  handleToggleFeedback(submission.id)
+                                                              }
+                                                          >
+                                                            {openFeedbackSubmissionId ===
+                                                            submission.id
+                                                                ? 'Hide Feedback'
+                                                                : 'View Feedback'}
+                                                          </button>
+                                                        </div>
+
+                                                        {/* ---- Feedback panel for this submission ---- */}
+                                                        {openFeedbackSubmissionId ===
+                                                            submission.id && (
+                                                                <div className="sub-panel">
+                                                                  <h4 className="panel-title">
+                                                                    Feedback
+                                                                  </h4>
+
+                                                                  {feedbackLoading && (
+                                                                      <p>Loading feedback...</p>
+                                                                  )}
+
+                                                                  {feedbackError && (
+                                                                      <p className="login-error">
+                                                                        {feedbackError}
+                                                                      </p>
+                                                                  )}
+
+                                                                  {feedbackDeleteError && (
+                                                                      <p className="login-error">
+                                                                        {feedbackDeleteError}
+                                                                      </p>
+                                                                  )}
+
+                                                                  {!feedbackLoading &&
+                                                                      !feedbackError &&
+                                                                      feedback && (
+                                                                          <>
+                                                                            {editingFeedback ? (
+                                                                                <>
+                                                                                  <label className="login-label">
+                                                                                    Comment
+                                                                                    <textarea
+                                                                                        value={
+                                                                                          editFeedbackComment
+                                                                                        }
+                                                                                        onChange={(event) =>
+                                                                                            setEditFeedbackComment(
+                                                                                                event.target.value
+                                                                                            )
+                                                                                        }
+                                                                                        rows={3}
+                                                                                    />
+                                                                                  </label>
+
+                                                                                  {feedbackSaveError && (
+                                                                                      <p className="login-error">
+                                                                                        {feedbackSaveError}
+                                                                                      </p>
+                                                                                  )}
+
+                                                                                  <div className="course-actions">
+                                                                                    <button
+                                                                                        className="login-button"
+                                                                                        onClick={() =>
+                                                                                            handleSaveFeedback(
+                                                                                                submission.id,
+                                                                                                feedback.id
+                                                                                            )
+                                                                                        }
+                                                                                        disabled={savingFeedback}
+                                                                                    >
+                                                                                      {savingFeedback
+                                                                                          ? 'Saving...'
+                                                                                          : 'Save'}
+                                                                                    </button>
+
+                                                                                    <button
+                                                                                        className="cancel-button"
+                                                                                        onClick={
+                                                                                          handleCancelEditFeedback
+                                                                                        }
+                                                                                        disabled={savingFeedback}
+                                                                                    >
+                                                                                      Cancel
+                                                                                    </button>
+                                                                                  </div>
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                  <div className="course-description">
+                                                                                    {feedback.comment}
+                                                                                  </div>
+
+                                                                                  <div className="course-id">
+                                                                                    by{' '}
+                                                                                    {feedback.trainerFullName}
+                                                                                  </div>
+
+                                                                                  <div className="course-actions">
+                                                                                    <button
+                                                                                        className="edit-button"
+                                                                                        onClick={
+                                                                                          handleStartEditFeedback
+                                                                                        }
+                                                                                    >
+                                                                                      Edit Feedback
+                                                                                    </button>
+
+                                                                                    <button
+                                                                                        className="delete-button"
+                                                                                        onClick={() =>
+                                                                                            handleDeleteFeedback(
+                                                                                                feedback.id,
+                                                                                                submission.id
+                                                                                            )
+                                                                                        }
+                                                                                        disabled={
+                                                                                          deletingFeedback
+                                                                                        }
+                                                                                    >
+                                                                                      {deletingFeedback
+                                                                                          ? 'Deleting...'
+                                                                                          : 'Delete Feedback'}
+                                                                                    </button>
+                                                                                  </div>
+                                                                                </>
+                                                                            )}
+                                                                          </>
+                                                                      )}
+
+                                                                  {!feedbackLoading &&
+                                                                      !feedbackError &&
+                                                                      !feedback && (
+                                                                          <>
+                                                                            <p>No feedback yet</p>
+
+                                                                            <label className="login-label">
+                                                                              Comment
+                                                                              <textarea
+                                                                                  value={newFeedbackComment}
+                                                                                  onChange={(event) =>
+                                                                                      setNewFeedbackComment(
+                                                                                          event.target.value
+                                                                                      )
+                                                                                  }
+                                                                                  placeholder="Write feedback for this submission"
+                                                                                  rows={3}
+                                                                              />
+                                                                            </label>
+
+                                                                            {feedbackCreateError && (
+                                                                                <p className="login-error">
+                                                                                  {feedbackCreateError}
+                                                                                </p>
+                                                                            )}
+
+                                                                            <button
+                                                                                className="login-button"
+                                                                                onClick={() =>
+                                                                                    handleCreateFeedback(
+                                                                                        submission.id
+                                                                                    )
+                                                                                }
+                                                                                disabled={creatingFeedback}
+                                                                            >
+                                                                              {creatingFeedback
+                                                                                  ? 'Creating...'
+                                                                                  : 'Create Feedback'}
+                                                                            </button>
+                                                                          </>
+                                                                      )}
+                                                                </div>
+                                                            )}
+                                                      </li>
+                                                  ))}
+                                                </ul>
+                                            ))}
+                                      </div>
+                                  )}
+                                </li>
+                            ))}
+                          </ul>
+                      )}
+                    </>
                 )}
               </>
-            )}
-          </>
-        )}
+          )}
+        </div>
       </div>
-    </div>
   )
 }
 
