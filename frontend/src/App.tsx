@@ -1,138 +1,61 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import './App.css'
+import LoginPage, { dashboardPathForRole } from './LoginPage'
 import AdminDashboard from './AdminDashboard'
 import TrainerDashboard from './TrainerDashboard'
 import TraineeDashboard from './TraineeDashboard'
 
-function App() {
-  // Form fields
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+// A route that only lets the correct role in.
+// - Not logged in         -> go to /login
+// - Logged in, wrong role  -> go to that user's own dashboard
+// - Logged in, right role  -> show the dashboard
+function RoleRoute({ role }: { role: string }) {
+  const navigate = useNavigate()
 
-  // UI state
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  // We read these fresh from localStorage each render.
+  const currentRole = localStorage.getItem('role')
+  const fullName = localStorage.getItem('fullName')
 
-  // Logged-in user. We read it from localStorage so a refresh keeps you logged in.
-  const [role, setRole] = useState(localStorage.getItem('role'))
-  const [fullName, setFullName] = useState(localStorage.getItem('fullName'))
-
-  // Runs when the Login button is clicked / form is submitted
-  async function handleLogin(event: React.FormEvent) {
-    event.preventDefault() // stop the page from reloading
-
-    if (email === '' || password === '') {
-      setError('Please enter both email and password.')
-      return
-    }
-
-    setError('')
-    setLoading(true)
-
-    try {
-      const response = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        // Show the backend's error message if login fails
-        setError(data.message || 'Login failed. Please try again.')
-        return
-      }
-
-      // Save the values from a successful login
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('id', String(data.id))
-      localStorage.setItem('fullName', data.fullName)
-      localStorage.setItem('email', data.email)
-      localStorage.setItem('role', data.role)
-
-      // Switch to the dashboard
-      setRole(data.role)
-      setFullName(data.fullName)
-    } catch {
-      setError('Could not reach the server. Please try again.')
-    } finally {
-      setLoading(false)
-    }
+  // Not logged in at all
+  if (!currentRole) {
+    return <Navigate to="/login" replace />
   }
 
-  // Clears localStorage and returns to the login page
+  // Logged in but trying to open the wrong dashboard
+  if (currentRole !== role) {
+    return <Navigate to={dashboardPathForRole(currentRole)} replace />
+  }
+
+  // Logout clears everything and returns to the login page
   function handleLogout() {
     localStorage.clear()
-    setRole(null)
-    setFullName(null)
-    setEmail('')
-    setPassword('')
+    navigate('/login', { replace: true })
   }
 
-  // If we have a role, the user is logged in -> show the dashboard.
-  // Admins get the real courses dashboard; other roles get a simple placeholder for now.
-  if (role) {
-    if (role === 'ADMIN') {
-      return <AdminDashboard fullName={fullName} onLogout={handleLogout} />
-    }
-
-    if (role === 'TRAINER') {
-      return <TrainerDashboard fullName={fullName} onLogout={handleLogout} />
-    }
-
-    if (role === 'TRAINEE') {
-      return <TraineeDashboard fullName={fullName} onLogout={handleLogout} />
-    }
-
-    // Fallback for any unexpected role
-    return (
-      <div className="login-page">
-        <div className="login-card">
-          <h1 className="login-title">Dashboard</h1>
-          <p>Welcome, {fullName}!</p>
-          <button className="login-button" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </div>
-    )
+  // Show the dashboard that matches this route's role
+  if (role === 'ADMIN') {
+    return <AdminDashboard fullName={fullName} onLogout={handleLogout} />
   }
+  if (role === 'TRAINER') {
+    return <TrainerDashboard fullName={fullName} onLogout={handleLogout} />
+  }
+  return <TraineeDashboard fullName={fullName} onLogout={handleLogout} />
+}
 
-  // Otherwise show the login form
+function App() {
   return (
-    <div className="login-page">
-      <form className="login-card" onSubmit={handleLogin}>
-        <h1 className="login-title">Training Management System</h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin" element={<RoleRoute role="ADMIN" />} />
+        <Route path="/trainer" element={<RoleRoute role="TRAINER" />} />
+        <Route path="/trainee" element={<RoleRoute role="TRAINEE" />} />
 
-        <label className="login-label">
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-          />
-        </label>
-
-        <label className="login-label">
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-          />
-        </label>
-
-        {/* Error message area (only shows when there is an error) */}
-        {error && <p className="login-error">{error}</p>}
-
-        <button type="submit" className="login-button" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-    </div>
+        {/* Anything else (including "/") goes to the login page,
+            which will bounce logged-in users to their dashboard. */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiGet, apiPost, apiPut } from './api'
 
 // ---- Types that match the backend responses ----
 
@@ -57,12 +58,6 @@ type Feedback = {
 type TraineeDashboardProps = {
   fullName: string | null
   onLogout: () => void
-}
-
-// Helper: attach the JWT token to every request.
-function authHeaders() {
-  const token = localStorage.getItem('token')
-  return { Authorization: `Bearer ${token}` }
 }
 
 // The logged-in trainee's own id (saved at login). Used for enroll + submit.
@@ -126,9 +121,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setCoursesLoading(true)
     setCoursesError('')
     try {
-      const response = await fetch('http://localhost:8080/courses', {
-        headers: authHeaders(),
-      })
+      const response = await apiGet('/courses')
       if (!response.ok) {
         setCoursesError('Could not load courses. Please try again.')
         return
@@ -143,10 +136,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
   async function loadEnrollments() {
     try {
-      const response = await fetch(
-        `http://localhost:8080/enrollments/users/${userId}`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/enrollments/users/${userId}`)
       if (!response.ok) {
         // Not fatal for the page; just leave the list empty
         return
@@ -171,11 +161,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setEnrollError('')
     setEnrollingCourseId(courseId)
     try {
-      const response = await fetch('http://localhost:8080/enrollments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ userId, courseId }),
-      })
+      const response = await apiPost('/enrollments', { userId, courseId })
       if (!response.ok) {
         setEnrollError('Could not enroll. Please try again.')
         return
@@ -203,10 +189,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setLessonsLoading(true)
     setLessonsError('')
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${courseId}/lessons`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/courses/${courseId}/lessons`)
       if (!response.ok) {
         setLessonsError('Could not load lessons. Please try again.')
         return
@@ -223,10 +206,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setTasksLoading(true)
     setTasksError('')
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${courseId}/tasks`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/courses/${courseId}/tasks`)
       if (!response.ok) {
         setTasksError('Could not load tasks. Please try again.')
         return
@@ -244,10 +224,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setSubmissionsLoading(true)
     setSubmissionsError('')
     try {
-      const response = await fetch(
-        `http://localhost:8080/users/${userId}/submissions`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/users/${userId}/submissions`)
       if (!response.ok) {
         setSubmissionsError('Could not load your submissions. Please try again.')
         return
@@ -280,14 +257,10 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setSubmitErrors((prev) => ({ ...prev, [taskId]: '' }))
     setSubmittingTaskId(taskId)
     try {
-      const response = await fetch(
-        `http://localhost:8080/tasks/${taskId}/submissions`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({ userId, answer }),
-        }
-      )
+      const response = await apiPost(`/tasks/${taskId}/submissions`, {
+        userId,
+        answer,
+      })
       if (!response.ok) {
         setSubmitErrors((prev) => ({
           ...prev,
@@ -327,13 +300,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setSubmissionSaveError('')
     setSavingSubmission(true)
     try {
-      const response = await fetch(
-        `http://localhost:8080/tasks/${taskId}/submissions/${submissionId}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({ userId, answer: editAnswer }),
-        }
+      const response = await apiPut(
+        `/tasks/${taskId}/submissions/${submissionId}`,
+        { userId, answer: editAnswer }
       )
       if (!response.ok) {
         setSubmissionSaveError('Could not update. Please try again.')
@@ -363,10 +332,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     setFeedbackError('')
     setFeedback(null)
     try {
-      const response = await fetch(
-        `http://localhost:8080/submissions/${submissionId}/feedback`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/submissions/${submissionId}/feedback`)
       // 404 just means there is no feedback yet
       if (response.status === 404) {
         setFeedback(null)

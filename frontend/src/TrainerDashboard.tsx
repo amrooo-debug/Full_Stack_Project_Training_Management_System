@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiGet, apiPost, apiPut, apiDelete } from './api'
 
 // ---- Types that match the backend responses ----
 
@@ -50,13 +51,6 @@ type Feedback = {
 type TrainerDashboardProps = {
   fullName: string | null
   onLogout: () => void
-}
-
-// Small helper so we don't repeat the token lookup everywhere.
-// Returns the header object we attach to every request.
-function authHeaders() {
-  const token = localStorage.getItem('token')
-  return { Authorization: `Bearer ${token}` }
 }
 
 function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
@@ -151,9 +145,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setCoursesLoading(true)
     setCoursesError('')
     try {
-      const response = await fetch('http://localhost:8080/courses', {
-        headers: authHeaders(),
-      })
+      const response = await apiGet('/courses')
       if (!response.ok) {
         setCoursesError('Could not load courses. Please try again.')
         return
@@ -186,10 +178,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setLessonsLoading(true)
     setLessonsError('')
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${courseId}/lessons`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/courses/${courseId}/lessons`)
       if (!response.ok) {
         setLessonsError('Could not load lessons. Please try again.')
         return
@@ -214,16 +203,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setLessonCreateError('')
     setCreatingLesson(true)
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${selectedCourse.id}/lessons`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({
-            title: newLessonTitle,
-            content: newLessonContent,
-          }),
-        }
+      const response = await apiPost(
+        `/courses/${selectedCourse.id}/lessons`,
+        { title: newLessonTitle, content: newLessonContent }
       )
       if (!response.ok) {
         setLessonCreateError('Could not create the lesson. Please try again.')
@@ -262,16 +244,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setLessonSaveError('')
     setSavingLesson(true)
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${selectedCourse.id}/lessons/${lessonId}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({
-            title: editLessonTitle,
-            content: editLessonContent,
-          }),
-        }
+      const response = await apiPut(
+        `/courses/${selectedCourse.id}/lessons/${lessonId}`,
+        { title: editLessonTitle, content: editLessonContent }
       )
       if (!response.ok) {
         setLessonSaveError('Could not update the lesson. Please try again.')
@@ -293,9 +268,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setLessonDeleteError('')
     setDeletingLessonId(lessonId)
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${selectedCourse.id}/lessons/${lessonId}`,
-        { method: 'DELETE', headers: authHeaders() }
+      const response = await apiDelete(
+        `/courses/${selectedCourse.id}/lessons/${lessonId}`
       )
       if (!response.ok) {
         setLessonDeleteError('Could not delete the lesson. Please try again.')
@@ -315,10 +289,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setTasksLoading(true)
     setTasksError('')
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${courseId}/tasks`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/courses/${courseId}/tasks`)
       if (!response.ok) {
         setTasksError('Could not load tasks. Please try again.')
         return
@@ -343,16 +314,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setTaskCreateError('')
     setCreatingTask(true)
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${selectedCourse.id}/tasks`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({
-            title: newTaskTitle,
-            description: newTaskDescription,
-          }),
-        }
+      const response = await apiPost(
+        `/courses/${selectedCourse.id}/tasks`,
+        { title: newTaskTitle, description: newTaskDescription }
       )
       if (!response.ok) {
         setTaskCreateError('Could not create the task. Please try again.')
@@ -391,16 +355,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setTaskSaveError('')
     setSavingTask(true)
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${selectedCourse.id}/tasks/${taskId}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({
-            title: editTaskTitle,
-            description: editTaskDescription,
-          }),
-        }
+      const response = await apiPut(
+        `/courses/${selectedCourse.id}/tasks/${taskId}`,
+        { title: editTaskTitle, description: editTaskDescription }
       )
       if (!response.ok) {
         setTaskSaveError('Could not update the task. Please try again.')
@@ -422,9 +379,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setTaskDeleteError('')
     setDeletingTaskId(taskId)
     try {
-      const response = await fetch(
-        `http://localhost:8080/courses/${selectedCourse.id}/tasks/${taskId}`,
-        { method: 'DELETE', headers: authHeaders() }
+      const response = await apiDelete(
+        `/courses/${selectedCourse.id}/tasks/${taskId}`
       )
       if (!response.ok) {
         setTaskDeleteError('Could not delete the task. Please try again.')
@@ -458,10 +414,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setSubmissionsError('')
     setSubmissions([])
     try {
-      const response = await fetch(
-        `http://localhost:8080/tasks/${taskId}/submissions`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/tasks/${taskId}/submissions`)
       if (!response.ok) {
         setSubmissionsError('Could not load submissions. Please try again.')
         return
@@ -495,10 +448,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setFeedbackError('')
     setFeedback(null)
     try {
-      const response = await fetch(
-        `http://localhost:8080/submissions/${submissionId}/feedback`,
-        { headers: authHeaders() }
-      )
+      const response = await apiGet(`/submissions/${submissionId}/feedback`)
 
       // 404 simply means "no feedback yet" - not a real error
       if (response.status === 404) {
@@ -530,13 +480,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     const trainerId = Number(localStorage.getItem('id'))
 
     try {
-      const response = await fetch(
-        `http://localhost:8080/submissions/${submissionId}/feedback`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({ trainerId, comment: newFeedbackComment }),
-        }
+      const response = await apiPost(
+        `/submissions/${submissionId}/feedback`,
+        { trainerId, comment: newFeedbackComment }
       )
       if (!response.ok) {
         setFeedbackCreateError('Could not create feedback. Please try again.')
@@ -575,13 +521,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     const trainerId = Number(localStorage.getItem('id'))
 
     try {
-      const response = await fetch(
-        `http://localhost:8080/submissions/${submissionId}/feedback/${feedbackId}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', ...authHeaders() },
-          body: JSON.stringify({ trainerId, comment: editFeedbackComment }),
-        }
+      const response = await apiPut(
+        `/submissions/${submissionId}/feedback/${feedbackId}`,
+        { trainerId, comment: editFeedbackComment }
       )
       if (!response.ok) {
         setFeedbackSaveError('Could not update feedback. Please try again.')
@@ -602,10 +544,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setFeedbackDeleteError('')
     setDeletingFeedback(true)
     try {
-      const response = await fetch(
-        `http://localhost:8080/feedback/${feedbackId}`,
-        { method: 'DELETE', headers: authHeaders() }
-      )
+      const response = await apiDelete(`/feedback/${feedbackId}`)
       if (!response.ok) {
         setFeedbackDeleteError('Could not delete feedback. Please try again.')
         return

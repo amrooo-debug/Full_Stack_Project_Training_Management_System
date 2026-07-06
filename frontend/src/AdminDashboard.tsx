@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiGet, apiPost, apiPut, apiDelete } from './api'
 
 // The shape of one course coming back from GET /courses
 type Course = {
@@ -51,16 +52,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     setLoading(true)
     setError('')
 
-    // Read the JWT token that we saved during login
-    const token = localStorage.getItem('token')
-
     try {
-      const response = await fetch('http://localhost:8080/courses', {
-        headers: {
-          // Send the token so the backend knows who we are
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await apiGet('/courses')
 
       if (!response.ok) {
         setError('Could not load courses. Please try again.')
@@ -93,17 +86,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     setCreateError('')
     setCreating(true)
 
-    // Read the JWT token that we saved during login
-    const token = localStorage.getItem('token')
-
     try {
-      const response = await fetch('http://localhost:8080/courses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: newTitle, description: newDescription }),
+      const response = await apiPost('/courses', {
+        title: newTitle,
+        description: newDescription,
       })
 
       if (!response.ok) {
@@ -135,16 +121,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     setDeleteError('')
     setDeletingId(courseId) // remember which one we're deleting
 
-    // Read the JWT token that we saved during login
-    const token = localStorage.getItem('token')
-
     try {
-      const response = await fetch(`http://localhost:8080/courses/${courseId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await apiDelete(`/courses/${courseId}`)
 
       if (!response.ok) {
         setDeleteError('Could not delete the course. Please try again.')
@@ -185,17 +163,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     setSaveError('')
     setSaving(true)
 
-    // Read the JWT token that we saved during login
-    const token = localStorage.getItem('token')
-
     try {
-      const response = await fetch(`http://localhost:8080/courses/${courseId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: editTitle, description: editDescription }),
+      const response = await apiPut(`/courses/${courseId}`, {
+        title: editTitle,
+        description: editDescription,
       })
 
       if (!response.ok) {
