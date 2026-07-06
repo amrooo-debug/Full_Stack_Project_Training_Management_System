@@ -2,21 +2,66 @@
 
 ## Project Overview
 
-This project is a backend system for managing training courses, users, lessons, tasks, submissions, feedback, and enrollments.
+Training Management System is a full-stack web application for managing training courses, users, lessons, tasks, submissions, feedback, and enrollments.
 
-The project was built using **Kotlin**, **Spring Boot**, **PostgreSQL**, **Spring Security**, and **JWT Authentication**.
+The goal of this project is to practice a real full-stack development workflow using:
 
-The system supports three user roles:
+- Kotlin and Spring Boot for the backend
+- PostgreSQL for the database
+- React, TypeScript, and Vite for the frontend
+- JWT authentication for secure login
+- Role-based access for Admin, Trainer, and Trainee users
 
-- `ADMIN`
-- `TRAINER`
-- `TRAINEE`
+The system allows each user role to access only the features they are allowed to use.
 
-Each role has different permissions inside the system.
+---
+
+## User Roles
+
+The system supports three roles:
+
+### ADMIN
+
+Admin manages the main system data.
+
+Admin can:
+
+- Manage courses
+- Manage users
+- Create, edit, and delete users
+- Assign user roles
+
+### TRAINER
+
+Trainer manages course content and trainee work.
+
+Trainer can:
+
+- View courses
+- Manage lessons
+- Manage tasks
+- View trainee submissions
+- Add, edit, and delete feedback
+
+### TRAINEE
+
+Trainee uses the system to learn and submit work.
+
+Trainee can:
+
+- View courses
+- Enroll in courses
+- View lessons
+- View tasks
+- Submit work
+- Edit their own submission
+- View trainer feedback
 
 ---
 
 ## Technologies Used
+
+### Backend
 
 - Kotlin
 - Spring Boot
@@ -27,40 +72,43 @@ Each role has different permissions inside the system.
 - PostgreSQL
 - Gradle Kotlin
 - Java 21
+
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- React Router
+- CSS
+
+### Tools
+
+- IntelliJ IDEA
 - Postman
 - pgAdmin
-- Git and GitHub
-- IntelliJ IDEA
+- Git
+- GitHub
+- npm
 
 ---
 
-## Project Structure
+## Backend
 
-The backend is organized using a clean layered structure:
+The backend is responsible for:
+
+- Handling API requests
+- Connecting to the PostgreSQL database
+- Managing users, courses, lessons, tasks, submissions, feedback, and enrollments
+- Authenticating users with JWT
+- Applying role-based permissions
+
+Backend URL:
 
 ```text
-controller
-service
-repository
-dto
-entity
-enums
-config
+http://localhost:8080
 ```
 
-- `controller`: receives API requests
-- `service`: contains business logic
-- `repository`: connects to the database
-- `dto`: controls request and response data
-- `entity`: represents database tables
-- `enums`: contains user roles
-- `config`: contains security and JWT setup
-
----
-
-## Database
-
-Database name:
+Database:
 
 ```text
 training_db
@@ -72,130 +120,73 @@ PostgreSQL port:
 5000
 ```
 
-Tables created:
-
-- `users`
-- `courses`
-- `lessons`
-- `enrollments`
-- `tasks`
-- `submissions`
-- `feedback`
-
----
-
-## Environment Variables
-
-The project uses environment variables to keep sensitive data safe.
-
-Required variables:
+Main backend folder:
 
 ```text
-DB_PASSWORD
-JWT_SECRET
+src/main/kotlin/com/example/trainingmanagementsystem
 ```
 
-Example:
+---
+
+## Frontend
+
+The frontend is responsible for:
+
+- Showing the login page
+- Redirecting users to the correct dashboard
+- Calling backend APIs
+- Displaying courses, lessons, tasks, submissions, feedback, and users
+- Protecting dashboard routes based on user role
+
+Frontend URL:
 
 ```text
-DB_PASSWORD=your_database_password;JWT_SECRET=your_jwt_secret_key
+http://localhost:5173
 ```
 
-In `application.properties`, secrets are used like this:
+Main frontend folder:
 
-```properties
-spring.datasource.password=${DB_PASSWORD}
-app.jwt.secret=${JWT_SECRET}
+```text
+frontend
 ```
 
-No real database password or JWT secret is stored in the code.
+Main frontend source folder:
+
+```text
+frontend/src
+```
+
+Frontend routes:
+
+```text
+/login
+/admin
+/trainer
+/trainee
+```
 
 ---
 
-## Features Completed
+## Authentication
 
-### Courses
+The project uses JWT authentication.
 
-- Create course
-- Get courses
-- Get course by ID
-- Update course
-- Delete course
+Login flow:
 
-### Lessons
+1. User enters email and password.
+2. Backend checks the user.
+3. Backend returns a JWT token.
+4. Frontend saves the token in localStorage.
+5. Frontend sends the token with protected API requests.
+6. Backend checks the token and user role before allowing access.
 
-- Create lesson under a course
-- Get lessons by course
-- Get lesson by ID
-- Update lesson
-- Delete lesson
-
-### Users
-
-- Create user
-- Get users
-- Get user by ID
-- Update user
-- Delete user
-- Support roles: `ADMIN`, `TRAINER`, `TRAINEE`
-
-### Enrollments
-
-- Enroll user in course
-- Get enrollments
-- Get enrollments by user
-- Get enrollments by course
-- Delete enrollment
-- Prevent duplicate enrollment
-
-### Tasks
-
-- Create task under a course
-- Get tasks by course
-- Get task by ID
-- Update task
-- Delete task
-
-### Submissions
-
-- Trainee submits work for a task
-- Get submissions by task
-- Get submission by ID
-- Get submissions by user
-- Update submission
-- Prevent duplicate submission
-
-### Feedback
-
-- Trainer gives feedback on a submission
-- Get feedback by submission
-- Get feedback by trainer
-- Get feedback by ID
-- Update feedback
-- Prevent duplicate feedback
-
----
-
-## Authentication and Security
-
-The project includes authentication using **Spring Security** and **JWT**.
-
-Completed security features:
-
-- Password field added to users
-- Passwords are hashed using BCrypt
-- Login API created
-- JWT token is returned after successful login
-- APIs are protected using Bearer Token
-- Role-based permissions are added
-
-Login endpoint:
+Login API:
 
 ```text
 POST /auth/login
 ```
 
-Example login request:
+Example request:
 
 ```json
 {
@@ -204,94 +195,43 @@ Example login request:
 }
 ```
 
-Example login response:
-
-```json
-{
-  "id": 1,
-  "fullName": "Test Admin",
-  "email": "admin@test.com",
-  "role": "ADMIN",
-  "token": "jwt-token-here",
-  "message": "Login successful"
-}
-```
-
 ---
 
-## Role-Based Permissions
+## Environment Variables
 
-### ADMIN
+The project uses environment variables to protect sensitive data.
 
-Admin can:
-
-- Manage users
-- Manage courses
-- Manage lessons
-- Manage tasks
-- View submissions
-- Manage feedback
-- View and delete enrollments
-
-### TRAINER
-
-Trainer can:
-
-- View courses
-- Manage lessons
-- Manage tasks
-- View submissions
-- Give and update feedback
-- View enrollments
-
-### TRAINEE
-
-Trainee can:
-
-- View courses
-- View lessons
-- View tasks
-- Enroll in courses
-- Submit work
-- Update submission
-- View feedback
-- View own enrollments
-
----
-
-## Main API Groups
+Required variables:
 
 ```text
-POST   /auth/login
-
-/users
-/courses
-/courses/{courseId}/lessons
-/enrollments
-/courses/{courseId}/tasks
-/tasks/{taskId}/submissions
-/submissions/{submissionId}/feedback
+DB_PASSWORD
+JWT_SECRET
 ```
 
-The APIs were tested using Postman with different JWT tokens for:
+Example IntelliJ Run Configuration format:
 
-- Admin
-- Trainer
-- Trainee
+```text
+DB_PASSWORD=your_database_password;JWT_SECRET=your_jwt_secret_key
+```
+
+The backend uses these placeholders in `application.properties`:
+
+```properties
+spring.datasource.password=${DB_PASSWORD}
+app.jwt.secret=${JWT_SECRET}
+```
+
+Do not commit real passwords or real JWT secrets to GitHub.
 
 ---
 
-## How to Run the Project
+## How to Run the Backend
 
-1. Clone the repository:
+1. Open the project in IntelliJ IDEA.
 
-```bash
-git clone https://github.com/amrooo-debug/Full_Stack_Project_Training_Management_System.git
-```
+2. Make sure PostgreSQL is running.
 
-2. Open the project in IntelliJ IDEA.
-
-3. Create a PostgreSQL database:
+3. Make sure the database exists:
 
 ```text
 training_db
@@ -303,13 +243,13 @@ training_db
 DB_PASSWORD=your_database_password;JWT_SECRET=your_jwt_secret_key
 ```
 
-5. Run:
+5. Run the backend application:
 
 ```text
 TrainingManagementSystemApplication.kt
 ```
 
-The backend will run on:
+6. Backend should run on:
 
 ```text
 http://localhost:8080
@@ -317,51 +257,308 @@ http://localhost:8080
 
 ---
 
-## Testing
+## How to Run the Frontend
 
-The project was tested using:
+1. Open IntelliJ Terminal.
 
-- Postman for API testing
-- pgAdmin for database checking
-- IntelliJ IDEA for running and debugging the backend
+2. Go to the frontend folder:
 
-Common successful responses:
-
-```text
-200 OK
-201 Created
-204 No Content
+```bash
+cd frontend
 ```
 
-Common security response:
+3. Install dependencies if needed:
 
-```text
-403 Forbidden
+```bash
+npm install
 ```
 
-This means the user is logged in but does not have permission for that API.
+4. Start the frontend:
+
+```bash
+npm run dev
+```
+
+5. Frontend should run on:
+
+```text
+http://localhost:5173
+```
 
 ---
 
-## Project Status
+## Test Login Accounts
 
-Completed:
+### Admin
+
+```text
+Email: admin@test.com
+Password: 123456
+```
+
+### Trainer
+
+```text
+Email: login.trainer@test.com
+Password: 123456
+```
+
+### Trainee
+
+```text
+Email: login.trainee@test.com
+Password: 123456
+```
+
+---
+
+## Main Backend Features
+
+### Courses
+
+- Create courses
+- View courses
+- Update courses
+- Delete courses
+
+### Lessons
+
+- Create lessons under a course
+- View course lessons
+- Update lessons
+- Delete lessons
+
+### Users
+
+- Create users
+- View users
+- Update users
+- Delete users
+- Support Admin, Trainer, and Trainee roles
+
+### Enrollments
+
+- Enroll trainees in courses
+- View enrollments by user
+- View enrollments by course
+- Prevent duplicate enrollment
+
+### Tasks
+
+- Create tasks under a course
+- View course tasks
+- Update tasks
+- Delete tasks
+
+### Submissions
+
+- Trainees can submit work
+- Trainees can edit their own submissions
+- Trainers and admins can view submissions
+- Duplicate submissions are prevented
+
+### Feedback
+
+- Trainers can give feedback on submissions
+- Trainees can view feedback
+- Feedback can be updated or deleted
+- Duplicate feedback for the same submission is prevented
+
+---
+
+## Main Frontend Features
+
+### Login Page
+
+- Login with email and password
+- Save JWT token
+- Save user role
+- Redirect user to the correct dashboard
+
+### Protected Routes
+
+The frontend protects dashboard pages:
+
+- Not logged in users go to `/login`
+- Admin users go to `/admin`
+- Trainer users go to `/trainer`
+- Trainee users go to `/trainee`
+- Users cannot access dashboards for other roles
+
+### Admin Dashboard
+
+Admin can:
+
+- View all courses
+- Create courses
+- Edit courses
+- Delete courses
+- View all users
+- Create users
+- Edit users
+- Delete users
+
+### Trainer Dashboard
+
+Trainer can:
+
+- View courses
+- Select a course
+- Manage lessons
+- Manage tasks
+- View submissions
+- Add and manage feedback
+
+### Trainee Dashboard
+
+Trainee can:
+
+- View courses
+- Enroll in courses
+- See enrolled status
+- Select a course
+- View lessons
+- View tasks
+- Submit work
+- Edit submission
+- View feedback
+
+---
+
+## Shared Frontend API Helper
+
+The frontend uses a shared API helper:
+
+```text
+frontend/src/api.ts
+```
+
+This file helps with:
+
+- Backend base URL
+- GET requests
+- POST requests
+- PUT requests
+- DELETE requests
+- Sending the JWT Bearer Token automatically
+- Handling backend responses
+
+---
+
+## Project Structure
+
+```text
+training-management-system
+│
+├── src
+│   └── main
+│       └── kotlin
+│           └── com.example.trainingmanagementsystem
+│               ├── config
+│               ├── controller
+│               ├── dto
+│               ├── entity
+│               ├── enums
+│               ├── exception
+│               ├── repository
+│               └── service
+│
+├── frontend
+│   ├── src
+│   │   ├── AdminDashboard.tsx
+│   │   ├── TrainerDashboard.tsx
+│   │   ├── TraineeDashboard.tsx
+│   │   ├── LoginPage.tsx
+│   │   ├── api.ts
+│   │   ├── App.tsx
+│   │   ├── App.css
+│   │   └── index.css
+│   │
+│   ├── package.json
+│   └── package-lock.json
+│
+├── README.md
+├── build.gradle.kts
+└── settings.gradle.kts
+```
+
+---
+
+## Common URLs
+
+Backend:
+
+```text
+http://localhost:8080
+```
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+Login:
+
+```text
+http://localhost:5173/login
+```
+
+Admin Dashboard:
+
+```text
+http://localhost:5173/admin
+```
+
+Trainer Dashboard:
+
+```text
+http://localhost:5173/trainer
+```
+
+Trainee Dashboard:
+
+```text
+http://localhost:5173/trainee
+```
+
+---
+
+## Completed Project Work
+
+Completed so far:
 
 - Backend CRUD APIs
-- Database relationships
-- Authentication
+- PostgreSQL database connection
 - JWT login
-- Role-based permissions
-- PostgreSQL connection
-- Postman testing
-- GitHub version control
+- Password hashing
+- Role-based backend permissions
+- Cleaner backend error responses
+- React frontend setup
+- Frontend login page
+- React Router
+- Protected frontend routes
+- Shared frontend API helper
+- Admin Dashboard
+- Trainer Dashboard
+- Trainee Dashboard
+- Frontend UI design improvement
+- GitHub commits and pushes
 
-Still left:
+---
 
-- Export Postman collection
-- Improve validation and error responses
-- Build frontend website later
-- Connect frontend with backend APIs
+## Future Improvements
+
+Optional improvements that can be added later:
+
+- Add screenshots to the README
+- Create shared TypeScript model types
+- Create reusable frontend components
+- Improve success and error messages
+- Add admin enrollment management
+- Add backend tests
+- Add frontend tests
+- Prepare the project for deployment
 
 ---
 
