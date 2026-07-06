@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { apiGet, apiPost, apiPut, apiDelete } from './api'
 import type { Course, User, UserRole } from './types'
+import DashboardHeader from './components/DashboardHeader'
 
 // Props: the logged-in admin's name + the logout handler.
 // We pass these in from App so this component stays focused on courses.
@@ -343,17 +344,12 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   return (
       <div className="dashboard-page">
         <div className="dashboard-card">
-          <div className="dashboard-header">
-            <div>
-              <h1 className="dashboard-title">Admin Dashboard</h1>
-              <p className="dashboard-welcome">Welcome, {fullName}!</p>
-              <span className="user-role role-ADMIN">ADMIN</span>
-            </div>
-
-            <button className="login-button" onClick={onLogout}>
-              Logout
-            </button>
-          </div>
+          <DashboardHeader
+              title="Admin Dashboard"
+              fullName={fullName}
+              role="ADMIN"
+              onLogout={onLogout}
+          />
 
           {/* ---- Create Course form ---- */}
           <h2 className="dashboard-subtitle">Create Course</h2>

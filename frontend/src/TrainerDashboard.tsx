@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { apiGet, apiPost, apiPut, apiDelete } from './api'
 import type { Course, Lesson, Task, Submission, Feedback } from './types'
+import DashboardHeader from './components/DashboardHeader'
 
 // Props passed in from App
 type TrainerDashboardProps = {
@@ -14,7 +15,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   const [coursesLoading, setCoursesLoading] = useState(true)
   const [coursesError, setCoursesError] = useState('')
 
-  // The course the trainer is currently working inside (null = none selected)
+  // The course the trainer is currently working inside
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
 
   // ================= Lessons =================
@@ -581,18 +582,12 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   return (
       <div className="dashboard-page">
         <div className="dashboard-card">
-          {/* ---- Header ---- */}
-          <div className="dashboard-header">
-            <div>
-              <h1 className="dashboard-title">Trainer Dashboard</h1>
-              <p className="dashboard-welcome">Welcome, {fullName}!</p>
-              <span className="user-role role-TRAINER">TRAINER</span>
-            </div>
-
-            <button className="login-button" onClick={onLogout}>
-              Logout
-            </button>
-          </div>
+          <DashboardHeader
+              title="Trainer Dashboard"
+              fullName={fullName}
+              role="TRAINER"
+              onLogout={onLogout}
+          />
 
           {/* ---- Courses ---- */}
           <h2 className="dashboard-subtitle">Courses</h2>
