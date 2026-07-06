@@ -37,14 +37,16 @@
   color: #374151;
 }
 
-.login-label input {
+.login-label input,
+.login-label select {
   padding: 0.6rem 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 1rem;
 }
 
-.login-label input:focus {
+.login-label input:focus,
+.login-label select:focus {
   outline: none;
   border-color: #2563eb;
 }
@@ -170,6 +172,25 @@
   margin-top: 0.25rem;
   font-size: 0.9rem;
   color: #4b5563;
+}
+
+/* The role label shown on a user card (e.g. TRAINER) */
+.user-role {
+  margin-top: 0.35rem;
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background-color: #eef2ff;
+  color: #3730a3;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Small grey hint text under a form field */
+.field-hint {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.8rem;
 }
 
 /* Row of buttons (Edit/Delete or Save/Cancel) under a course */
