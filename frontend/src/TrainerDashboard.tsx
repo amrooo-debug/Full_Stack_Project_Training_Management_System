@@ -566,6 +566,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
           <div>
             <h1 className="dashboard-title">Trainer Dashboard</h1>
             <p className="dashboard-welcome">Welcome, {fullName}!</p>
+            <span className="user-role role-TRAINER">TRAINER</span>
           </div>
           <button className="login-button" onClick={onLogout}>
             Logout

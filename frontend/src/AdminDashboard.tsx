@@ -359,6 +359,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
           <div>
             <h1 className="dashboard-title">Admin Dashboard</h1>
             <p className="dashboard-welcome">Welcome, {fullName}!</p>
+            <span className="user-role role-ADMIN">ADMIN</span>
           </div>
           <button className="login-button" onClick={onLogout}>
             Logout
@@ -633,7 +634,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                       <>
                         <div className="course-title">{user.fullName}</div>
                         <div className="course-description">{user.email}</div>
-                        <div className="user-role">{user.role}</div>
+                        <div className={`user-role role-${user.role}`}>
+                          {user.role}
+                        </div>
                         <div className="course-actions">
                           <button
                             className="edit-button"

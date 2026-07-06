@@ -1,21 +1,28 @@
+/* =========================================================
+   Training Management System - component styles
+   All class names are kept the same as before, so the
+   dashboards keep working; only the look-and-feel changes.
+   ========================================================= */
+
+/* ---------- Login page ---------- */
+
 /* Center the login card on the page */
 .login-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f2f4f8;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
 }
 
 /* The white login box */
 .login-card {
   width: 100%;
-  max-width: 360px;
-  background-color: #ffffff;
+  max-width: 380px;
+  background-color: var(--surface);
   padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -23,269 +30,366 @@
 
 .login-title {
   margin: 0 0 0.5rem;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   text-align: center;
-  color: #1f2937;
+  color: var(--text);
 }
 
-/* Each label wraps its input */
+/* ---------- Forms (shared by login + all dashboards) ---------- */
+
+/* Each label wraps its input, stacked with a small gap */
 .login-label {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
   font-size: 0.9rem;
+  font-weight: 500;
   color: #374151;
 }
 
 .login-label input,
-.login-label select {
+.login-label select,
+.login-label textarea {
+  width: 100%;
   padding: 0.6rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 1rem;
+  font-family: inherit;
+  color: var(--text);
+  background-color: var(--surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.login-label textarea {
+  resize: vertical;
+  min-height: 4.5rem;
 }
 
 .login-label input:focus,
-.login-label select:focus {
+.login-label select:focus,
+.login-label textarea:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Red error text */
+/* Small grey hint text under a form field */
+.field-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* A form that stacks its fields (Create Course / Create User / etc.) */
+.course-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Messages ---------- */
+
+/* Error message: soft red box so it stands out clearly */
 .login-error {
   margin: 0;
-  color: #dc2626;
+  padding: 0.5rem 0.75rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: var(--danger);
   font-size: 0.9rem;
 }
 
+/* ---------- Buttons ---------- */
+
+/* Primary (blue) button - used for Login, Create, Save */
 .login-button {
-  padding: 0.7rem;
+  padding: 0.7rem 1rem;
   border: none;
-  border-radius: 6px;
-  background-color: #2563eb;
+  border-radius: 8px;
+  background-color: var(--primary);
   color: #ffffff;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .login-button:hover {
-  background-color: #1d4ed8;
+  background-color: var(--primary-hover);
 }
 
-/* ---- Admin Dashboard ---- */
+.login-button:disabled {
+  background-color: var(--primary-soft);
+  cursor: default;
+}
+
+/* Small action buttons that sit on cards */
+.edit-button,
+.delete-button,
+.cancel-button {
+  padding: 0.45rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+/* Blue - primary card action (Edit / Select / View) */
+.edit-button {
+  background-color: var(--primary);
+}
+.edit-button:hover {
+  background-color: var(--primary-hover);
+}
+.edit-button:disabled {
+  background-color: var(--primary-soft);
+  cursor: default;
+}
+
+/* Red - destructive action (Delete) */
+.delete-button {
+  background-color: var(--danger);
+}
+.delete-button:hover {
+  background-color: var(--danger-hover);
+}
+.delete-button:disabled {
+  background-color: var(--danger-soft);
+  cursor: default;
+}
+
+/* Grey - Cancel */
+.cancel-button {
+  background-color: var(--gray);
+}
+.cancel-button:hover {
+  background-color: var(--gray-hover);
+}
+.cancel-button:disabled {
+  background-color: #d1d5db;
+  cursor: default;
+}
+
+/* Give keyboard users a visible focus ring on every button */
+.login-button:focus-visible,
+.edit-button:focus-visible,
+.delete-button:focus-visible,
+.cancel-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Dashboard shell ---------- */
 
 /* Full-page light background, content aligned to the top */
 .dashboard-page {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  background-color: #f2f4f8;
   padding: 2rem 1rem;
 }
 
-/* The white card that holds the dashboard, wider than the login card */
+/* The white card that holds a dashboard */
 .dashboard-card {
   width: 100%;
-  max-width: 640px;
-  background-color: #ffffff;
+  max-width: 720px;
+  background-color: var(--surface);
   padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-/* Title on the left, logout button on the right */
+/* Header: title/welcome on the left, logout on the right */
 .dashboard-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .dashboard-title {
   margin: 0;
-  font-size: 1.4rem;
-  color: #1f2937;
+  font-size: 1.5rem;
+  color: var(--text);
 }
 
 .dashboard-welcome {
   margin: 0.25rem 0 0;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
+/* Section heading (Courses, Users, Lessons, Tasks...) */
 .dashboard-subtitle {
-  margin: 1.5rem 0 0.75rem;
-  font-size: 1.1rem;
-  color: #374151;
+  margin: 1.75rem 0 0.75rem;
+  font-size: 1.15rem;
+  color: var(--text);
 }
 
-/* The Create Course form: stack fields with a small gap */
-.course-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* Thin line separating major sections */
+.section-divider {
+  margin: 2rem 0 1rem;
+  border: none;
+  border-top: 1px solid var(--border);
 }
 
-/* Make the textarea look like the text inputs */
-.login-label textarea {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-family: inherit;
-  resize: vertical;
+/* Note showing which course is currently selected */
+.selected-course-note {
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 0.95rem;
 }
 
-.login-label textarea:focus {
-  outline: none;
-  border-color: #2563eb;
+/* Grey italic text for "will be added next" placeholders */
+.placeholder-note {
+  color: var(--text-faint);
+  font-style: italic;
 }
 
-/* The list of courses (no bullet points) */
+/* ---------- Cards (courses, users, lessons, tasks, submissions) ---------- */
+
+/* The list wrapper (no bullet points) */
 .course-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .course-item {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  background-color: var(--surface);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.course-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .course-id {
-  font-size: 0.8rem;
-  color: #9ca3af;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
 }
 
 .course-title {
-  font-size: 1rem;
+  margin-top: 0.15rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text);
 }
 
 .course-description {
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  font-size: 0.92rem;
   color: #4b5563;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-/* The role label shown on a user card (e.g. TRAINER) */
-.user-role {
-  margin-top: 0.35rem;
-  display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  background-color: #eef2ff;
-  color: #3730a3;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-/* Small grey hint text under a form field */
-.field-hint {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.8rem;
-}
-
-/* Row of buttons (Edit/Delete or Save/Cancel) under a course */
+/* Row of buttons under a card */
 .course-actions {
-  margin-top: 0.75rem;
+  margin-top: 0.85rem;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-/* Shared shape for the small buttons on a course card */
-.edit-button,
-.delete-button,
-.cancel-button {
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 6px;
-  color: #ffffff;
-  font-size: 0.85rem;
-  cursor: pointer;
+/* ---------- Role badges ---------- */
+
+/* Base pill shape */
+.user-role {
+  margin-top: 0.4rem;
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background-color: #eef2ff;
+  color: #3730a3;
 }
 
-/* Blue Edit button */
-.edit-button {
-  background-color: #2563eb;
+/* Per-role colors */
+.role-ADMIN {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+.role-TRAINER {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.role-TRAINEE {
+  background-color: #dcfce7;
+  color: #166534;
 }
 
-.edit-button:hover {
-  background-color: #1d4ed8;
-}
+/* ---------- Nested panels (submissions inside a task, feedback inside a submission) ---------- */
 
-.edit-button:disabled {
-  background-color: #93c5fd;
-  cursor: default;
-}
-
-/* Red Delete button */
-.delete-button {
-  background-color: #dc2626;
-}
-
-.delete-button:hover {
-  background-color: #b91c1c;
-}
-
-.delete-button:disabled {
-  background-color: #fca5a5;
-  cursor: default;
-}
-
-/* Grey Cancel button */
-.cancel-button {
-  background-color: #6b7280;
-}
-
-.cancel-button:hover {
-  background-color: #4b5563;
-}
-
-.cancel-button:disabled {
-  background-color: #d1d5db;
-  cursor: default;
-}
-
-/* Thin line separating the course list from the selected-course sections */
-.section-divider {
-  margin: 1.75rem 0 1rem;
-  border: none;
-  border-top: 1px solid #e5e7eb;
-}
-
-/* Small note showing which course is currently being managed */
-.selected-course-note {
-  margin: 0 0 0.5rem;
-  color: #374151;
-  font-size: 0.95rem;
-}
-
-/* Grey text for the "will be added next" placeholder sections */
-.placeholder-note {
-  color: #9ca3af;
-  font-style: italic;
-}
-
-/* A nested panel (submissions inside a task, feedback inside a submission) */
 .sub-panel {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  border-left: 3px solid #e5e7eb;
-  background-color: #f9fafb;
-  border-radius: 0 6px 6px 0;
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--primary);
+  background-color: var(--surface-soft);
+  border-radius: 0 8px 8px 0;
 }
 
 /* Small heading inside a nested panel */
 .panel-title {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.6rem;
   font-size: 0.95rem;
+  font-weight: 600;
   color: #374151;
+}
+
+/* ---------- Responsive tweaks for small screens ---------- */
+
+@media (max-width: 640px) {
+  .dashboard-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .dashboard-card {
+    padding: 1.25rem;
+  }
+
+  /* Stack the header so the logout button drops below the title */
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Make card action buttons fill the row nicely when they wrap */
+  .course-actions .edit-button,
+  .course-actions .delete-button,
+  .course-actions .cancel-button {
+    flex: 1 1 auto;
+  }
+
+  .login-card {
+    padding: 1.5rem;
+  }
 }

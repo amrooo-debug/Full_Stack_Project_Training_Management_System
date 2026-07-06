@@ -60,10 +60,13 @@ type TraineeDashboardProps = {
   onLogout: () => void
 }
 
-// The logged-in trainee's own id (saved at login). Used for enroll + submit.
-const userId = Number(localStorage.getItem('id'))
-
 function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
+  // The logged-in trainee's own id (saved at login). Used for enroll + submit.
+  // IMPORTANT: read this inside the component (not at the top of the file), so
+  // it is read AFTER login. Reading it at the top of the file would run before
+  // login and give 0, breaking enrollments and submissions.
+  const userId = Number(localStorage.getItem('id'))
+
   // ================= Courses =================
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesLoading, setCoursesLoading] = useState(true)
@@ -163,7 +166,13 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     try {
       const response = await apiPost('/enrollments', { userId, courseId })
       if (!response.ok) {
-        setEnrollError('Could not enroll. Please try again.')
+        // 409 = the backend says this trainee is already enrolled
+        if (response.status === 409) {
+          setEnrollError('You are already enrolled in this course')
+          await loadEnrollments() // refresh so the button flips to "Enrolled"
+        } else {
+          setEnrollError('Could not enroll. Please try again.')
+        }
         return
       }
       await loadEnrollments() // refresh so the button shows "Enrolled"
@@ -359,6 +368,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
           <div>
             <h1 className="dashboard-title">Trainee Dashboard</h1>
             <p className="dashboard-welcome">Welcome, {fullName}!</p>
+            <span className="user-role role-TRAINEE">TRAINEE</span>
           </div>
           <button className="login-button" onClick={onLogout}>
             Logout
