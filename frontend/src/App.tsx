@@ -36,26 +36,28 @@ function RoleRoute({ role }: { role: string }) {
   if (role === 'ADMIN') {
     return <AdminDashboard fullName={fullName} onLogout={handleLogout} />
   }
+
   if (role === 'TRAINER') {
     return <TrainerDashboard fullName={fullName} onLogout={handleLogout} />
   }
+
   return <TraineeDashboard fullName={fullName} onLogout={handleLogout} />
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin" element={<RoleRoute role="ADMIN" />} />
-        <Route path="/trainer" element={<RoleRoute role="TRAINER" />} />
-        <Route path="/trainee" element={<RoleRoute role="TRAINEE" />} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<RoleRoute role="ADMIN" />} />
+          <Route path="/trainer" element={<RoleRoute role="TRAINER" />} />
+          <Route path="/trainee" element={<RoleRoute role="TRAINEE" />} />
 
-        {/* Anything else (including "/") goes to the login page,
+          {/* Anything else, including "/", goes to the login page,
             which will bounce logged-in users to their dashboard. */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
   )
 }
 
