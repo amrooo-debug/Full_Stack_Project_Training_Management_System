@@ -30,6 +30,7 @@ Admin can:
 - Manage users
 - Create, edit, and delete users
 - Assign user roles
+- Create enrollments
 - View enrollments
 - Delete enrollments
 
@@ -361,7 +362,9 @@ Password: 123456
 
 ### Enrollments
 
-- Enroll trainees in courses
+- Create enrollments
+- Allow Admin to create enrollments from the Admin Dashboard
+- Allow Trainees to enroll themselves from the Trainee Dashboard
 - View all enrollments
 - View enrollments by user
 - View enrollments by course
@@ -389,6 +392,22 @@ Password: 123456
 - Trainees can view feedback
 - Feedback can be updated or deleted
 - Duplicate feedback for the same submission is prevented
+
+---
+
+## Backend Permissions
+
+The backend uses Spring Security and method-level role checks.
+
+Important enrollment permissions:
+
+- Admin and Trainee can create enrollments
+- Admin and Trainer can view all enrollments
+- Admin, Trainer, and Trainee can view enrollments by user
+- Admin and Trainer can view enrollments by course
+- Admin can delete enrollments
+
+This allows the Trainee Dashboard to support self-enrollment and the Admin Dashboard to support full enrollment management.
 
 ---
 
@@ -423,6 +442,7 @@ Admin can:
 - Create users
 - Edit users
 - Delete users
+- Create enrollments
 - View all enrollments
 - Delete enrollments
 
@@ -615,6 +635,7 @@ Completed so far:
 - JWT login
 - Password hashing
 - Role-based backend permissions
+- Backend permission update for admin enrollment creation
 - Cleaner backend error responses
 - React frontend setup
 - Frontend login page
@@ -626,6 +647,7 @@ Completed so far:
 - Admin Dashboard
 - Admin course management
 - Admin user management
+- Admin create enrollment action
 - Admin enrollment view
 - Admin delete enrollment action
 - Trainer Dashboard
