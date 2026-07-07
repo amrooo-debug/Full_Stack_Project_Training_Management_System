@@ -9,6 +9,9 @@ type AdminDashboardProps = {
 }
 
 function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
+  // ================= Shared success message =================
+  const [successMessage, setSuccessMessage] = useState('')
+
   // ================= Courses =================
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -147,6 +150,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   // ================= Courses: create / edit / delete =================
   async function handleCreateCourse(event: FormEvent) {
     event.preventDefault()
+    setSuccessMessage('')
 
     if (newTitle === '' || newDescription === '') {
       setCreateError('Please enter both a title and a description.')
@@ -170,6 +174,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setNewTitle('')
       setNewDescription('')
       await loadCourses()
+      setSuccessMessage('Course created successfully.')
     } catch {
       setCreateError('Could not reach the server. Please try again.')
     } finally {
@@ -184,6 +189,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       return
     }
 
+    setSuccessMessage('')
     setDeleteError('')
     setDeletingId(courseId)
 
@@ -197,6 +203,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
       await loadCourses()
       await loadEnrollments()
+      setSuccessMessage('Course deleted successfully.')
     } catch {
       setDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -205,6 +212,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   }
 
   function handleStartEdit(course: Course) {
+    setSuccessMessage('')
     setSaveError('')
     setEditingId(course.id)
     setEditTitle(course.title)
@@ -217,6 +225,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   }
 
   async function handleSaveEdit(courseId: number) {
+    setSuccessMessage('')
+
     if (editTitle === '' || editDescription === '') {
       setSaveError('Please enter both a title and a description.')
       return
@@ -239,6 +249,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setEditingId(null)
       await loadCourses()
       await loadEnrollments()
+      setSuccessMessage('Course updated successfully.')
     } catch {
       setSaveError('Could not reach the server. Please try again.')
     } finally {
@@ -249,6 +260,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   // ================= Users: create / edit / delete =================
   async function handleCreateUser(event: FormEvent) {
     event.preventDefault()
+    setSuccessMessage('')
 
     if (
         newUserFullName === '' ||
@@ -281,6 +293,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setNewUserRole('TRAINEE')
       await loadUsers()
       await loadEnrollments()
+      setSuccessMessage('User created successfully.')
     } catch {
       setUserCreateError('Could not reach the server. Please try again.')
     } finally {
@@ -289,6 +302,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   }
 
   function handleStartEditUser(user: User) {
+    setSuccessMessage('')
     setUserSaveError('')
     setEditingUserId(user.id)
     setEditUserFullName(user.fullName)
@@ -303,6 +317,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   }
 
   async function handleSaveUser(userId: number) {
+    setSuccessMessage('')
+
     if (
         editUserFullName === '' ||
         editUserEmail === '' ||
@@ -331,6 +347,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setEditingUserId(null)
       await loadUsers()
       await loadEnrollments()
+      setSuccessMessage('User updated successfully.')
     } catch {
       setUserSaveError('Could not reach the server. Please try again.')
     } finally {
@@ -345,6 +362,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       return
     }
 
+    setSuccessMessage('')
     setUserDeleteError('')
     setDeletingUserId(userId)
 
@@ -358,6 +376,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
       await loadUsers()
       await loadEnrollments()
+      setSuccessMessage('User deleted successfully.')
     } catch {
       setUserDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -368,6 +387,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   // ================= Enrollments: create / delete =================
   async function handleCreateEnrollment(event: FormEvent) {
     event.preventDefault()
+    setSuccessMessage('')
 
     if (newEnrollmentUserId === '' || newEnrollmentCourseId === '') {
       setEnrollmentCreateError('Please select both a trainee and a course.')
@@ -377,10 +397,25 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     setEnrollmentCreateError('')
     setCreatingEnrollment(true)
 
+    const selectedUserId = Number(newEnrollmentUserId)
+    const selectedCourseId = Number(newEnrollmentCourseId)
+
+    const alreadyEnrolled = enrollments.some(
+        (enrollment) =>
+            enrollment.userId === selectedUserId &&
+            enrollment.courseId === selectedCourseId
+    )
+
+    if (alreadyEnrolled) {
+      setEnrollmentCreateError('This trainee is already enrolled in this course.')
+      setCreatingEnrollment(false)
+      return
+    }
+
     try {
       const response = await apiPost('/enrollments', {
-        userId: Number(newEnrollmentUserId),
-        courseId: Number(newEnrollmentCourseId),
+        userId: selectedUserId,
+        courseId: selectedCourseId,
       })
 
       if (!response.ok) {
@@ -398,6 +433,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setNewEnrollmentUserId('')
       setNewEnrollmentCourseId('')
       await loadEnrollments()
+      setSuccessMessage('Enrollment created successfully.')
     } catch {
       setEnrollmentCreateError('Could not reach the server. Please try again.')
     } finally {
@@ -414,6 +450,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       return
     }
 
+    setSuccessMessage('')
     setEnrollmentDeleteError('')
     setDeletingEnrollmentId(enrollmentId)
 
@@ -426,6 +463,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       }
 
       await loadEnrollments()
+      setSuccessMessage('Enrollment deleted successfully.')
     } catch {
       setEnrollmentDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -444,6 +482,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               role="ADMIN"
               onLogout={onLogout}
           />
+
+          {successMessage && (
+              <p className="selected-course-note">{successMessage}</p>
+          )}
 
           {/* ---- Create Course form ---- */}
           <h2 className="dashboard-subtitle">Create Course</h2>
@@ -760,7 +802,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               Trainee
               <select
                   value={newEnrollmentUserId}
-                  onChange={(event) => setNewEnrollmentUserId(event.target.value)}
+                  onChange={(event) => {
+                    setNewEnrollmentUserId(event.target.value)
+                    setEnrollmentCreateError('')
+                    setSuccessMessage('')
+                  }}
               >
                 <option value="">Select trainee</option>
                 {traineeUsers.map((user) => (
@@ -775,7 +821,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               Course
               <select
                   value={newEnrollmentCourseId}
-                  onChange={(event) => setNewEnrollmentCourseId(event.target.value)}
+                  onChange={(event) => {
+                    setNewEnrollmentCourseId(event.target.value)
+                    setEnrollmentCreateError('')
+                    setSuccessMessage('')
+                  }}
               >
                 <option value="">Select course</option>
                 {courses.map((course) => (
