@@ -1,41 +1,33 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { apiGet, apiPost, apiPut, apiDelete } from './api'
-import type { Course, User, UserRole } from './types'
+import type { Course, Enrollment, User, UserRole } from './types'
 import DashboardHeader from './components/DashboardHeader'
 
-// Props: the logged-in admin's name + the logout handler.
-// We pass these in from App so this component stays focused on courses.
 type AdminDashboardProps = {
   fullName: string | null
   onLogout: () => void
 }
 
 function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
-  // The courses we load from the backend
+  // ================= Courses =================
   const [courses, setCourses] = useState<Course[]>([])
-
-  // UI state for the loading text and any error message
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  // The "Create Course" form fields
+  // Create Course form
   const [newTitle, setNewTitle] = useState('')
   const [newDescription, setNewDescription] = useState('')
-
-  // UI state for the create form
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState('')
 
-  // Which course is currently being deleted
+  // Delete Course
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [deleteError, setDeleteError] = useState('')
 
-  // Which course is currently being edited
+  // Edit Course
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [editDescription, setEditDescription] = useState('')
-
-  // UI state for saving a course edit
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
@@ -65,7 +57,12 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null)
   const [userDeleteError, setUserDeleteError] = useState('')
 
-  // Loads the course list from the backend.
+  // ================= Enrollments =================
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([])
+  const [enrollmentsLoading, setEnrollmentsLoading] = useState(true)
+  const [enrollmentsError, setEnrollmentsError] = useState('')
+
+  // ================= Load data =================
   async function loadCourses() {
     setLoading(true)
     setError('')
@@ -87,7 +84,6 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // Loads the user list from the backend.
   async function loadUsers() {
     setUsersLoading(true)
     setUsersError('')
@@ -109,13 +105,34 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // Load courses and users once when the dashboard opens.
+  async function loadEnrollments() {
+    setEnrollmentsLoading(true)
+    setEnrollmentsError('')
+
+    try {
+      const response = await apiGet('/enrollments')
+
+      if (!response.ok) {
+        setEnrollmentsError('Could not load enrollments. Please try again.')
+        return
+      }
+
+      const data = await response.json()
+      setEnrollments(data)
+    } catch {
+      setEnrollmentsError('Could not reach the server. Please try again.')
+    } finally {
+      setEnrollmentsLoading(false)
+    }
+  }
+
   useEffect(() => {
     loadCourses()
     loadUsers()
+    loadEnrollments()
   }, [])
 
-  // Runs when the Create Course form is submitted.
+  // ================= Courses: create / edit / delete =================
   async function handleCreateCourse(event: FormEvent) {
     event.preventDefault()
 
@@ -148,7 +165,6 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // Runs when a course's Delete button is clicked.
   async function handleDeleteCourse(courseId: number) {
     const confirmed = window.confirm('Are you sure you want to delete this course?')
 
@@ -168,6 +184,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       }
 
       await loadCourses()
+      await loadEnrollments()
     } catch {
       setDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -175,7 +192,6 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // Switch a course card into edit mode.
   function handleStartEdit(course: Course) {
     setSaveError('')
     setEditingId(course.id)
@@ -183,13 +199,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     setEditDescription(course.description)
   }
 
-  // Leave course edit mode without saving.
   function handleCancelEdit() {
     setEditingId(null)
     setSaveError('')
   }
 
-  // Save edited course.
   async function handleSaveEdit(courseId: number) {
     if (editTitle === '' || editDescription === '') {
       setSaveError('Please enter both a title and a description.')
@@ -212,6 +226,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
       setEditingId(null)
       await loadCourses()
+      await loadEnrollments()
     } catch {
       setSaveError('Could not reach the server. Please try again.')
     } finally {
@@ -219,7 +234,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // Runs when the Create User form is submitted.
+  // ================= Users: create / edit / delete =================
   async function handleCreateUser(event: FormEvent) {
     event.preventDefault()
 
@@ -253,6 +268,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setNewUserPassword('')
       setNewUserRole('TRAINEE')
       await loadUsers()
+      await loadEnrollments()
     } catch {
       setUserCreateError('Could not reach the server. Please try again.')
     } finally {
@@ -260,8 +276,6 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // Switch a user card into edit mode.
-  // The password field starts empty because the backend never returns passwords.
   function handleStartEditUser(user: User) {
     setUserSaveError('')
     setEditingUserId(user.id)
@@ -271,14 +285,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     setEditUserRole(user.role)
   }
 
-  // Leave user edit mode without saving.
   function handleCancelEditUser() {
     setEditingUserId(null)
     setUserSaveError('')
   }
 
-  // Save edited user.
-  // The backend requires a password on update, so admin must type a new password.
   async function handleSaveUser(userId: number) {
     if (
         editUserFullName === '' ||
@@ -307,6 +318,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
       setEditingUserId(null)
       await loadUsers()
+      await loadEnrollments()
     } catch {
       setUserSaveError('Could not reach the server. Please try again.')
     } finally {
@@ -314,7 +326,6 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // Delete user.
   async function handleDeleteUser(userId: number) {
     const confirmed = window.confirm('Are you sure you want to delete this user?')
 
@@ -334,6 +345,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       }
 
       await loadUsers()
+      await loadEnrollments()
     } catch {
       setUserDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -476,7 +488,6 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
           {/* ================= Users ================= */}
           <hr className="section-divider" />
 
-          {/* ---- Create User form ---- */}
           <h2 className="dashboard-subtitle">Create User</h2>
 
           <form className="course-form" onSubmit={handleCreateUser}>
@@ -531,7 +542,6 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             </button>
           </form>
 
-          {/* ---- Users list ---- */}
           <h2 className="dashboard-subtitle">Users</h2>
 
           {usersLoading && <p>Loading users...</p>}
@@ -651,6 +661,44 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                   </div>
                                 </>
                             )}
+                          </li>
+                      ))}
+                    </ul>
+                )}
+              </>
+          )}
+
+          {/* ================= Enrollments ================= */}
+          <hr className="section-divider" />
+
+          <h2 className="dashboard-subtitle">Enrollments</h2>
+
+          {enrollmentsLoading && <p>Loading enrollments...</p>}
+          {enrollmentsError && (
+              <p className="login-error">{enrollmentsError}</p>
+          )}
+
+          {!enrollmentsLoading && !enrollmentsError && (
+              <>
+                {enrollments.length === 0 ? (
+                    <p>No enrollments yet.</p>
+                ) : (
+                    <ul className="course-list">
+                      {enrollments.map((enrollment) => (
+                          <li key={enrollment.id} className="course-item">
+                            <div className="course-id">Enrollment #{enrollment.id}</div>
+
+                            <div className="course-title">
+                              {enrollment.userFullName ?? 'Unknown trainee'}
+                            </div>
+
+                            <div className="course-description">
+                              Course: {enrollment.courseTitle ?? 'Unknown course'}
+                            </div>
+
+                            <div className="course-id">
+                              User #{enrollment.userId} - Course #{enrollment.courseId}
+                            </div>
                           </li>
                       ))}
                     </ul>
