@@ -10,6 +10,9 @@ type TrainerDashboardProps = {
 }
 
 function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
+  // ================= Shared success message =================
+  const [successMessage, setSuccessMessage] = useState('')
+
   // ================= Courses =================
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesLoading, setCoursesLoading] = useState(true)
@@ -120,6 +123,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
   // When a course is selected, load its lessons and tasks
   function handleSelectCourse(course: Course) {
+    setSuccessMessage('')
     setSelectedCourse(course)
     setEditingLessonId(null)
     setEditingTaskId(null)
@@ -151,6 +155,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
   async function handleCreateLesson(event: FormEvent) {
     event.preventDefault()
+    setSuccessMessage('')
 
     if (!selectedCourse) {
       return
@@ -178,6 +183,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       setNewLessonTitle('')
       setNewLessonContent('')
       await loadLessons(selectedCourse.id)
+      setSuccessMessage('Lesson created successfully.')
     } catch {
       setLessonCreateError('Could not reach the server. Please try again.')
     } finally {
@@ -186,6 +192,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   function handleStartEditLesson(lesson: Lesson) {
+    setSuccessMessage('')
     setLessonSaveError('')
     setEditingLessonId(lesson.id)
     setEditLessonTitle(lesson.title)
@@ -198,6 +205,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleSaveLesson(lessonId: number) {
+    setSuccessMessage('')
+
     if (!selectedCourse) {
       return
     }
@@ -226,6 +235,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
       setEditingLessonId(null)
       await loadLessons(selectedCourse.id)
+      setSuccessMessage('Lesson updated successfully.')
     } catch {
       setLessonSaveError('Could not reach the server. Please try again.')
     } finally {
@@ -242,6 +252,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
+    setSuccessMessage('')
     setLessonDeleteError('')
     setDeletingLessonId(lessonId)
 
@@ -256,6 +267,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       }
 
       await loadLessons(selectedCourse.id)
+      setSuccessMessage('Lesson deleted successfully.')
     } catch {
       setLessonDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -287,6 +299,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
   async function handleCreateTask(event: FormEvent) {
     event.preventDefault()
+    setSuccessMessage('')
 
     if (!selectedCourse) {
       return
@@ -314,6 +327,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       setNewTaskTitle('')
       setNewTaskDescription('')
       await loadTasks(selectedCourse.id)
+      setSuccessMessage('Task created successfully.')
     } catch {
       setTaskCreateError('Could not reach the server. Please try again.')
     } finally {
@@ -322,6 +336,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   function handleStartEditTask(task: Task) {
+    setSuccessMessage('')
     setTaskSaveError('')
     setEditingTaskId(task.id)
     setEditTaskTitle(task.title)
@@ -334,6 +349,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleSaveTask(taskId: number) {
+    setSuccessMessage('')
+
     if (!selectedCourse) {
       return
     }
@@ -362,6 +379,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
       setEditingTaskId(null)
       await loadTasks(selectedCourse.id)
+      setSuccessMessage('Task updated successfully.')
     } catch {
       setTaskSaveError('Could not reach the server. Please try again.')
     } finally {
@@ -378,6 +396,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
+    setSuccessMessage('')
     setTaskDeleteError('')
     setDeletingTaskId(taskId)
 
@@ -392,6 +411,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       }
 
       await loadTasks(selectedCourse.id)
+      setSuccessMessage('Task deleted successfully.')
     } catch {
       setTaskDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -402,6 +422,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   // ================= Submissions: toggle + load =================
 
   function handleToggleSubmissions(taskId: number) {
+    setSuccessMessage('')
+
     if (openSubmissionsTaskId === taskId) {
       setOpenSubmissionsTaskId(null)
       return
@@ -436,6 +458,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   // ================= Feedback: toggle + load / create / edit / delete =================
 
   function handleToggleFeedback(submissionId: number) {
+    setSuccessMessage('')
+
     if (openFeedbackSubmissionId === submissionId) {
       setOpenFeedbackSubmissionId(null)
       return
@@ -475,6 +499,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleCreateFeedback(submissionId: number) {
+    setSuccessMessage('')
+
     if (newFeedbackComment === '') {
       setFeedbackCreateError('Please enter a comment.')
       return
@@ -498,6 +524,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
       setNewFeedbackComment('')
       await loadFeedback(submissionId)
+      setSuccessMessage('Feedback created successfully.')
     } catch {
       setFeedbackCreateError('Could not reach the server. Please try again.')
     } finally {
@@ -510,6 +537,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
+    setSuccessMessage('')
     setFeedbackSaveError('')
     setEditFeedbackComment(feedback.comment)
     setEditingFeedback(true)
@@ -521,6 +549,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   async function handleSaveFeedback(submissionId: number, feedbackId: number) {
+    setSuccessMessage('')
+
     if (editFeedbackComment === '') {
       setFeedbackSaveError('Please enter a comment.')
       return
@@ -547,6 +577,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
       setEditingFeedback(false)
       await loadFeedback(submissionId)
+      setSuccessMessage('Feedback updated successfully.')
     } catch {
       setFeedbackSaveError('Could not reach the server. Please try again.')
     } finally {
@@ -559,6 +590,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
+    setSuccessMessage('')
     setFeedbackDeleteError('')
     setDeletingFeedback(true)
 
@@ -571,6 +603,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       }
 
       await loadFeedback(submissionId)
+      setSuccessMessage('Feedback deleted successfully.')
     } catch {
       setFeedbackDeleteError('Could not reach the server. Please try again.')
     } finally {
@@ -588,6 +621,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
               role="TRAINER"
               onLogout={onLogout}
           />
+
+          {successMessage && (
+              <p className="selected-course-note">{successMessage}</p>
+          )}
 
           {/* ---- Courses ---- */}
           <h2 className="dashboard-subtitle">Courses</h2>
