@@ -106,6 +106,18 @@
   font-size: 0.9rem;
 }
 
+/* Success message: green box for completed actions */
+.success-message {
+  margin: 1rem 0 0.5rem;
+  padding: 0.6rem 0.8rem;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  color: #166534;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
 /* ---------- Buttons ---------- */
 
 /* Primary (blue) button - used for Login, Create, Save */
@@ -252,7 +264,7 @@
   border-top: 1px solid var(--border);
 }
 
-/* Note showing which course is currently selected or success messages */
+/* Note showing which course is currently selected */
 .selected-course-note {
   margin: 0 0 0.5rem;
   padding: 0.5rem 0.75rem;
@@ -263,7 +275,7 @@
   font-size: 0.95rem;
 }
 
-/* ---------- Admin summary cards ---------- */
+/* ---------- Dashboard summary cards ---------- */
 
 .summary-grid {
   display: grid;

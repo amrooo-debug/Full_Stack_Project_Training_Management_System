@@ -342,6 +342,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
         if (openFeedbackSubmissionId === submissionId) {
             setOpenFeedbackSubmissionId(null)
+            setFeedback(null)
             return
         }
 
@@ -392,9 +393,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                     onLogout={onLogout}
                 />
 
-                {successMessage && (
-                    <p className="selected-course-note">{successMessage}</p>
-                )}
+                {successMessage && <p className="success-message">{successMessage}</p>}
 
                 <div className="summary-grid">
                     <div className="summary-card">

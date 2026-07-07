@@ -637,9 +637,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
               onLogout={onLogout}
           />
 
-          {successMessage && (
-              <p className="selected-course-note">{successMessage}</p>
-          )}
+          {successMessage && <p className="success-message">{successMessage}</p>}
 
           <div className="summary-grid">
             <div className="summary-card">
