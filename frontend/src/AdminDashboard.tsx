@@ -61,6 +61,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
   const [enrollmentsLoading, setEnrollmentsLoading] = useState(true)
   const [enrollmentsError, setEnrollmentsError] = useState('')
+  const [deletingEnrollmentId, setDeletingEnrollmentId] = useState<number | null>(
+      null
+  )
+  const [enrollmentDeleteError, setEnrollmentDeleteError] = useState('')
 
   // ================= Load data =================
   async function loadCourses() {
@@ -350,6 +354,35 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setUserDeleteError('Could not reach the server. Please try again.')
     } finally {
       setDeletingUserId(null)
+    }
+  }
+
+  // ================= Enrollments: delete =================
+  async function handleDeleteEnrollment(enrollmentId: number) {
+    const confirmed = window.confirm(
+        'Are you sure you want to delete this enrollment?'
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setEnrollmentDeleteError('')
+    setDeletingEnrollmentId(enrollmentId)
+
+    try {
+      const response = await apiDelete(`/enrollments/${enrollmentId}`)
+
+      if (!response.ok) {
+        setEnrollmentDeleteError('Could not delete enrollment. Please try again.')
+        return
+      }
+
+      await loadEnrollments()
+    } catch {
+      setEnrollmentDeleteError('Could not reach the server. Please try again.')
+    } finally {
+      setDeletingEnrollmentId(null)
     }
   }
 
@@ -677,6 +710,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
           {enrollmentsError && (
               <p className="login-error">{enrollmentsError}</p>
           )}
+          {enrollmentDeleteError && (
+              <p className="login-error">{enrollmentDeleteError}</p>
+          )}
 
           {!enrollmentsLoading && !enrollmentsError && (
               <>
@@ -698,6 +734,18 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
                             <div className="course-id">
                               User #{enrollment.userId} - Course #{enrollment.courseId}
+                            </div>
+
+                            <div className="course-actions">
+                              <button
+                                  className="delete-button"
+                                  onClick={() => handleDeleteEnrollment(enrollment.id)}
+                                  disabled={deletingEnrollmentId === enrollment.id}
+                              >
+                                {deletingEnrollmentId === enrollment.id
+                                    ? 'Deleting...'
+                                    : 'Delete Enrollment'}
+                              </button>
                             </div>
                           </li>
                       ))}
