@@ -127,6 +127,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setSelectedCourse(course)
     setEditingLessonId(null)
     setEditingTaskId(null)
+    setOpenSubmissionsTaskId(null)
+    setOpenFeedbackSubmissionId(null)
+    setSubmissions([])
+    setFeedback(null)
     loadLessons(course.id)
     loadTasks(course.id)
   }
@@ -426,10 +430,14 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     if (openSubmissionsTaskId === taskId) {
       setOpenSubmissionsTaskId(null)
+      setOpenFeedbackSubmissionId(null)
+      setSubmissions([])
+      setFeedback(null)
       return
     }
 
     setOpenFeedbackSubmissionId(null)
+    setFeedback(null)
     setOpenSubmissionsTaskId(taskId)
     loadSubmissions(taskId)
   }
@@ -462,6 +470,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     if (openFeedbackSubmissionId === submissionId) {
       setOpenFeedbackSubmissionId(null)
+      setFeedback(null)
       return
     }
 
@@ -611,6 +620,12 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     }
   }
 
+  const totalCourses = courses.length
+  const totalLessons = lessons.length
+  const totalTasks = tasks.length
+  const totalSubmissions = submissions.length
+  const totalFeedback = feedback ? 1 : 0
+
   // ================= Render =================
   return (
       <div className="dashboard-page">
@@ -625,6 +640,33 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
           {successMessage && (
               <p className="selected-course-note">{successMessage}</p>
           )}
+
+          <div className="summary-grid">
+            <div className="summary-card">
+              <span className="summary-label">Courses</span>
+              <strong className="summary-value">{totalCourses}</strong>
+            </div>
+
+            <div className="summary-card">
+              <span className="summary-label">Lessons</span>
+              <strong className="summary-value">{totalLessons}</strong>
+            </div>
+
+            <div className="summary-card">
+              <span className="summary-label">Tasks</span>
+              <strong className="summary-value">{totalTasks}</strong>
+            </div>
+
+            <div className="summary-card">
+              <span className="summary-label">Submissions</span>
+              <strong className="summary-value">{totalSubmissions}</strong>
+            </div>
+
+            <div className="summary-card">
+              <span className="summary-label">Feedback</span>
+              <strong className="summary-value">{totalFeedback}</strong>
+            </div>
+          </div>
 
           {/* ---- Courses ---- */}
           <h2 className="dashboard-subtitle">Courses</h2>
