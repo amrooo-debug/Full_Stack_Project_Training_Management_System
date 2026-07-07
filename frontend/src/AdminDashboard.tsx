@@ -61,6 +61,14 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
   const [enrollmentsLoading, setEnrollmentsLoading] = useState(true)
   const [enrollmentsError, setEnrollmentsError] = useState('')
+
+  // Create Enrollment form
+  const [newEnrollmentUserId, setNewEnrollmentUserId] = useState('')
+  const [newEnrollmentCourseId, setNewEnrollmentCourseId] = useState('')
+  const [creatingEnrollment, setCreatingEnrollment] = useState(false)
+  const [enrollmentCreateError, setEnrollmentCreateError] = useState('')
+
+  // Delete Enrollment
   const [deletingEnrollmentId, setDeletingEnrollmentId] = useState<number | null>(
       null
   )
@@ -357,7 +365,46 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
   }
 
-  // ================= Enrollments: delete =================
+  // ================= Enrollments: create / delete =================
+  async function handleCreateEnrollment(event: FormEvent) {
+    event.preventDefault()
+
+    if (newEnrollmentUserId === '' || newEnrollmentCourseId === '') {
+      setEnrollmentCreateError('Please select both a trainee and a course.')
+      return
+    }
+
+    setEnrollmentCreateError('')
+    setCreatingEnrollment(true)
+
+    try {
+      const response = await apiPost('/enrollments', {
+        userId: Number(newEnrollmentUserId),
+        courseId: Number(newEnrollmentCourseId),
+      })
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setEnrollmentCreateError(
+              'This trainee is already enrolled in this course.'
+          )
+        } else {
+          setEnrollmentCreateError('Could not create enrollment. Please try again.')
+        }
+
+        return
+      }
+
+      setNewEnrollmentUserId('')
+      setNewEnrollmentCourseId('')
+      await loadEnrollments()
+    } catch {
+      setEnrollmentCreateError('Could not reach the server. Please try again.')
+    } finally {
+      setCreatingEnrollment(false)
+    }
+  }
+
   async function handleDeleteEnrollment(enrollmentId: number) {
     const confirmed = window.confirm(
         'Are you sure you want to delete this enrollment?'
@@ -385,6 +432,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
       setDeletingEnrollmentId(null)
     }
   }
+
+  const traineeUsers = users.filter((user) => user.role === 'TRAINEE')
 
   return (
       <div className="dashboard-page">
@@ -703,6 +752,52 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
           {/* ================= Enrollments ================= */}
           <hr className="section-divider" />
+
+          <h2 className="dashboard-subtitle">Create Enrollment</h2>
+
+          <form className="course-form" onSubmit={handleCreateEnrollment}>
+            <label className="login-label">
+              Trainee
+              <select
+                  value={newEnrollmentUserId}
+                  onChange={(event) => setNewEnrollmentUserId(event.target.value)}
+              >
+                <option value="">Select trainee</option>
+                {traineeUsers.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.fullName} - User #{user.id}
+                    </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="login-label">
+              Course
+              <select
+                  value={newEnrollmentCourseId}
+                  onChange={(event) => setNewEnrollmentCourseId(event.target.value)}
+              >
+                <option value="">Select course</option>
+                {courses.map((course) => (
+                    <option key={course.id} value={course.id}>
+                      {course.title} - Course #{course.id}
+                    </option>
+                ))}
+              </select>
+            </label>
+
+            {enrollmentCreateError && (
+                <p className="login-error">{enrollmentCreateError}</p>
+            )}
+
+            <button
+                type="submit"
+                className="login-button"
+                disabled={creatingEnrollment}
+            >
+              {creatingEnrollment ? 'Creating...' : 'Create Enrollment'}
+            </button>
+          </form>
 
           <h2 className="dashboard-subtitle">Enrollments</h2>
 

@@ -2,6 +2,7 @@ package com.example.trainingmanagementsystem.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -30,8 +31,20 @@ class SecurityConfig(
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authorizeHttpRequests { authorizeRequests ->
-                authorizeRequests.requestMatchers("/auth/**").permitAll()
-                authorizeRequests.anyRequest().authenticated()
+                authorizeRequests
+                    .requestMatchers("/auth/**").permitAll()
+
+                    // Admin can create enrollments from Admin Dashboard.
+                    // Trainee can still enroll themselves from Trainee Dashboard.
+                    .requestMatchers(HttpMethod.POST, "/enrollments")
+                    .hasAnyRole("ADMIN", "TRAINEE")
+
+                    // Only Admin can delete enrollments.
+                    .requestMatchers(HttpMethod.DELETE, "/enrollments/**")
+                    .hasRole("ADMIN")
+
+                    .anyRequest()
+                    .authenticated()
             }
             .httpBasic { httpBasicConfig ->
                 httpBasicConfig.disable()
@@ -46,13 +59,14 @@ class SecurityConfig(
     fun passwordEncoder(): PasswordEncoder =
         BCryptPasswordEncoder()
 
-    // Allow the frontend (Vite dev server) to call the API from the browser
+    // Allow the frontend Vite dev server to call the backend API from the browser.
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf("http://localhost:5173")
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
+        configuration.allowCredentials = true
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)

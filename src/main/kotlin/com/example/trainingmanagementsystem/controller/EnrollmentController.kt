@@ -23,7 +23,7 @@ class EnrollmentController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('TRAINEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINEE')")
     fun createEnrollment(
         @Valid @RequestBody enrollmentRequest: EnrollmentRequest
     ): EnrollmentResponse =
