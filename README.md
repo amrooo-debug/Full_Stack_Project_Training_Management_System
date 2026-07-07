@@ -30,6 +30,8 @@ Admin can:
 - Manage users
 - Create, edit, and delete users
 - Assign user roles
+- View enrollments
+- Delete enrollments
 
 ### TRAINER
 
@@ -51,6 +53,7 @@ Trainee can:
 
 - View courses
 - Enroll in courses
+- See enrolled status
 - View lessons
 - View tasks
 - Submit work
@@ -101,6 +104,7 @@ The backend is responsible for:
 - Managing users, courses, lessons, tasks, submissions, feedback, and enrollments
 - Authenticating users with JWT
 - Applying role-based permissions
+- Returning cleaner error responses for common API errors
 
 Backend URL:
 
@@ -135,8 +139,10 @@ The frontend is responsible for:
 - Showing the login page
 - Redirecting users to the correct dashboard
 - Calling backend APIs
-- Displaying courses, lessons, tasks, submissions, feedback, and users
+- Displaying courses, lessons, tasks, submissions, feedback, users, and enrollments
 - Protecting dashboard routes based on user role
+- Reusing shared TypeScript types
+- Reusing shared UI components such as the dashboard header
 
 Frontend URL:
 
@@ -177,8 +183,9 @@ Login flow:
 2. Backend checks the user.
 3. Backend returns a JWT token.
 4. Frontend saves the token in localStorage.
-5. Frontend sends the token with protected API requests.
-6. Backend checks the token and user role before allowing access.
+5. Frontend saves the user role in localStorage.
+6. Frontend sends the token with protected API requests.
+7. Backend checks the token and user role before allowing access.
 
 Login API:
 
@@ -287,6 +294,19 @@ http://localhost:5173
 
 ---
 
+## How to Build the Frontend
+
+To check that the frontend builds successfully, run:
+
+```bash
+cd frontend
+npm run build
+```
+
+This runs TypeScript checking and creates a production build.
+
+---
+
 ## Test Login Accounts
 
 ### Admin
@@ -318,6 +338,7 @@ Password: 123456
 
 - Create courses
 - View courses
+- View course by ID
 - Update courses
 - Delete courses
 
@@ -325,6 +346,7 @@ Password: 123456
 
 - Create lessons under a course
 - View course lessons
+- View lesson by ID
 - Update lessons
 - Delete lessons
 
@@ -332,6 +354,7 @@ Password: 123456
 
 - Create users
 - View users
+- View user by ID
 - Update users
 - Delete users
 - Support Admin, Trainer, and Trainee roles
@@ -339,14 +362,17 @@ Password: 123456
 ### Enrollments
 
 - Enroll trainees in courses
+- View all enrollments
 - View enrollments by user
 - View enrollments by course
+- Delete enrollments
 - Prevent duplicate enrollment
 
 ### Tasks
 
 - Create tasks under a course
 - View course tasks
+- View task by ID
 - Update tasks
 - Delete tasks
 
@@ -397,6 +423,8 @@ Admin can:
 - Create users
 - Edit users
 - Delete users
+- View all enrollments
+- Delete enrollments
 
 ### Trainer Dashboard
 
@@ -406,8 +434,10 @@ Trainer can:
 - Select a course
 - Manage lessons
 - Manage tasks
-- View submissions
-- Add and manage feedback
+- View trainee submissions
+- Add feedback
+- Edit feedback
+- Delete feedback
 
 ### Trainee Dashboard
 
@@ -445,6 +475,54 @@ This file helps with:
 
 ---
 
+## Shared Frontend Types
+
+The frontend uses shared TypeScript types:
+
+```text
+frontend/src/types.ts
+```
+
+This file includes common types such as:
+
+- User
+- UserRole
+- Course
+- Lesson
+- Task
+- Enrollment
+- Submission
+- Feedback
+
+Using shared types keeps the dashboard files cleaner and avoids repeating the same type definitions in many places.
+
+---
+
+## Reusable Frontend Components
+
+The frontend includes reusable components.
+
+Current reusable component:
+
+```text
+frontend/src/components/DashboardHeader.tsx
+```
+
+This component is used by:
+
+- Admin Dashboard
+- Trainer Dashboard
+- Trainee Dashboard
+
+It shows:
+
+- Dashboard title
+- Welcome message
+- Role badge
+- Logout button
+
+---
+
 ## Project Structure
 
 ```text
@@ -465,11 +543,15 @@ training-management-system
 │
 ├── frontend
 │   ├── src
+│   │   ├── components
+│   │   │   └── DashboardHeader.tsx
+│   │   │
 │   │   ├── AdminDashboard.tsx
 │   │   ├── TrainerDashboard.tsx
 │   │   ├── TraineeDashboard.tsx
 │   │   ├── LoginPage.tsx
 │   │   ├── api.ts
+│   │   ├── types.ts
 │   │   ├── App.tsx
 │   │   ├── App.css
 │   │   └── index.css
@@ -539,9 +621,22 @@ Completed so far:
 - React Router
 - Protected frontend routes
 - Shared frontend API helper
+- Shared frontend TypeScript types
+- Reusable dashboard header component
 - Admin Dashboard
+- Admin course management
+- Admin user management
+- Admin enrollment view
+- Admin delete enrollment action
 - Trainer Dashboard
+- Trainer lesson management
+- Trainer task management
+- Trainer submission view
+- Trainer feedback management
 - Trainee Dashboard
+- Trainee course enrollment
+- Trainee submission workflow
+- Trainee feedback view
 - Frontend UI design improvement
 - GitHub commits and pushes
 
@@ -552,10 +647,9 @@ Completed so far:
 Optional improvements that can be added later:
 
 - Add screenshots to the README
-- Create shared TypeScript model types
-- Create reusable frontend components
+- Create more reusable frontend components
 - Improve success and error messages
-- Add admin enrollment management
+- Add better loading states
 - Add backend tests
 - Add frontend tests
 - Prepare the project for deployment
