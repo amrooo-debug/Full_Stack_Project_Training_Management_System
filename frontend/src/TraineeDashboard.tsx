@@ -19,6 +19,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     // The logged-in trainee's own id is saved at login.
     const userId = Number(localStorage.getItem('id'))
 
+    // ================= Shared success message =================
+    const [successMessage, setSuccessMessage] = useState('')
+
     // ================= Courses =================
     const [courses, setCourses] = useState<Course[]>([])
     const [coursesLoading, setCoursesLoading] = useState(true)
@@ -116,6 +119,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     }
 
     async function handleEnroll(courseId: number) {
+        setSuccessMessage('')
         setEnrollError('')
         setEnrollingCourseId(courseId)
 
@@ -134,6 +138,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
             }
 
             await loadEnrollments()
+            setSuccessMessage('Enrollment created successfully.')
         } catch {
             setEnrollError('Could not reach the server. Please try again.')
         } finally {
@@ -143,6 +148,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
     // When a course is selected, load its lessons, tasks, and my submissions
     function handleSelectCourse(course: Course) {
+        setSuccessMessage('')
         setSelectedCourse(course)
         setEditingSubmissionId(null)
         setOpenFeedbackSubmissionId(null)
@@ -222,9 +228,18 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
             ...previousAnswers,
             [taskId]: value,
         }))
+
+        setSubmitErrors((previousErrors) => ({
+            ...previousErrors,
+            [taskId]: '',
+        }))
+
+        setSuccessMessage('')
     }
 
     async function handleSubmitWork(taskId: number) {
+        setSuccessMessage('')
+
         const answer = newAnswers[taskId] ?? ''
 
         if (answer === '') {
@@ -259,6 +274,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
             setAnswerFor(taskId, '')
             await loadMySubmissions()
+            setSuccessMessage('Submission created successfully.')
         } catch {
             setSubmitErrors((previousErrors) => ({
                 ...previousErrors,
@@ -270,6 +286,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     }
 
     function handleStartEditSubmission(submission: Submission) {
+        setSuccessMessage('')
         setSubmissionSaveError('')
         setEditingSubmissionId(submission.id)
         setEditAnswer(submission.answer)
@@ -281,6 +298,8 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     }
 
     async function handleSaveSubmission(taskId: number, submissionId: number) {
+        setSuccessMessage('')
+
         if (editAnswer === '') {
             setSubmissionSaveError('Please enter an answer.')
             return
@@ -305,6 +324,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
             setEditingSubmissionId(null)
             await loadMySubmissions()
+            setSuccessMessage('Submission updated successfully.')
         } catch {
             setSubmissionSaveError('Could not reach the server. Please try again.')
         } finally {
@@ -314,6 +334,8 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
     // ================= Feedback =================
     function handleToggleFeedback(submissionId: number) {
+        setSuccessMessage('')
+
         if (openFeedbackSubmissionId === submissionId) {
             setOpenFeedbackSubmissionId(null)
             return
@@ -359,6 +381,10 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                     role="TRAINEE"
                     onLogout={onLogout}
                 />
+
+                {successMessage && (
+                    <p className="selected-course-note">{successMessage}</p>
+                )}
 
                 {/* ---- Courses ---- */}
                 <h2 className="dashboard-subtitle">Courses</h2>
@@ -522,9 +548,11 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                                                                             Your answer
                                                                             <textarea
                                                                                 value={editAnswer}
-                                                                                onChange={(event) =>
+                                                                                onChange={(event) => {
                                                                                     setEditAnswer(event.target.value)
-                                                                                }
+                                                                                    setSubmissionSaveError('')
+                                                                                    setSuccessMessage('')
+                                                                                }}
                                                                                 rows={3}
                                                                             />
                                                                         </label>
