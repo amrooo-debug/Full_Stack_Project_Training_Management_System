@@ -165,7 +165,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
-    if (newLessonTitle === '' || newLessonContent === '') {
+    const lessonTitle = newLessonTitle.trim()
+    const lessonContent = newLessonContent.trim()
+
+    if (lessonTitle === '' || lessonContent === '') {
       setLessonCreateError('Please enter both a title and content.')
       return
     }
@@ -175,8 +178,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     try {
       const response = await apiPost(`/courses/${selectedCourse.id}/lessons`, {
-        title: newLessonTitle,
-        content: newLessonContent,
+        title: lessonTitle,
+        content: lessonContent,
       })
 
       if (!response.ok) {
@@ -215,7 +218,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
-    if (editLessonTitle === '' || editLessonContent === '') {
+    const lessonTitle = editLessonTitle.trim()
+    const lessonContent = editLessonContent.trim()
+
+    if (lessonTitle === '' || lessonContent === '') {
       setLessonSaveError('Please enter both a title and content.')
       return
     }
@@ -227,8 +233,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       const response = await apiPut(
           `/courses/${selectedCourse.id}/lessons/${lessonId}`,
           {
-            title: editLessonTitle,
-            content: editLessonContent,
+            title: lessonTitle,
+            content: lessonContent,
           }
       )
 
@@ -309,7 +315,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
-    if (newTaskTitle === '' || newTaskDescription === '') {
+    const taskTitle = newTaskTitle.trim()
+    const taskDescription = newTaskDescription.trim()
+
+    if (taskTitle === '' || taskDescription === '') {
       setTaskCreateError('Please enter both a title and a description.')
       return
     }
@@ -319,8 +328,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
     try {
       const response = await apiPost(`/courses/${selectedCourse.id}/tasks`, {
-        title: newTaskTitle,
-        description: newTaskDescription,
+        title: taskTitle,
+        description: taskDescription,
       })
 
       if (!response.ok) {
@@ -359,7 +368,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       return
     }
 
-    if (editTaskTitle === '' || editTaskDescription === '') {
+    const taskTitle = editTaskTitle.trim()
+    const taskDescription = editTaskDescription.trim()
+
+    if (taskTitle === '' || taskDescription === '') {
       setTaskSaveError('Please enter both a title and a description.')
       return
     }
@@ -371,8 +383,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       const response = await apiPut(
           `/courses/${selectedCourse.id}/tasks/${taskId}`,
           {
-            title: editTaskTitle,
-            description: editTaskDescription,
+            title: taskTitle,
+            description: taskDescription,
           }
       )
 
@@ -510,7 +522,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   async function handleCreateFeedback(submissionId: number) {
     setSuccessMessage('')
 
-    if (newFeedbackComment === '') {
+    const feedbackComment = newFeedbackComment.trim()
+
+    if (feedbackComment === '') {
       setFeedbackCreateError('Please enter a comment.')
       return
     }
@@ -523,7 +537,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     try {
       const response = await apiPost(`/submissions/${submissionId}/feedback`, {
         trainerId,
-        comment: newFeedbackComment,
+        comment: feedbackComment,
       })
 
       if (!response.ok) {
@@ -560,7 +574,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   async function handleSaveFeedback(submissionId: number, feedbackId: number) {
     setSuccessMessage('')
 
-    if (editFeedbackComment === '') {
+    const feedbackComment = editFeedbackComment.trim()
+
+    if (feedbackComment === '') {
       setFeedbackSaveError('Please enter a comment.')
       return
     }
@@ -575,7 +591,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
           `/submissions/${submissionId}/feedback/${feedbackId}`,
           {
             trainerId,
-            comment: editFeedbackComment,
+            comment: feedbackComment,
           }
       )
 
@@ -724,7 +740,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                     <input
                         type="text"
                         value={newLessonTitle}
-                        onChange={(event) => setNewLessonTitle(event.target.value)}
+                        onChange={(event) => {
+                          setNewLessonTitle(event.target.value)
+                          setLessonCreateError('')
+                          setSuccessMessage('')
+                        }}
                         placeholder="e.g. Components and Props"
                     />
                   </label>
@@ -733,7 +753,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                     Lesson content
                     <textarea
                         value={newLessonContent}
-                        onChange={(event) => setNewLessonContent(event.target.value)}
+                        onChange={(event) => {
+                          setNewLessonContent(event.target.value)
+                          setLessonCreateError('')
+                          setSuccessMessage('')
+                        }}
                         placeholder="What does this lesson cover?"
                         rows={3}
                     />
@@ -777,9 +801,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                           <input
                                               type="text"
                                               value={editLessonTitle}
-                                              onChange={(event) =>
-                                                  setEditLessonTitle(event.target.value)
-                                              }
+                                              onChange={(event) => {
+                                                setEditLessonTitle(event.target.value)
+                                                setLessonSaveError('')
+                                                setSuccessMessage('')
+                                              }}
                                           />
                                         </label>
 
@@ -787,9 +813,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                           Content
                                           <textarea
                                               value={editLessonContent}
-                                              onChange={(event) =>
-                                                  setEditLessonContent(event.target.value)
-                                              }
+                                              onChange={(event) => {
+                                                setEditLessonContent(event.target.value)
+                                                setLessonSaveError('')
+                                                setSuccessMessage('')
+                                              }}
                                               rows={3}
                                           />
                                         </label>
@@ -859,7 +887,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                     <input
                         type="text"
                         value={newTaskTitle}
-                        onChange={(event) => setNewTaskTitle(event.target.value)}
+                        onChange={(event) => {
+                          setNewTaskTitle(event.target.value)
+                          setTaskCreateError('')
+                          setSuccessMessage('')
+                        }}
                         placeholder="e.g. Build a login page"
                     />
                   </label>
@@ -868,9 +900,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                     Task description
                     <textarea
                         value={newTaskDescription}
-                        onChange={(event) =>
-                            setNewTaskDescription(event.target.value)
-                        }
+                        onChange={(event) => {
+                          setNewTaskDescription(event.target.value)
+                          setTaskCreateError('')
+                          setSuccessMessage('')
+                        }}
                         placeholder="What should the trainee do?"
                         rows={3}
                     />
@@ -912,9 +946,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                           <input
                                               type="text"
                                               value={editTaskTitle}
-                                              onChange={(event) =>
-                                                  setEditTaskTitle(event.target.value)
-                                              }
+                                              onChange={(event) => {
+                                                setEditTaskTitle(event.target.value)
+                                                setTaskSaveError('')
+                                                setSuccessMessage('')
+                                              }}
                                           />
                                         </label>
 
@@ -922,9 +958,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                           Description
                                           <textarea
                                               value={editTaskDescription}
-                                              onChange={(event) =>
-                                                  setEditTaskDescription(event.target.value)
-                                              }
+                                              onChange={(event) => {
+                                                setEditTaskDescription(event.target.value)
+                                                setTaskSaveError('')
+                                                setSuccessMessage('')
+                                              }}
                                               rows={3}
                                           />
                                         </label>
@@ -1076,11 +1114,13 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                                         value={
                                                                                           editFeedbackComment
                                                                                         }
-                                                                                        onChange={(event) =>
-                                                                                            setEditFeedbackComment(
-                                                                                                event.target.value
-                                                                                            )
-                                                                                        }
+                                                                                        onChange={(event) => {
+                                                                                          setEditFeedbackComment(
+                                                                                              event.target.value
+                                                                                          )
+                                                                                          setFeedbackSaveError('')
+                                                                                          setSuccessMessage('')
+                                                                                        }}
                                                                                         rows={3}
                                                                                     />
                                                                                   </label>
@@ -1174,11 +1214,13 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                               Comment
                                                                               <textarea
                                                                                   value={newFeedbackComment}
-                                                                                  onChange={(event) =>
-                                                                                      setNewFeedbackComment(
-                                                                                          event.target.value
-                                                                                      )
-                                                                                  }
+                                                                                  onChange={(event) => {
+                                                                                    setNewFeedbackComment(
+                                                                                        event.target.value
+                                                                                    )
+                                                                                    setFeedbackCreateError('')
+                                                                                    setSuccessMessage('')
+                                                                                  }}
                                                                                   placeholder="Write feedback for this submission"
                                                                                   rows={3}
                                                                               />
