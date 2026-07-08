@@ -467,6 +467,22 @@ button:disabled:hover,
   color: #374151;
 }
 
+/* ---------- Dashboard footer ---------- */
+
+.dashboard-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.dashboard-footer strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 640px) {

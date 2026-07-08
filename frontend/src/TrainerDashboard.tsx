@@ -1274,6 +1274,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                 )}
               </>
           )}
+
+          <footer className="dashboard-footer">
+            <strong>Training Management System</strong> - Trainer Portal
+          </footer>
         </div>
       </div>
   )

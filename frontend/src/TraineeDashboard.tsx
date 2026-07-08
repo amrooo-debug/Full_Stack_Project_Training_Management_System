@@ -734,6 +734,10 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                         )}
                     </>
                 )}
+
+                <footer className="dashboard-footer">
+                    <strong>Training Management System</strong> - Trainee Portal
+                </footer>
             </div>
         </div>
     )
