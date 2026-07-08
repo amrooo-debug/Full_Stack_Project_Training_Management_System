@@ -152,7 +152,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     event.preventDefault()
     setSuccessMessage('')
 
-    if (newTitle === '' || newDescription === '') {
+    const courseTitle = newTitle.trim()
+    const courseDescription = newDescription.trim()
+
+    if (courseTitle === '' || courseDescription === '') {
       setCreateError('Please enter both a title and a description.')
       return
     }
@@ -162,8 +165,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
     try {
       const response = await apiPost('/courses', {
-        title: newTitle,
-        description: newDescription,
+        title: courseTitle,
+        description: courseDescription,
       })
 
       if (!response.ok) {
@@ -227,7 +230,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   async function handleSaveEdit(courseId: number) {
     setSuccessMessage('')
 
-    if (editTitle === '' || editDescription === '') {
+    const courseTitle = editTitle.trim()
+    const courseDescription = editDescription.trim()
+
+    if (courseTitle === '' || courseDescription === '') {
       setSaveError('Please enter both a title and a description.')
       return
     }
@@ -237,8 +243,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
     try {
       const response = await apiPut(`/courses/${courseId}`, {
-        title: editTitle,
-        description: editDescription,
+        title: courseTitle,
+        description: courseDescription,
       })
 
       if (!response.ok) {
@@ -262,11 +268,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     event.preventDefault()
     setSuccessMessage('')
 
-    if (
-        newUserFullName === '' ||
-        newUserEmail === '' ||
-        newUserPassword === ''
-    ) {
+    const userFullName = newUserFullName.trim()
+    const userEmail = newUserEmail.trim()
+    const userPassword = newUserPassword.trim()
+
+    if (userFullName === '' || userEmail === '' || userPassword === '') {
       setUserCreateError('Please fill in full name, email, and password.')
       return
     }
@@ -276,9 +282,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
     try {
       const response = await apiPost('/users', {
-        fullName: newUserFullName,
-        email: newUserEmail,
-        password: newUserPassword,
+        fullName: userFullName,
+        email: userEmail,
+        password: userPassword,
         role: newUserRole,
       })
 
@@ -319,11 +325,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
   async function handleSaveUser(userId: number) {
     setSuccessMessage('')
 
-    if (
-        editUserFullName === '' ||
-        editUserEmail === '' ||
-        editUserPassword === ''
-    ) {
+    const userFullName = editUserFullName.trim()
+    const userEmail = editUserEmail.trim()
+    const userPassword = editUserPassword.trim()
+
+    if (userFullName === '' || userEmail === '' || userPassword === '') {
       setUserSaveError('Please fill in full name, email, and password.')
       return
     }
@@ -333,9 +339,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
     try {
       const response = await apiPut(`/users/${userId}`, {
-        fullName: editUserFullName,
-        email: editUserEmail,
-        password: editUserPassword,
+        fullName: userFullName,
+        email: userEmail,
+        password: userPassword,
         role: editUserRole,
       })
 
@@ -528,7 +534,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               <input
                   type="text"
                   value={newTitle}
-                  onChange={(event) => setNewTitle(event.target.value)}
+                  onChange={(event) => {
+                    setNewTitle(event.target.value)
+                    setCreateError('')
+                    setSuccessMessage('')
+                  }}
                   placeholder="e.g. Intro to React"
               />
             </label>
@@ -537,7 +547,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               Description
               <textarea
                   value={newDescription}
-                  onChange={(event) => setNewDescription(event.target.value)}
+                  onChange={(event) => {
+                    setNewDescription(event.target.value)
+                    setCreateError('')
+                    setSuccessMessage('')
+                  }}
                   placeholder="What is this course about?"
                   rows={3}
               />
@@ -576,7 +590,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                     <input
                                         type="text"
                                         value={editTitle}
-                                        onChange={(event) => setEditTitle(event.target.value)}
+                                        onChange={(event) => {
+                                          setEditTitle(event.target.value)
+                                          setSaveError('')
+                                          setSuccessMessage('')
+                                        }}
                                     />
                                   </label>
 
@@ -584,9 +602,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                     Description
                                     <textarea
                                         value={editDescription}
-                                        onChange={(event) =>
-                                            setEditDescription(event.target.value)
-                                        }
+                                        onChange={(event) => {
+                                          setEditDescription(event.target.value)
+                                          setSaveError('')
+                                          setSuccessMessage('')
+                                        }}
                                         rows={3}
                                     />
                                   </label>
@@ -654,7 +674,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               <input
                   type="text"
                   value={newUserFullName}
-                  onChange={(event) => setNewUserFullName(event.target.value)}
+                  onChange={(event) => {
+                    setNewUserFullName(event.target.value)
+                    setUserCreateError('')
+                    setSuccessMessage('')
+                  }}
                   placeholder="e.g. Jane Trainer"
               />
             </label>
@@ -664,7 +688,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               <input
                   type="email"
                   value={newUserEmail}
-                  onChange={(event) => setNewUserEmail(event.target.value)}
+                  onChange={(event) => {
+                    setNewUserEmail(event.target.value)
+                    setUserCreateError('')
+                    setSuccessMessage('')
+                  }}
                   placeholder="jane@example.com"
               />
             </label>
@@ -674,7 +702,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               <input
                   type="password"
                   value={newUserPassword}
-                  onChange={(event) => setNewUserPassword(event.target.value)}
+                  onChange={(event) => {
+                    setNewUserPassword(event.target.value)
+                    setUserCreateError('')
+                    setSuccessMessage('')
+                  }}
                   placeholder="Set an initial password"
               />
             </label>
@@ -683,9 +715,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
               Role
               <select
                   value={newUserRole}
-                  onChange={(event) =>
-                      setNewUserRole(event.target.value as UserRole)
-                  }
+                  onChange={(event) => {
+                    setNewUserRole(event.target.value as UserRole)
+                    setUserCreateError('')
+                    setSuccessMessage('')
+                  }}
               >
                 <option value="ADMIN">ADMIN</option>
                 <option value="TRAINER">TRAINER</option>
@@ -725,9 +759,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                     <input
                                         type="text"
                                         value={editUserFullName}
-                                        onChange={(event) =>
-                                            setEditUserFullName(event.target.value)
-                                        }
+                                        onChange={(event) => {
+                                          setEditUserFullName(event.target.value)
+                                          setUserSaveError('')
+                                          setSuccessMessage('')
+                                        }}
                                     />
                                   </label>
 
@@ -736,9 +772,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                     <input
                                         type="email"
                                         value={editUserEmail}
-                                        onChange={(event) =>
-                                            setEditUserEmail(event.target.value)
-                                        }
+                                        onChange={(event) => {
+                                          setEditUserEmail(event.target.value)
+                                          setUserSaveError('')
+                                          setSuccessMessage('')
+                                        }}
                                     />
                                   </label>
 
@@ -747,9 +785,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                     <input
                                         type="password"
                                         value={editUserPassword}
-                                        onChange={(event) =>
-                                            setEditUserPassword(event.target.value)
-                                        }
+                                        onChange={(event) => {
+                                          setEditUserPassword(event.target.value)
+                                          setUserSaveError('')
+                                          setSuccessMessage('')
+                                        }}
                                         placeholder="Enter a new password"
                                     />
                                   </label>
@@ -762,9 +802,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                     Role
                                     <select
                                         value={editUserRole}
-                                        onChange={(event) =>
-                                            setEditUserRole(event.target.value as UserRole)
-                                        }
+                                        onChange={(event) => {
+                                          setEditUserRole(event.target.value as UserRole)
+                                          setUserSaveError('')
+                                          setSuccessMessage('')
+                                        }}
                                     >
                                       <option value="ADMIN">ADMIN</option>
                                       <option value="TRAINER">TRAINER</option>
