@@ -135,16 +135,12 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease,
+  transform 0.15s ease;
 }
 
 .login-button:hover {
   background-color: var(--primary-hover);
-}
-
-.login-button:disabled {
-  background-color: var(--primary-soft);
-  cursor: default;
 }
 
 .edit-button,
@@ -157,7 +153,8 @@
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease,
+  transform 0.15s ease;
 }
 
 .edit-button {
@@ -168,22 +165,12 @@
   background-color: var(--primary-hover);
 }
 
-.edit-button:disabled {
-  background-color: var(--primary-soft);
-  cursor: default;
-}
-
 .delete-button {
   background-color: var(--danger);
 }
 
 .delete-button:hover {
   background-color: var(--danger-hover);
-}
-
-.delete-button:disabled {
-  background-color: var(--danger-soft);
-  cursor: default;
 }
 
 .cancel-button {
@@ -194,17 +181,58 @@
   background-color: var(--gray-hover);
 }
 
-.cancel-button:disabled {
-  background-color: #d1d5db;
-  cursor: default;
-}
-
 .login-button:focus-visible,
 .edit-button:focus-visible,
 .delete-button:focus-visible,
 .cancel-button:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* Clear disabled state for loading and selected buttons */
+button:disabled,
+.login-button:disabled,
+.edit-button:disabled,
+.delete-button:disabled,
+.cancel-button:disabled,
+.primary-button:disabled,
+.secondary-button:disabled,
+.danger-button:disabled,
+.action-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: grayscale(10%);
+}
+
+button:disabled:hover,
+.login-button:disabled:hover,
+.edit-button:disabled:hover,
+.delete-button:disabled:hover,
+.cancel-button:disabled:hover,
+.primary-button:disabled:hover,
+.secondary-button:disabled:hover,
+.danger-button:disabled:hover,
+.action-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.login-button:disabled {
+  background-color: var(--primary-soft);
+}
+
+.edit-button:disabled {
+  background-color: var(--primary-soft);
+}
+
+.delete-button:disabled {
+  background-color: var(--danger-soft);
+}
+
+.cancel-button:disabled {
+  background-color: #d1d5db;
 }
 
 /* ---------- Dashboard shell ---------- */
@@ -259,6 +287,7 @@
   border-top: 1px solid var(--border);
 }
 
+/* Old selected course note class kept in case another file still uses it */
 .selected-course-note {
   margin: 0 0 0.5rem;
   padding: 0.5rem 0.75rem;
@@ -267,6 +296,39 @@
   border-radius: 8px;
   color: #1e40af;
   font-size: 0.95rem;
+}
+
+/* New selected course details card */
+.selected-course-details {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #d8e2ef;
+  border-radius: 14px;
+  background-color: #f8fbff;
+}
+
+.selected-course-title {
+  margin: 0;
+  color: #1f2937;
+  font-size: 15px;
+}
+
+.selected-course-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selected-course-stat {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #d8e2ef;
 }
 
 /* ---------- Dashboard summary cards ---------- */
@@ -434,27 +496,4 @@
   .login-card {
     padding: 1.5rem;
   }
-}
-button:disabled,
-.primary-button:disabled,
-.secondary-button:disabled,
-.danger-button:disabled,
-.action-button:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-button:disabled:hover,
-.primary-button:disabled:hover,
-.secondary-button:disabled:hover,
-.danger-button:disabled:hover,
-.action-button:disabled:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-button:disabled {
-  filter: grayscale(10%);
 }

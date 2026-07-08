@@ -487,9 +487,23 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                     <>
                         <hr className="section-divider" />
 
-                        <p className="selected-course-note">
-                            Viewing: <strong>{selectedCourse.title}</strong>
-                        </p>
+                        <div className="selected-course-details">
+                            <p className="selected-course-title">
+                                Viewing: <strong>{selectedCourse.title}</strong>
+                            </p>
+
+                            <div className="selected-course-stats">
+                                <span className="selected-course-stat">
+                                    Lessons: {totalLessons}
+                                </span>
+                                <span className="selected-course-stat">
+                                    Tasks: {totalTasks}
+                                </span>
+                                <span className="selected-course-stat">
+                                    My Submissions: {totalSubmissions}
+                                </span>
+                            </div>
+                        </div>
 
                         {/* ============ Lessons ============ */}
                         <h2 className="dashboard-subtitle">Lessons</h2>
