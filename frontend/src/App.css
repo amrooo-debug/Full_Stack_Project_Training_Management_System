@@ -435,3 +435,26 @@
     padding: 1.5rem;
   }
 }
+button:disabled,
+.primary-button:disabled,
+.secondary-button:disabled,
+.danger-button:disabled,
+.action-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+button:disabled:hover,
+.primary-button:disabled:hover,
+.secondary-button:disabled:hover,
+.danger-button:disabled:hover,
+.action-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+button:disabled {
+  filter: grayscale(10%);
+}
