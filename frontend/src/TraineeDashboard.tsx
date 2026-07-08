@@ -432,7 +432,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                 {!coursesLoading && !coursesError && (
                     <>
                         {courses.length === 0 ? (
-                            <p>No courses yet.</p>
+                            <p className="empty-state">
+                                No courses yet. Ask an admin to create a course first.
+                            </p>
                         ) : (
                             <ul className="course-list">
                                 {courses.map((course) => (
@@ -495,7 +497,10 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                         {!lessonsLoading && !lessonsError && (
                             <>
                                 {lessons.length === 0 ? (
-                                    <p>No lessons yet.</p>
+                                    <p className="empty-state">
+                                        No lessons yet. The trainer has not added lessons for this
+                                        course.
+                                    </p>
                                 ) : (
                                     <ul className="course-list">
                                         {lessons.map((lesson) => (
@@ -524,7 +529,10 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                         {!tasksLoading && !tasksError && (
                             <>
                                 {tasks.length === 0 ? (
-                                    <p>No tasks yet.</p>
+                                    <p className="empty-state">
+                                        No tasks yet. The trainer has not added tasks for this
+                                        course.
+                                    </p>
                                 ) : (
                                     <ul className="course-list">
                                         {tasks.map((task) => {
@@ -546,6 +554,10 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
                                                         {!submissionsLoading && !mySubmission && (
                                                             <>
+                                                                <p className="empty-state">
+                                                                    You have not submitted work for this task yet.
+                                                                </p>
+
                                                                 <label className="login-label">
                                                                     Your answer
                                                                     <textarea
@@ -683,7 +695,12 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
                                                                                     {!feedbackLoading &&
                                                                                         !feedbackError &&
-                                                                                        !feedback && <p>No feedback yet</p>}
+                                                                                        !feedback && (
+                                                                                            <p className="empty-state">
+                                                                                                No feedback yet. The trainer has
+                                                                                                not reviewed this submission yet.
+                                                                                            </p>
+                                                                                        )}
                                                                                 </div>
                                                                             )}
                                                                     </>

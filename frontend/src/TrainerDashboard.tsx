@@ -675,7 +675,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
           {!coursesLoading && !coursesError && (
               <>
                 {courses.length === 0 ? (
-                    <p>No courses yet.</p>
+                    <p className="empty-state">
+                      No courses yet. Ask an admin to create a course first.
+                    </p>
                 ) : (
                     <ul className="course-list">
                       {courses.map((course) => (
@@ -759,7 +761,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                 {!lessonsLoading && !lessonsError && (
                     <>
                       {lessons.length === 0 ? (
-                          <p>No lessons yet.</p>
+                          <p className="empty-state">
+                            No lessons yet. Create the first lesson for this course.
+                          </p>
                       ) : (
                           <ul className="course-list">
                             {lessons.map((lesson) => (
@@ -892,7 +896,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                 {!tasksLoading && !tasksError && (
                     <>
                       {tasks.length === 0 ? (
-                          <p>No tasks yet.</p>
+                          <p className="empty-state">
+                            No tasks yet. Create the first task for this course.
+                          </p>
                       ) : (
                           <ul className="course-list">
                             {tasks.map((task) => (
@@ -995,7 +1001,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                         {!submissionsLoading &&
                                             !submissionsError &&
                                             (submissions.length === 0 ? (
-                                                <p>No submissions yet</p>
+                                                <p className="empty-state">
+                                                  No submissions yet. Trainees have not submitted
+                                                  work for this task.
+                                                </p>
                                             ) : (
                                                 <ul className="course-list">
                                                   {submissions.map((submission) => (
@@ -1156,7 +1165,10 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                       !feedbackError &&
                                                                       !feedback && (
                                                                           <>
-                                                                            <p>No feedback yet</p>
+                                                                            <p className="empty-state">
+                                                                              No feedback yet. Create
+                                                                              feedback for this submission.
+                                                                            </p>
 
                                                                             <label className="login-label">
                                                                               Comment

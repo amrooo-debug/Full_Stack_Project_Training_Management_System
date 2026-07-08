@@ -35,9 +35,8 @@
   color: var(--text);
 }
 
-/* ---------- Forms (shared by login + all dashboards) ---------- */
+/* ---------- Forms shared by login + dashboards ---------- */
 
-/* Each label wraps its input, stacked with a small gap */
 .login-label {
   display: flex;
   flex-direction: column;
@@ -74,14 +73,12 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Small grey hint text under a form field */
 .field-hint {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.8rem;
 }
 
-/* A form that stacks its fields (Create Course / Create User / etc.) */
 .course-form {
   display: flex;
   flex-direction: column;
@@ -95,7 +92,6 @@
 
 /* ---------- Messages ---------- */
 
-/* Error message: soft red box so it stands out clearly */
 .login-error {
   margin: 0;
   padding: 0.5rem 0.75rem;
@@ -106,7 +102,6 @@
   font-size: 0.9rem;
 }
 
-/* Success message: green box for completed actions */
 .success-message {
   margin: 1rem 0 0.5rem;
   padding: 0.6rem 0.8rem;
@@ -118,9 +113,19 @@
   font-weight: 500;
 }
 
+/* Empty state message: soft neutral box for empty lists */
+.empty-state {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  background-color: var(--surface-soft);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
 /* ---------- Buttons ---------- */
 
-/* Primary (blue) button - used for Login, Create, Save */
 .login-button {
   padding: 0.7rem 1rem;
   border: none;
@@ -142,7 +147,6 @@
   cursor: default;
 }
 
-/* Small action buttons that sit on cards */
 .edit-button,
 .delete-button,
 .cancel-button {
@@ -156,7 +160,6 @@
   transition: background-color 0.15s ease;
 }
 
-/* Blue - primary card action (Edit / Select / View) */
 .edit-button {
   background-color: var(--primary);
 }
@@ -170,7 +173,6 @@
   cursor: default;
 }
 
-/* Red - destructive action (Delete) */
 .delete-button {
   background-color: var(--danger);
 }
@@ -184,7 +186,6 @@
   cursor: default;
 }
 
-/* Grey - Cancel */
 .cancel-button {
   background-color: var(--gray);
 }
@@ -198,7 +199,6 @@
   cursor: default;
 }
 
-/* Give keyboard users a visible focus ring on every button */
 .login-button:focus-visible,
 .edit-button:focus-visible,
 .delete-button:focus-visible,
@@ -209,7 +209,6 @@
 
 /* ---------- Dashboard shell ---------- */
 
-/* Full-page light background, content aligned to the top */
 .dashboard-page {
   min-height: 100vh;
   display: flex;
@@ -217,7 +216,6 @@
   padding: 2rem 1rem;
 }
 
-/* The white card that holds a dashboard */
 .dashboard-card {
   width: 100%;
   max-width: 820px;
@@ -227,7 +225,6 @@
   box-shadow: var(--shadow);
 }
 
-/* Header: title/welcome on the left, logout on the right */
 .dashboard-header {
   display: flex;
   align-items: flex-start;
@@ -250,21 +247,18 @@
   font-size: 0.9rem;
 }
 
-/* Section heading (Courses, Users, Lessons, Tasks...) */
 .dashboard-subtitle {
   margin: 1.75rem 0 0.75rem;
   font-size: 1.15rem;
   color: var(--text);
 }
 
-/* Thin line separating major sections */
 .section-divider {
   margin: 2rem 0 1rem;
   border: none;
   border-top: 1px solid var(--border);
 }
 
-/* Note showing which course is currently selected */
 .selected-course-note {
   margin: 0 0 0.5rem;
   padding: 0.5rem 0.75rem;
@@ -307,15 +301,13 @@
   line-height: 1;
 }
 
-/* Grey italic text for "will be added next" placeholders */
+/* ---------- Cards ---------- */
+
 .placeholder-note {
   color: var(--text-faint);
   font-style: italic;
 }
 
-/* ---------- Cards (courses, users, lessons, tasks, submissions) ---------- */
-
-/* The list wrapper (no bullet points) */
 .course-list {
   list-style: none;
   margin: 0;
@@ -360,7 +352,6 @@
   word-break: break-word;
 }
 
-/* Row of buttons under a card */
 .course-actions {
   margin-top: 0.85rem;
   display: flex;
@@ -370,7 +361,6 @@
 
 /* ---------- Role badges ---------- */
 
-/* Base pill shape */
 .user-role {
   margin-top: 0.4rem;
   display: inline-block;
@@ -383,7 +373,6 @@
   color: #3730a3;
 }
 
-/* Per-role colors */
 .role-ADMIN {
   background-color: #ede9fe;
   color: #5b21b6;
@@ -399,7 +388,7 @@
   color: #166534;
 }
 
-/* ---------- Nested panels (submissions inside a task, feedback inside a submission) ---------- */
+/* ---------- Nested panels ---------- */
 
 .sub-panel {
   margin-top: 0.85rem;
@@ -409,7 +398,6 @@
   border-radius: 0 8px 8px 0;
 }
 
-/* Small heading inside a nested panel */
 .panel-title {
   margin: 0 0 0.6rem;
   font-size: 0.95rem;
@@ -417,7 +405,7 @@
   color: #374151;
 }
 
-/* ---------- Responsive tweaks for small screens ---------- */
+/* ---------- Responsive ---------- */
 
 @media (max-width: 640px) {
   .dashboard-page {
@@ -428,7 +416,6 @@
     padding: 1.25rem;
   }
 
-  /* Stack the header so the logout button drops below the title */
   .dashboard-header {
     flex-direction: column;
     align-items: stretch;
@@ -438,7 +425,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* Make card action buttons fill the row nicely when they wrap */
   .course-actions .edit-button,
   .course-actions .delete-button,
   .course-actions .cancel-button {

@@ -560,7 +560,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
           {!loading && !error && (
               <>
                 {courses.length === 0 ? (
-                    <p>No courses yet.</p>
+                    <p className="empty-state">
+                      No courses yet. Create the first course to get started.
+                    </p>
                 ) : (
                     <ul className="course-list">
                       {courses.map((course) => (
@@ -707,7 +709,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
           {!usersLoading && !usersError && (
               <>
                 {users.length === 0 ? (
-                    <p>No users yet.</p>
+                    <p className="empty-state">
+                      No users yet. Create the first user to get started.
+                    </p>
                 ) : (
                     <ul className="course-list">
                       {users.map((user) => (
@@ -894,7 +898,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
           {!enrollmentsLoading && !enrollmentsError && (
               <>
                 {enrollments.length === 0 ? (
-                    <p>No enrollments yet.</p>
+                    <p className="empty-state">
+                      No enrollments yet. Create an enrollment to assign a trainee to a
+                      course.
+                    </p>
                 ) : (
                     <ul className="course-list">
                       {enrollments.map((enrollment) => (
