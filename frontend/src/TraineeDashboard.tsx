@@ -149,6 +149,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     // When a course is selected, load its lessons, tasks, and my submissions
     function handleSelectCourse(course: Course) {
         setSuccessMessage('')
+        setEnrollError('')
         setSelectedCourse(course)
         setEditingSubmissionId(null)
         setOpenFeedbackSubmissionId(null)
@@ -244,7 +245,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     async function handleSubmitWork(taskId: number) {
         setSuccessMessage('')
 
-        const answer = newAnswers[taskId] ?? ''
+        const answer = (newAnswers[taskId] ?? '').trim()
 
         if (answer === '') {
             setSubmitErrors((previousErrors) => ({
@@ -304,7 +305,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     async function handleSaveSubmission(taskId: number, submissionId: number) {
         setSuccessMessage('')
 
-        if (editAnswer === '') {
+        const answer = editAnswer.trim()
+
+        if (answer === '') {
             setSubmissionSaveError('Please enter an answer.')
             return
         }
@@ -317,7 +320,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                 `/tasks/${taskId}/submissions/${submissionId}`,
                 {
                     userId,
-                    answer: editAnswer,
+                    answer,
                 }
             )
 
