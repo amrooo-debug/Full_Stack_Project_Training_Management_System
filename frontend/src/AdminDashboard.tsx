@@ -192,9 +192,15 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
 
     useEffect(() => {
-        void loadCourses()
-        void loadUsers()
-        void loadEnrollments()
+        // Load the three lists once when the dashboard mounts. The async
+        // function lives inside the effect (the pattern React recommends).
+        // Promise.all keeps the three requests running in parallel, exactly
+        // like before, and each loader still manages its own loading/error state.
+        async function loadInitialData() {
+            await Promise.all([loadCourses(), loadUsers(), loadEnrollments()])
+        }
+
+        void loadInitialData()
     }, [])
 
     // ================= Courses: create / edit / delete =================

@@ -95,8 +95,13 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     }
 
     async function loadEnrollments() {
+        // Read the logged-in id straight from localStorage here so this loader
+        // does not close over the render-scoped userId. That keeps the mount
+        // effect free of reactive dependencies (the value is the same either way).
+        const enrolledUserId = Number(localStorage.getItem('id'))
+
         try {
-            const response = await apiGet(`/enrollments/users/${userId}`)
+            const response = await apiGet(`/enrollments/users/${enrolledUserId}`)
 
             if (!response.ok) {
                 return
@@ -109,8 +114,15 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     }
 
     useEffect(() => {
-        void loadCourses()
-        void loadEnrollments()
+        // Load the course list and my enrollments once when the dashboard
+        // mounts. The async function lives inside the effect (the pattern React
+        // recommends). Promise.all keeps both requests running in parallel,
+        // exactly like before, and each loader manages its own loading/error.
+        async function loadInitialData() {
+            await Promise.all([loadCourses(), loadEnrollments()])
+        }
+
+        void loadInitialData()
     }, [])
 
     // True if the trainee is already enrolled in this course

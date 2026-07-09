@@ -1,16 +1,8 @@
 import { useEffect, useState, type SyntheticEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiPost } from './api'
+import { dashboardPathForRole } from './dashboardPaths'
 import './App.css'
-
-// Given a role, return the dashboard path it belongs to.
-// Exported so App can reuse it for redirects.
-export function dashboardPathForRole(role: string | null) {
-  if (role === 'ADMIN') return '/admin'
-  if (role === 'TRAINER') return '/trainer'
-  if (role === 'TRAINEE') return '/trainee'
-  return '/login'
-}
 
 function LoginPage() {
   const navigate = useNavigate()

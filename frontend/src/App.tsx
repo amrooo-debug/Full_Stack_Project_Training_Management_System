@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import './App.css'
-import LoginPage, { dashboardPathForRole } from './LoginPage'
+import LoginPage from './LoginPage'
+import { dashboardPathForRole } from './dashboardPaths'
 import AdminDashboard from './AdminDashboard'
 import TrainerDashboard from './TrainerDashboard'
 import TraineeDashboard from './TraineeDashboard'

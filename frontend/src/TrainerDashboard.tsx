@@ -135,31 +135,32 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   const [feedbackDeleteError, setFeedbackDeleteError] = useState('')
 
   // ================= Load courses =================
-  async function loadCourses() {
-    setCoursesLoading(true)
-    setCoursesError('')
-
-    try {
-      const response = await apiGet('/courses')
-
-      if (!response.ok) {
-        const message = await getErrorMessage(
-            response,
-            'Could not load courses. Please try again.'
-        )
-        setCoursesError(message)
-        return
-      }
-
-      setCourses(await response.json())
-    } catch {
-      setCoursesError('Could not reach the server. Please try again.')
-    } finally {
-      setCoursesLoading(false)
-    }
-  }
-
+  // Load the course list once when the dashboard mounts. The async function
+  // lives inside the effect (the pattern React recommends) so we fetch from
+  // the server and then update state once the request finishes. coursesLoading
+  // already starts as true, so we only turn it off in the finally block.
   useEffect(() => {
+    async function loadCourses() {
+      try {
+        const response = await apiGet('/courses')
+
+        if (!response.ok) {
+          const message = await getErrorMessage(
+              response,
+              'Could not load courses. Please try again.'
+          )
+          setCoursesError(message)
+          return
+        }
+
+        setCourses(await response.json())
+      } catch {
+        setCoursesError('Could not reach the server. Please try again.')
+      } finally {
+        setCoursesLoading(false)
+      }
+    }
+
     void loadCourses()
   }, [])
 
