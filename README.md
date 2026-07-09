@@ -1,545 +1,103 @@
 # Training Management System
 
-## Project Overview
+A full-stack web application for managing training programs. Admins manage
+courses, users, and enrollments; trainers add lessons, tasks, and feedback;
+and trainees enroll in courses, submit work, and read their feedback. Access
+is protected with JWT authentication and role-based permissions.
 
-Training Management System is a full-stack web application for managing training courses, users, lessons, tasks, submissions, feedback, and enrollments.
+**Repository:** https://github.com/amrooo-debug/Full_Stack_Project_Training_Management_System
 
-The goal of this project is to practice a real full-stack development workflow using:
+---
 
-- Kotlin and Spring Boot for the backend
-- PostgreSQL for the database
-- React, TypeScript, and Vite for the frontend
-- JWT authentication for secure login
-- Role-based access for Admin, Trainer, and Trainee users
+## Table of Contents
 
-The system allows each user role to access only the features they are allowed to use.
+- [Main Features](#main-features)
+- [User Roles](#user-roles)
+  - [Admin](#admin)
+  - [Trainer](#trainer)
+  - [Trainee](#trainee)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Local Setup](#local-setup)
+  - [1. Prerequisites](#1-prerequisites)
+  - [2. PostgreSQL Database](#2-postgresql-database)
+  - [3. Environment Variables](#3-environment-variables)
+  - [4. Backend Setup and Run](#4-backend-setup-and-run)
+  - [5. Frontend Setup and Run](#5-frontend-setup-and-run)
+- [Application URLs](#application-urls)
+- [Test Login Accounts](#test-login-accounts)
+- [Frontend Environment Variable](#frontend-environment-variable)
+- [Screenshots](#screenshots)
+- [Recently Improved](#recently-improved)
+- [Future Improvements](#future-improvements)
+
+---
+
+## Main Features
+
+- Role-based login with JWT authentication (Admin, Trainer, Trainee).
+- Course, lesson, and task management.
+- Trainee enrollment and self-enrollment.
+- Work submission and editing by trainees.
+- Feedback creation, editing, and deletion by trainers.
+- Dashboard summary cards showing live counts for each role.
+- Clear, consistent backend error messages and HTTP status codes.
 
 ---
 
 ## User Roles
 
-The system supports three roles:
-
-### ADMIN
-
-Admin manages the main system data.
-
-Admin can:
-
-- Manage courses
-- Manage users
-- Create, edit, and delete users
-- Assign user roles
-- Create enrollments
-- View enrollments
-- Delete enrollments
-
-### TRAINER
-
-Trainer manages course content and trainee work.
-
-Trainer can:
-
-- View courses
-- Manage lessons
-- Manage tasks
-- View trainee submissions
-- Add, edit, and delete feedback
-
-### TRAINEE
-
-Trainee uses the system to learn and submit work.
-
-Trainee can:
-
-- View courses
-- Enroll in courses
-- See enrolled status
-- View lessons
-- View tasks
-- Submit work
-- Edit their own submission
-- View trainer feedback
-
----
-
-## Technologies Used
-
-### Backend
-
-- Kotlin
-- Spring Boot
-- Spring Security
-- JWT Authentication
-- Spring Data JPA
-- Hibernate
-- PostgreSQL
-- Gradle Kotlin
-- Java 21
-
-### Frontend
-
-- React
-- TypeScript
-- Vite
-- React Router
-- CSS
-
-### Tools
-
-- IntelliJ IDEA
-- Postman
-- pgAdmin
-- Git
-- GitHub
-- npm
-
----
-
-## Backend
-
-The backend is responsible for:
-
-- Handling API requests
-- Connecting to the PostgreSQL database
-- Managing users, courses, lessons, tasks, submissions, feedback, and enrollments
-- Authenticating users with JWT
-- Applying role-based permissions
-- Returning cleaner error responses for common API errors
-
-Backend URL:
-
-```text
-http://localhost:8080
-```
-
-Database:
-
-```text
-training_db
-```
-
-PostgreSQL port:
-
-```text
-5000
-```
-
-Main backend folder:
-
-```text
-src/main/kotlin/com/example/trainingmanagementsystem
-```
-
----
-
-## Frontend
-
-The frontend is responsible for:
-
-- Showing the login page
-- Redirecting users to the correct dashboard
-- Calling backend APIs
-- Displaying courses, lessons, tasks, submissions, feedback, users, and enrollments
-- Protecting dashboard routes based on user role
-- Reusing shared TypeScript types
-- Reusing shared UI components such as the dashboard header
-
-Frontend URL:
-
-```text
-http://localhost:5173
-```
-
-Main frontend folder:
-
-```text
-frontend
-```
-
-Main frontend source folder:
-
-```text
-frontend/src
-```
-
-Frontend routes:
-
-```text
-/login
-/admin
-/trainer
-/trainee
-```
-
----
-
-## Authentication
-
-The project uses JWT authentication.
-
-Login flow:
-
-1. User enters email and password.
-2. Backend checks the user.
-3. Backend returns a JWT token.
-4. Frontend saves the token in localStorage.
-5. Frontend saves the user role in localStorage.
-6. Frontend sends the token with protected API requests.
-7. Backend checks the token and user role before allowing access.
-
-Login API:
-
-```text
-POST /auth/login
-```
-
-Example request:
-
-```json
-{
-  "email": "admin@test.com",
-  "password": "123456"
-}
-```
-
----
-
-## Environment Variables
-
-The project uses environment variables to protect sensitive data.
-
-Required variables:
-
-```text
-DB_PASSWORD
-JWT_SECRET
-```
-
-Example IntelliJ Run Configuration format:
-
-```text
-DB_PASSWORD=your_database_password;JWT_SECRET=your_jwt_secret_key
-```
-
-The backend uses these placeholders in `application.properties`:
-
-```properties
-spring.datasource.password=${DB_PASSWORD}
-app.jwt.secret=${JWT_SECRET}
-```
-
-Do not commit real passwords or real JWT secrets to GitHub.
-
----
-
-## How to Run the Backend
-
-1. Open the project in IntelliJ IDEA.
-
-2. Make sure PostgreSQL is running.
-
-3. Make sure the database exists:
-
-```text
-training_db
-```
-
-4. Add environment variables in IntelliJ Run Configuration:
-
-```text
-DB_PASSWORD=your_database_password;JWT_SECRET=your_jwt_secret_key
-```
-
-5. Run the backend application:
-
-```text
-TrainingManagementSystemApplication.kt
-```
-
-6. Backend should run on:
-
-```text
-http://localhost:8080
-```
-
----
-
-## How to Run the Frontend
-
-1. Open IntelliJ Terminal.
-
-2. Go to the frontend folder:
-
-```bash
-cd frontend
-```
-
-3. Install dependencies if needed:
-
-```bash
-npm install
-```
-
-4. Start the frontend:
-
-```bash
-npm run dev
-```
-
-5. Frontend should run on:
-
-```text
-http://localhost:5173
-```
-
----
-
-## How to Build the Frontend
-
-To check that the frontend builds successfully, run:
-
-```bash
-cd frontend
-npm run build
-```
-
-This runs TypeScript checking and creates a production build.
-
----
-
-## Test Login Accounts
+The system supports three roles. Each user can only reach the dashboard and
+actions allowed for their role.
 
 ### Admin
 
-```text
-Email: admin@test.com
-Password: 123456
-```
+The admin manages the core system data.
+
+- **Manage courses** – create, view, edit, and delete courses.
+- **Manage users** – create, view, edit, and delete users, and set their role
+  (Admin, Trainer, or Trainee).
+- **Manage enrollments** – enroll a trainee into a course, view all
+  enrollments, and delete enrollments. Duplicate enrollments are prevented.
+- **View dashboard summary cards** – live totals for Courses, Users,
+  Enrollments, Trainers, and Trainees.
 
 ### Trainer
 
-```text
-Email: login.trainer@test.com
-Password: 123456
-```
+The trainer manages course content and reviews trainee work.
+
+- **View courses** – browse the available courses and select one to manage.
+- **Manage lessons** – create, edit, and delete lessons for a course.
+- **Manage tasks** – create, edit, and delete tasks for a course.
+- **View submissions** – see the work trainees submitted for each task.
+- **Create, edit, and delete feedback** – leave feedback on a submission,
+  update it, or remove it. Only one feedback per submission is allowed.
 
 ### Trainee
 
-```text
-Email: login.trainee@test.com
-Password: 123456
-```
+The trainee learns from courses and submits work.
+
+- **View courses** – browse all courses.
+- **Enroll in courses** – self-enroll and see the "Enrolled" status.
+- **View lessons** – read the lessons for a selected course.
+- **View tasks** – see the tasks for a selected course.
+- **Submit work** – submit an answer for a task.
+- **Edit submissions** – update a previously submitted answer.
+- **View feedback** – read the trainer's feedback on a submission.
 
 ---
 
-## Main Backend Features
+## Tech Stack
 
-### Courses
-
-- Create courses
-- View courses
-- View course by ID
-- Update courses
-- Delete courses
-
-### Lessons
-
-- Create lessons under a course
-- View course lessons
-- View lesson by ID
-- Update lessons
-- Delete lessons
-
-### Users
-
-- Create users
-- View users
-- View user by ID
-- Update users
-- Delete users
-- Support Admin, Trainer, and Trainee roles
-
-### Enrollments
-
-- Create enrollments
-- Allow Admin to create enrollments from the Admin Dashboard
-- Allow Trainees to enroll themselves from the Trainee Dashboard
-- View all enrollments
-- View enrollments by user
-- View enrollments by course
-- Delete enrollments
-- Prevent duplicate enrollment
-
-### Tasks
-
-- Create tasks under a course
-- View course tasks
-- View task by ID
-- Update tasks
-- Delete tasks
-
-### Submissions
-
-- Trainees can submit work
-- Trainees can edit their own submissions
-- Trainers and admins can view submissions
-- Duplicate submissions are prevented
-
-### Feedback
-
-- Trainers can give feedback on submissions
-- Trainees can view feedback
-- Feedback can be updated or deleted
-- Duplicate feedback for the same submission is prevented
-
----
-
-## Backend Permissions
-
-The backend uses Spring Security and method-level role checks.
-
-Important enrollment permissions:
-
-- Admin and Trainee can create enrollments
-- Admin and Trainer can view all enrollments
-- Admin, Trainer, and Trainee can view enrollments by user
-- Admin and Trainer can view enrollments by course
-- Admin can delete enrollments
-
-This allows the Trainee Dashboard to support self-enrollment and the Admin Dashboard to support full enrollment management.
-
----
-
-## Main Frontend Features
-
-### Login Page
-
-- Login with email and password
-- Save JWT token
-- Save user role
-- Redirect user to the correct dashboard
-
-### Protected Routes
-
-The frontend protects dashboard pages:
-
-- Not logged in users go to `/login`
-- Admin users go to `/admin`
-- Trainer users go to `/trainer`
-- Trainee users go to `/trainee`
-- Users cannot access dashboards for other roles
-
-### Admin Dashboard
-
-Admin can:
-
-- View all courses
-- Create courses
-- Edit courses
-- Delete courses
-- View all users
-- Create users
-- Edit users
-- Delete users
-- Create enrollments
-- View all enrollments
-- Delete enrollments
-
-### Trainer Dashboard
-
-Trainer can:
-
-- View courses
-- Select a course
-- Manage lessons
-- Manage tasks
-- View trainee submissions
-- Add feedback
-- Edit feedback
-- Delete feedback
-
-### Trainee Dashboard
-
-Trainee can:
-
-- View courses
-- Enroll in courses
-- See enrolled status
-- Select a course
-- View lessons
-- View tasks
-- Submit work
-- Edit submission
-- View feedback
-
----
-
-## Shared Frontend API Helper
-
-The frontend uses a shared API helper:
-
-```text
-frontend/src/api.ts
-```
-
-This file helps with:
-
-- Backend base URL
-- GET requests
-- POST requests
-- PUT requests
-- DELETE requests
-- Sending the JWT Bearer Token automatically
-- Handling backend responses
-
----
-
-## Shared Frontend Types
-
-The frontend uses shared TypeScript types:
-
-```text
-frontend/src/types.ts
-```
-
-This file includes common types such as:
-
-- User
-- UserRole
-- Course
-- Lesson
-- Task
-- Enrollment
-- Submission
-- Feedback
-
-Using shared types keeps the dashboard files cleaner and avoids repeating the same type definitions in many places.
-
----
-
-## Reusable Frontend Components
-
-The frontend includes reusable components.
-
-Current reusable component:
-
-```text
-frontend/src/components/DashboardHeader.tsx
-```
-
-This component is used by:
-
-- Admin Dashboard
-- Trainer Dashboard
-- Trainee Dashboard
-
-It shows:
-
-- Dashboard title
-- Welcome message
-- Role badge
-- Logout button
+| Layer            | Technologies                                              |
+| ---------------- | --------------------------------------------------------- |
+| Backend          | Kotlin, Spring Boot, Spring Security, Spring Data JPA      |
+| Database         | PostgreSQL                                                 |
+| Authentication   | JWT (JSON Web Tokens)                                      |
+| Frontend         | React, TypeScript, Vite, React Router                     |
+| Styling          | CSS                                                       |
+| Build tools      | Gradle (Kotlin DSL), npm                                   |
+| Language runtime | Java 21, Kotlin 2.3.x                                      |
 
 ---
 
@@ -548,138 +106,216 @@ It shows:
 ```text
 training-management-system
 │
-├── src
-│   └── main
-│       └── kotlin
-│           └── com.example.trainingmanagementsystem
-│               ├── config
-│               ├── controller
-│               ├── dto
-│               ├── entity
-│               ├── enums
-│               ├── exception
-│               ├── repository
-│               └── service
+├── src/main/kotlin/com/example/trainingmanagementsystem
+│   ├── config          # Security config and JWT filter
+│   ├── controller      # REST controllers (API endpoints)
+│   ├── dto             # Request/response data classes
+│   ├── entity          # JPA entities (database tables)
+│   ├── enums           # UserRole enum
+│   ├── exception       # Global exception handler
+│   ├── repository      # Spring Data JPA repositories
+│   └── service         # Business logic
+│
+├── src/main/resources/application.properties
 │
 ├── frontend
-│   ├── src
-│   │   ├── components
-│   │   │   └── DashboardHeader.tsx
-│   │   │
-│   │   ├── AdminDashboard.tsx
-│   │   ├── TrainerDashboard.tsx
-│   │   ├── TraineeDashboard.tsx
-│   │   ├── LoginPage.tsx
-│   │   ├── api.ts
-│   │   ├── types.ts
-│   │   ├── App.tsx
-│   │   ├── App.css
-│   │   └── index.css
-│   │
-│   ├── package.json
-│   └── package-lock.json
+│   └── src
+│       ├── components/DashboardHeader.tsx
+│       ├── AdminDashboard.tsx
+│       ├── TrainerDashboard.tsx
+│       ├── TraineeDashboard.tsx
+│       ├── LoginPage.tsx
+│       ├── api.ts             # Shared fetch helper + base URL
+│       ├── errors.ts          # Shared getErrorMessage helper
+│       ├── dashboardPaths.ts  # Role -> dashboard path helper
+│       ├── types.ts           # Shared TypeScript types
+│       ├── App.tsx
+│       ├── App.css
+│       └── index.css
+│   ├── .env.example
+│   └── package.json
 │
-├── README.md
 ├── build.gradle.kts
-└── settings.gradle.kts
+├── settings.gradle.kts
+└── README.md
 ```
 
 ---
 
-## Common URLs
+## Local Setup
 
-Backend:
+### 1. Prerequisites
+
+Make sure the following are installed:
+
+- **Java 21** (JDK 21)
+- **Node.js** (18 or newer) and **npm**
+- **PostgreSQL**
+- **Git**
+
+### 2. PostgreSQL Database
+
+The backend expects a PostgreSQL database with these settings (from
+`src/main/resources/application.properties`):
 
 ```text
-http://localhost:8080
+Host:     localhost
+Port:     5000
+Database: training_db
+Username: postgres
+Password: (provided via the DB_PASSWORD environment variable)
 ```
 
-Frontend:
+Create the database once before running the backend, for example:
 
-```text
-http://localhost:5173
+```sql
+CREATE DATABASE training_db;
 ```
 
-Login:
+> Note: PostgreSQL uses port **5000** in this project (not the default 5432).
+> If your PostgreSQL runs on a different port, update the `spring.datasource.url`
+> in `application.properties`.
+
+The tables are created automatically on first run
+(`spring.jpa.hibernate.ddl-auto=update`).
+
+### 3. Environment Variables
+
+The backend reads two required values from environment variables so secrets are
+never committed to source control:
 
 ```text
-http://localhost:5173/login
+DB_PASSWORD   # your PostgreSQL password
+JWT_SECRET    # a long, random secret used to sign JWT tokens
 ```
 
-Admin Dashboard:
+These map to placeholders in `application.properties`:
 
-```text
-http://localhost:5173/admin
+```properties
+spring.datasource.password=${DB_PASSWORD}
+app.jwt.secret=${JWT_SECRET}
 ```
 
-Trainer Dashboard:
+> Do not commit real passwords or JWT secrets to GitHub.
 
-```text
-http://localhost:5173/trainer
+### 4. Backend Setup and Run
+
+From the project root, set the environment variables and start the backend
+(PowerShell on Windows):
+
+```powershell
+cd "C:\Users\Amro Folowise\IdeaProjects\training-management-system"
+$env:JWT_SECRET="my-local-training-management-system-secret-key-123456789"
+$env:DB_PASSWORD="123321"
+$env:SPRING_DATASOURCE_PASSWORD="123321"
+.\gradlew bootRun --no-daemon
 ```
 
-Trainee Dashboard:
+The backend starts on **http://localhost:8080**.
 
-```text
-http://localhost:5173/trainee
+> You can also run `TrainingManagementSystemApplication.kt` from IntelliJ IDEA
+> after adding `DB_PASSWORD` and `JWT_SECRET` to the Run Configuration.
+
+### 5. Frontend Setup and Run
+
+In a separate terminal, install dependencies (first time only) and start the
+dev server:
+
+```bash
+cd "C:\Users\Amro Folowise\IdeaProjects\training-management-system\frontend"
+npm install
+npm run dev
+```
+
+The frontend starts on **http://localhost:5173**.
+
+To create a production build instead:
+
+```bash
+npm run build
 ```
 
 ---
 
-## Completed Project Work
+## Application URLs
 
-Completed so far:
+| What              | URL                              |
+| ----------------- | -------------------------------- |
+| Frontend          | http://localhost:5173            |
+| Login page        | http://localhost:5173/login      |
+| Admin dashboard   | http://localhost:5173/admin      |
+| Trainer dashboard | http://localhost:5173/trainer    |
+| Trainee dashboard | http://localhost:5173/trainee    |
+| Backend API       | http://localhost:8080            |
 
-- Backend CRUD APIs
-- PostgreSQL database connection
-- JWT login
-- Password hashing
-- Role-based backend permissions
-- Backend permission update for admin enrollment creation
-- Cleaner backend error responses
-- React frontend setup
-- Frontend login page
-- React Router
-- Protected frontend routes
-- Shared frontend API helper
-- Shared frontend TypeScript types
-- Reusable dashboard header component
-- Admin Dashboard
-- Admin course management
-- Admin user management
-- Admin create enrollment action
-- Admin enrollment view
-- Admin delete enrollment action
-- Trainer Dashboard
-- Trainer lesson management
-- Trainer task management
-- Trainer submission view
-- Trainer feedback management
-- Trainee Dashboard
-- Trainee course enrollment
-- Trainee submission workflow
-- Trainee feedback view
-- Frontend UI design improvement
-- GitHub commits and pushes
+---
+
+## Test Login Accounts
+
+Use these accounts to sign in and explore each role:
+
+| Role    | Email                     | Password |
+| ------- | ------------------------- | -------- |
+| Admin   | admin@test.com            | 123456   |
+| Trainer | login.trainer@test.com    | 123456   |
+| Trainee | login.trainee@test.com    | 123456   |
+
+---
+
+## Frontend Environment Variable
+
+The frontend base API URL is configurable through a Vite environment variable.
+If it is not set, it falls back to `http://localhost:8080`, so local development
+works with no extra setup.
+
+```text
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+To customize it, copy `frontend/.env.example` to `frontend/.env` and change the
+value. A real `.env` file is git-ignored and should not be committed.
+
+---
+
+## Screenshots
+
+> Placeholder images — replace the paths below with real screenshots.
+
+**Login Page**
+
+![Login Page](docs/screenshots/login.png)
+
+**Admin Dashboard**
+
+![Admin Dashboard](docs/screenshots/admin-dashboard.png)
+
+**Trainer Dashboard**
+
+![Trainer Dashboard](docs/screenshots/trainer-dashboard.png)
+
+**Trainee Dashboard**
+
+![Trainee Dashboard](docs/screenshots/trainee-dashboard.png)
+
+---
+
+## Recently Improved
+
+- **Better backend error messages** – consistent, readable messages with
+  correct HTTP status codes (404 not found, 409 conflict, 400 invalid).
+- **Clean dashboard numbering** – stable, readable item numbering on the
+  dashboards.
+- **Shared frontend error helper** – a single `getErrorMessage` helper
+  (`frontend/src/errors.ts`) reused across dashboards instead of duplicated code.
+- **Frontend warning cleanup** – resolved React/TypeScript and ESLint warnings
+  (event typing, ignored promises, effect/state rules) without changing behavior.
+- **Environment-configurable API base URL** – `VITE_API_BASE_URL` with a
+  localhost fallback.
 
 ---
 
 ## Future Improvements
 
-Optional improvements that can be added later:
-
-- Add screenshots to the README
-- Create more reusable frontend components
-- Improve success and error messages
-- Add better loading states
-- Add backend tests
-- Add frontend tests
-- Prepare the project for deployment
-
----
-
-## GitHub Repository
-
-```text
-https://github.com/amrooo-debug/Full_Stack_Project_Training_Management_System
-```
+- Add automated backend tests (unit and integration).
+- Add deployment instructions (backend, frontend, and database hosting).
+- Add more reusable frontend components to simplify the dashboards.
