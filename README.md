@@ -279,23 +279,33 @@ value. A real `.env` file is git-ignored and should not be committed.
 
 ## Screenshots
 
-> Placeholder images — replace the paths below with real screenshots.
-
 **Login Page**
 
-![Login Page](docs/screenshots/login.png)
+![Login Page](docs/screenshots/login-page.png)
 
 **Admin Dashboard**
 
 ![Admin Dashboard](docs/screenshots/admin-dashboard.png)
 
+**Admin — Users and Enrollments**
+
+![Admin Users and Enrollments](docs/screenshots/admin-users-enrollments.png)
+
 **Trainer Dashboard**
 
 ![Trainer Dashboard](docs/screenshots/trainer-dashboard.png)
 
+**Trainer — Submissions and Feedback**
+
+![Trainer Submissions and Feedback](docs/screenshots/trainer-submissions-feedback.png)
+
 **Trainee Dashboard**
 
 ![Trainee Dashboard](docs/screenshots/trainee-dashboard.png)
+
+**Trainee — Submission and Feedback**
+
+![Trainee Submission and Feedback](docs/screenshots/trainee-submission-feedback.png)
 
 ---
 
