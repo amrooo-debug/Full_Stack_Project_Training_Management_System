@@ -2,9 +2,11 @@ package com.example.trainingmanagementsystem.service
 
 import com.example.trainingmanagementsystem.dto.TaskRequest
 import com.example.trainingmanagementsystem.dto.TaskResponse
+import com.example.trainingmanagementsystem.entity.CourseEntity
 import com.example.trainingmanagementsystem.entity.TaskEntity
 import com.example.trainingmanagementsystem.repository.CourseRepository
 import com.example.trainingmanagementsystem.repository.TaskRepository
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -16,13 +18,11 @@ class TaskService(
 ) {
 
     fun createTask(courseId: Long, taskRequest: TaskRequest): TaskResponse {
-        val courseEntity = courseRepository.findById(courseId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
-        }
+        val courseEntity = findCourseEntityById(courseId)
 
         val taskEntity = TaskEntity(
-            title = taskRequest.title,
-            description = taskRequest.description,
+            title = taskRequest.title.trim(),
+            description = taskRequest.description.trim(),
             course = courseEntity
         )
 
@@ -31,7 +31,7 @@ class TaskService(
     }
 
     fun getTasksByCourseId(courseId: Long): List<TaskResponse> {
-        validateCourseExists(courseId)
+        findCourseEntityById(courseId)
 
         return taskRepository.findByCourseId(courseId).map { taskEntity ->
             taskEntity.toTaskResponse()
@@ -44,8 +44,8 @@ class TaskService(
     fun updateTask(courseId: Long, taskId: Long, taskRequest: TaskRequest): TaskResponse {
         val taskEntity = findTaskEntityByIdAndCourseId(courseId, taskId)
 
-        taskEntity.title = taskRequest.title
-        taskEntity.description = taskRequest.description
+        taskEntity.title = taskRequest.title.trim()
+        taskEntity.description = taskRequest.description.trim()
 
         val updatedTask = taskRepository.save(taskEntity)
         return updatedTask.toTaskResponse()
@@ -53,24 +53,35 @@ class TaskService(
 
     fun deleteTask(courseId: Long, taskId: Long) {
         val taskEntity = findTaskEntityByIdAndCourseId(courseId, taskId)
-        taskRepository.delete(taskEntity)
-    }
 
-    private fun validateCourseExists(courseId: Long) {
-        if (!courseRepository.existsById(courseId)) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
+        try {
+            taskRepository.delete(taskEntity)
+        } catch (exception: DataIntegrityViolationException) {
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "This task cannot be deleted because it has related data.",
+                exception
+            )
         }
     }
 
+    private fun findCourseEntityById(courseId: Long): CourseEntity =
+        courseRepository.findById(courseId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found.")
+        }
+
     private fun findTaskEntityByIdAndCourseId(courseId: Long, taskId: Long): TaskEntity {
-        validateCourseExists(courseId)
+        findCourseEntityById(courseId)
 
         val taskEntity = taskRepository.findById(taskId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found")
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found.")
         }
 
         if (taskEntity.course?.id != courseId) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found in this course")
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Task not found in this course."
+            )
         }
 
         return taskEntity

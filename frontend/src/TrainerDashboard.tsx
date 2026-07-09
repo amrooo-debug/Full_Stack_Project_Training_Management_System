@@ -9,6 +9,44 @@ type TrainerDashboardProps = {
   onLogout: () => void
 }
 
+async function getErrorMessage(response: Response, fallbackMessage: string) {
+  try {
+    const contentType = response.headers.get('content-type')
+
+    if (contentType?.includes('application/json')) {
+      const data = await response.json()
+
+      if (typeof data === 'string' && data.trim() !== '') {
+        return data
+      }
+
+      if (typeof data.detail === 'string' && data.detail.trim() !== '') {
+        return data.detail
+      }
+
+      if (typeof data.message === 'string' && data.message.trim() !== '') {
+        return data.message
+      }
+
+      if (typeof data.error === 'string' && data.error.trim() !== '') {
+        return data.error
+      }
+
+      return fallbackMessage
+    }
+
+    const text = await response.text()
+
+    if (text.trim() !== '') {
+      return text
+    }
+
+    return fallbackMessage
+  } catch {
+    return fallbackMessage
+  }
+}
+
 function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   // ================= Shared success message =================
   const [successMessage, setSuccessMessage] = useState('')
@@ -105,7 +143,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       const response = await apiGet('/courses')
 
       if (!response.ok) {
-        setCoursesError('Could not load courses. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not load courses. Please try again.'
+        )
+        setCoursesError(message)
         return
       }
 
@@ -145,7 +187,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       const response = await apiGet(`/courses/${courseId}/lessons`)
 
       if (!response.ok) {
-        setLessonsError('Could not load lessons. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not load lessons. Please try again.'
+        )
+        setLessonsError(message)
         return
       }
 
@@ -183,7 +229,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       })
 
       if (!response.ok) {
-        setLessonCreateError('Could not create the lesson. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not create the lesson. Please try again.'
+        )
+        setLessonCreateError(message)
         return
       }
 
@@ -239,7 +289,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       )
 
       if (!response.ok) {
-        setLessonSaveError('Could not update the lesson. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not update the lesson. Please try again.'
+        )
+        setLessonSaveError(message)
         return
       }
 
@@ -272,7 +326,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       )
 
       if (!response.ok) {
-        setLessonDeleteError('Could not delete the lesson. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not delete the lesson. Please try again.'
+        )
+        setLessonDeleteError(message)
         return
       }
 
@@ -295,7 +353,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       const response = await apiGet(`/courses/${courseId}/tasks`)
 
       if (!response.ok) {
-        setTasksError('Could not load tasks. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not load tasks. Please try again.'
+        )
+        setTasksError(message)
         return
       }
 
@@ -333,7 +395,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       })
 
       if (!response.ok) {
-        setTaskCreateError('Could not create the task. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not create the task. Please try again.'
+        )
+        setTaskCreateError(message)
         return
       }
 
@@ -389,7 +455,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       )
 
       if (!response.ok) {
-        setTaskSaveError('Could not update the task. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not update the task. Please try again.'
+        )
+        setTaskSaveError(message)
         return
       }
 
@@ -422,7 +492,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       )
 
       if (!response.ok) {
-        setTaskDeleteError('Could not delete the task. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not delete the task. Please try again.'
+        )
+        setTaskDeleteError(message)
         return
       }
 
@@ -463,7 +537,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       const response = await apiGet(`/tasks/${taskId}/submissions`)
 
       if (!response.ok) {
-        setSubmissionsError('Could not load submissions. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not load submissions. Please try again.'
+        )
+        setSubmissionsError(message)
         return
       }
 
@@ -507,7 +585,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       }
 
       if (!response.ok) {
-        setFeedbackError('Could not load feedback. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not load feedback. Please try again.'
+        )
+        setFeedbackError(message)
         return
       }
 
@@ -541,7 +623,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       })
 
       if (!response.ok) {
-        setFeedbackCreateError('Could not create feedback. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not create feedback. Please try again.'
+        )
+        setFeedbackCreateError(message)
         return
       }
 
@@ -596,7 +682,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       )
 
       if (!response.ok) {
-        setFeedbackSaveError('Could not update feedback. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not update feedback. Please try again.'
+        )
+        setFeedbackSaveError(message)
         return
       }
 
@@ -623,7 +713,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       const response = await apiDelete(`/feedback/${feedbackId}`)
 
       if (!response.ok) {
-        setFeedbackDeleteError('Could not delete feedback. Please try again.')
+        const message = await getErrorMessage(
+            response,
+            'Could not delete feedback. Please try again.'
+        )
+        setFeedbackDeleteError(message)
         return
       }
 
