@@ -440,9 +440,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                             </p>
                         ) : (
                             <ul className="course-list">
-                                {courses.map((course) => (
+                                {courses.map((course, courseIndex) => (
                                     <li key={course.id} className="course-item">
-                                        <div className="course-id">#{course.id}</div>
+                                        <div className="course-id">#{courseIndex + 1}</div>
                                         <div className="course-title">{course.title}</div>
                                         <div className="course-description">
                                             {course.description}
@@ -520,9 +520,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                                     </p>
                                 ) : (
                                     <ul className="course-list">
-                                        {lessons.map((lesson) => (
+                                        {lessons.map((lesson, lessonIndex) => (
                                             <li key={lesson.id} className="course-item">
-                                                <div className="course-id">#{lesson.id}</div>
+                                                <div className="course-id">#{lessonIndex + 1}</div>
                                                 <div className="course-title">{lesson.title}</div>
                                                 <div className="course-description">
                                                     {lesson.content}
@@ -552,12 +552,12 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                                     </p>
                                 ) : (
                                     <ul className="course-list">
-                                        {tasks.map((task) => {
+                                        {tasks.map((task, taskIndex) => {
                                             const mySubmission = submissionForTask(task.id)
 
                                             return (
                                                 <li key={task.id} className="course-item">
-                                                    <div className="course-id">#{task.id}</div>
+                                                    <div className="course-id">#{taskIndex + 1}</div>
                                                     <div className="course-title">{task.title}</div>
                                                     <div className="course-description">
                                                         {task.description}

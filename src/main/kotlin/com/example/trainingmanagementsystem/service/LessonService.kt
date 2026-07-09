@@ -2,9 +2,11 @@ package com.example.trainingmanagementsystem.service
 
 import com.example.trainingmanagementsystem.dto.LessonRequest
 import com.example.trainingmanagementsystem.dto.LessonResponse
+import com.example.trainingmanagementsystem.entity.CourseEntity
 import com.example.trainingmanagementsystem.entity.LessonEntity
 import com.example.trainingmanagementsystem.repository.CourseRepository
 import com.example.trainingmanagementsystem.repository.LessonRepository
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -16,13 +18,11 @@ class LessonService(
 ) {
 
     fun createLesson(courseId: Long, lessonRequest: LessonRequest): LessonResponse {
-        val courseEntity = courseRepository.findById(courseId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
-        }
+        val courseEntity = findCourseEntityById(courseId)
 
         val lessonEntity = LessonEntity(
-            title = lessonRequest.title,
-            content = lessonRequest.content,
+            title = lessonRequest.title.trim(),
+            content = lessonRequest.content.trim(),
             course = courseEntity
         )
 
@@ -31,7 +31,7 @@ class LessonService(
     }
 
     fun getLessonsByCourseId(courseId: Long): List<LessonResponse> {
-        validateCourseExists(courseId)
+        findCourseEntityById(courseId)
 
         return lessonRepository.findByCourseId(courseId).map { lessonEntity ->
             lessonEntity.toLessonResponse()
@@ -44,8 +44,8 @@ class LessonService(
     fun updateLesson(courseId: Long, lessonId: Long, lessonRequest: LessonRequest): LessonResponse {
         val lessonEntity = findLessonEntityByIdAndCourseId(courseId, lessonId)
 
-        lessonEntity.title = lessonRequest.title
-        lessonEntity.content = lessonRequest.content
+        lessonEntity.title = lessonRequest.title.trim()
+        lessonEntity.content = lessonRequest.content.trim()
 
         val updatedLesson = lessonRepository.save(lessonEntity)
         return updatedLesson.toLessonResponse()
@@ -53,24 +53,35 @@ class LessonService(
 
     fun deleteLesson(courseId: Long, lessonId: Long) {
         val lessonEntity = findLessonEntityByIdAndCourseId(courseId, lessonId)
-        lessonRepository.delete(lessonEntity)
-    }
 
-    private fun validateCourseExists(courseId: Long) {
-        if (!courseRepository.existsById(courseId)) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
+        try {
+            lessonRepository.delete(lessonEntity)
+        } catch (exception: DataIntegrityViolationException) {
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "This lesson cannot be deleted because it has related data.",
+                exception
+            )
         }
     }
 
+    private fun findCourseEntityById(courseId: Long): CourseEntity =
+        courseRepository.findById(courseId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found.")
+        }
+
     private fun findLessonEntityByIdAndCourseId(courseId: Long, lessonId: Long): LessonEntity {
-        validateCourseExists(courseId)
+        findCourseEntityById(courseId)
 
         val lessonEntity = lessonRepository.findById(lessonId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found")
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found.")
         }
 
         if (lessonEntity.course?.id != courseId) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found in this course")
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Lesson not found in this course."
+            )
         }
 
         return lessonEntity

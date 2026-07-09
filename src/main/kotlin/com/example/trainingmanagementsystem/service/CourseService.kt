@@ -4,6 +4,7 @@ import com.example.trainingmanagementsystem.dto.CourseRequest
 import com.example.trainingmanagementsystem.dto.CourseResponse
 import com.example.trainingmanagementsystem.entity.CourseEntity
 import com.example.trainingmanagementsystem.repository.CourseRepository
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -14,9 +15,12 @@ class CourseService(
 ) {
 
     fun createCourse(courseRequest: CourseRequest): CourseResponse {
+        val courseTitle = courseRequest.title.trim()
+        val courseDescription = courseRequest.description.trim()
+
         val courseEntity = CourseEntity(
-            title = courseRequest.title,
-            description = courseRequest.description
+            title = courseTitle,
+            description = courseDescription
         )
 
         val savedCourse = courseRepository.save(courseEntity)
@@ -34,8 +38,8 @@ class CourseService(
     fun updateCourse(courseId: Long, courseRequest: CourseRequest): CourseResponse {
         val courseEntity = findCourseEntityById(courseId)
 
-        courseEntity.title = courseRequest.title
-        courseEntity.description = courseRequest.description
+        courseEntity.title = courseRequest.title.trim()
+        courseEntity.description = courseRequest.description.trim()
 
         val updatedCourse = courseRepository.save(courseEntity)
         return updatedCourse.toCourseResponse()
@@ -43,12 +47,21 @@ class CourseService(
 
     fun deleteCourse(courseId: Long) {
         val courseEntity = findCourseEntityById(courseId)
-        courseRepository.delete(courseEntity)
+
+        try {
+            courseRepository.delete(courseEntity)
+        } catch (exception: DataIntegrityViolationException) {
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "This course cannot be deleted because it has related data.",
+                exception
+            )
+        }
     }
 
     private fun findCourseEntityById(courseId: Long): CourseEntity =
         courseRepository.findById(courseId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found.")
         }
 
     private fun CourseEntity.toCourseResponse(): CourseResponse =

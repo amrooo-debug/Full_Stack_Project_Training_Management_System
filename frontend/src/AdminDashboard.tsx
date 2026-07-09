@@ -8,6 +8,44 @@ type AdminDashboardProps = {
     onLogout: () => void
 }
 
+async function getErrorMessage(response: Response, fallbackMessage: string) {
+    try {
+        const contentType = response.headers.get('content-type')
+
+        if (contentType?.includes('application/json')) {
+            const data = await response.json()
+
+            if (typeof data === 'string' && data.trim() !== '') {
+                return data
+            }
+
+            if (typeof data.detail === 'string' && data.detail.trim() !== '') {
+                return data.detail
+            }
+
+            if (typeof data.message === 'string' && data.message.trim() !== '') {
+                return data.message
+            }
+
+            if (typeof data.error === 'string' && data.error.trim() !== '') {
+                return data.error
+            }
+
+            return fallbackMessage
+        }
+
+        const text = await response.text()
+
+        if (text.trim() !== '') {
+            return text
+        }
+
+        return fallbackMessage
+    } catch {
+        return fallbackMessage
+    }
+}
+
 function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     // ================= Shared success message =================
     const [successMessage, setSuccessMessage] = useState('')
@@ -86,7 +124,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             const response = await apiGet('/courses')
 
             if (!response.ok) {
-                setError('Could not load courses. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not load courses. Please try again.'
+                )
+                setError(message)
                 return
             }
 
@@ -107,7 +149,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             const response = await apiGet('/users')
 
             if (!response.ok) {
-                setUsersError('Could not load users. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not load users. Please try again.'
+                )
+                setUsersError(message)
                 return
             }
 
@@ -128,7 +174,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             const response = await apiGet('/enrollments')
 
             if (!response.ok) {
-                setEnrollmentsError('Could not load enrollments. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not load enrollments. Please try again.'
+                )
+                setEnrollmentsError(message)
                 return
             }
 
@@ -170,7 +220,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             })
 
             if (!response.ok) {
-                setCreateError('Could not create the course. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not create the course. Please try again.'
+                )
+                setCreateError(message)
                 return
             }
 
@@ -200,7 +254,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             const response = await apiDelete(`/courses/${courseId}`)
 
             if (!response.ok) {
-                setDeleteError('Could not delete the course. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not delete the course. Please try again.'
+                )
+                setDeleteError(message)
                 return
             }
 
@@ -248,7 +306,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             })
 
             if (!response.ok) {
-                setSaveError('Could not update the course. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not update the course. Please try again.'
+                )
+                setSaveError(message)
                 return
             }
 
@@ -289,7 +351,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             })
 
             if (!response.ok) {
-                setUserCreateError('Could not create the user. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not create the user. Please try again.'
+                )
+                setUserCreateError(message)
                 return
             }
 
@@ -346,7 +412,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             })
 
             if (!response.ok) {
-                setUserSaveError('Could not update the user. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not update the user. Please try again.'
+                )
+                setUserSaveError(message)
                 return
             }
 
@@ -376,7 +446,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             const response = await apiDelete(`/users/${userId}`)
 
             if (!response.ok) {
-                setUserDeleteError('Could not delete the user. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not delete the user. Please try again.'
+                )
+                setUserDeleteError(message)
                 return
             }
 
@@ -425,14 +499,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             })
 
             if (!response.ok) {
-                if (response.status === 409) {
-                    setEnrollmentCreateError(
-                        'This trainee is already enrolled in this course.'
-                    )
-                } else {
-                    setEnrollmentCreateError('Could not create enrollment. Please try again.')
-                }
-
+                const message = await getErrorMessage(
+                    response,
+                    'Could not create enrollment. Please try again.'
+                )
+                setEnrollmentCreateError(message)
                 return
             }
 
@@ -464,7 +535,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
             const response = await apiDelete(`/enrollments/${enrollmentId}`)
 
             if (!response.ok) {
-                setEnrollmentDeleteError('Could not delete enrollment. Please try again.')
+                const message = await getErrorMessage(
+                    response,
+                    'Could not delete enrollment. Please try again.'
+                )
+                setEnrollmentDeleteError(message)
                 return
             }
 
@@ -485,6 +560,16 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     const totalEnrollments = enrollments.length
     const totalTrainers = trainerUsers.length
     const totalTrainees = traineeUsers.length
+
+    function getUserDisplayNumber(userId: number) {
+        const userIndex = users.findIndex((user) => user.id === userId)
+        return userIndex === -1 ? '?' : userIndex + 1
+    }
+
+    function getCourseDisplayNumber(courseId: number) {
+        const courseIndex = courses.findIndex((course) => course.id === courseId)
+        return courseIndex === -1 ? '?' : courseIndex + 1
+    }
 
     return (
         <div className="dashboard-page">
@@ -579,9 +664,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                             </p>
                         ) : (
                             <ul className="course-list">
-                                {courses.map((course) => (
+                                {courses.map((course, courseIndex) => (
                                     <li key={course.id} className="course-item">
-                                        <div className="course-id">#{course.id}</div>
+                                        <div className="course-id">#{courseIndex + 1}</div>
 
                                         {editingId === course.id ? (
                                             <>
@@ -748,9 +833,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                             </p>
                         ) : (
                             <ul className="course-list">
-                                {users.map((user) => (
+                                {users.map((user, userIndex) => (
                                     <li key={user.id} className="course-item">
-                                        <div className="course-id">#{user.id}</div>
+                                        <div className="course-id">#{userIndex + 1}</div>
 
                                         {editingUserId === user.id ? (
                                             <>
@@ -887,9 +972,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                             }}
                         >
                             <option value="">Select trainee</option>
-                            {traineeUsers.map((user) => (
+                            {traineeUsers.map((user, traineeIndex) => (
                                 <option key={user.id} value={user.id}>
-                                    {user.fullName} - User #{user.id}
+                                    {user.fullName} - Trainee #{traineeIndex + 1}
                                 </option>
                             ))}
                         </select>
@@ -906,9 +991,9 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                             }}
                         >
                             <option value="">Select course</option>
-                            {courses.map((course) => (
+                            {courses.map((course, courseIndex) => (
                                 <option key={course.id} value={course.id}>
-                                    {course.title} - Course #{course.id}
+                                    {course.title} - Course #{courseIndex + 1}
                                 </option>
                             ))}
                         </select>
@@ -946,9 +1031,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                             </p>
                         ) : (
                             <ul className="course-list">
-                                {enrollments.map((enrollment) => (
+                                {enrollments.map((enrollment, enrollmentIndex) => (
                                     <li key={enrollment.id} className="course-item">
-                                        <div className="course-id">Enrollment #{enrollment.id}</div>
+                                        <div className="course-id">
+                                            Enrollment #{enrollmentIndex + 1}
+                                        </div>
 
                                         <div className="course-title">
                                             {enrollment.userFullName ?? 'Unknown trainee'}
@@ -959,7 +1046,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                         </div>
 
                                         <div className="course-id">
-                                            User #{enrollment.userId} - Course #{enrollment.courseId}
+                                            User #{getUserDisplayNumber(enrollment.userId)} - Course #
+                                            {getCourseDisplayNumber(enrollment.courseId)}
                                         </div>
 
                                         <div className="course-actions">

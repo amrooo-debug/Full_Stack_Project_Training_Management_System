@@ -16,8 +16,13 @@ class AuthService(
 ) {
 
     fun login(loginRequest: LoginRequest): LoginResponse {
-        val userEntity = userRepository.findByEmail(loginRequest.email)
-            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password")
+        val normalizedEmail = loginRequest.email.trim()
+
+        val userEntity = userRepository.findByEmail(normalizedEmail)
+            ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid email or password."
+            )
 
         val passwordMatches = passwordEncoder.matches(
             loginRequest.password,
@@ -25,7 +30,10 @@ class AuthService(
         )
 
         if (!passwordMatches) {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password")
+            throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid email or password."
+            )
         }
 
         val token = jwtService.generateToken(userEntity)
@@ -36,7 +44,7 @@ class AuthService(
             email = userEntity.email,
             role = userEntity.role,
             token = token,
-            message = "Login successful"
+            message = "Login successful."
         )
     }
 }

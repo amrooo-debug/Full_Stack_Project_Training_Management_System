@@ -696,9 +696,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                     </p>
                 ) : (
                     <ul className="course-list">
-                      {courses.map((course) => (
+                      {courses.map((course, courseIndex) => (
                           <li key={course.id} className="course-item">
-                            <div className="course-id">#{course.id}</div>
+                            <div className="course-id">#{courseIndex + 1}</div>
                             <div className="course-title">{course.title}</div>
                             <div className="course-description">
                               {course.description}
@@ -801,9 +801,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                           </p>
                       ) : (
                           <ul className="course-list">
-                            {lessons.map((lesson) => (
+                            {lessons.map((lesson, lessonIndex) => (
                                 <li key={lesson.id} className="course-item">
-                                  <div className="course-id">#{lesson.id}</div>
+                                  <div className="course-id">#{lessonIndex + 1}</div>
 
                                   {editingLessonId === lesson.id ? (
                                       <>
@@ -946,9 +946,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                           </p>
                       ) : (
                           <ul className="course-list">
-                            {tasks.map((task) => (
+                            {tasks.map((task, taskIndex) => (
                                 <li key={task.id} className="course-item">
-                                  <div className="course-id">#{task.id}</div>
+                                  <div className="course-id">#{taskIndex + 1}</div>
 
                                   {editingTaskId === task.id ? (
                                       <>
@@ -1056,212 +1056,213 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                 </p>
                                             ) : (
                                                 <ul className="course-list">
-                                                  {submissions.map((submission) => (
-                                                      <li
-                                                          key={submission.id}
-                                                          className="course-item"
-                                                      >
-                                                        <div className="course-id">
-                                                          Submission #{submission.id} - Task #
-                                                          {submission.taskId}
-                                                        </div>
-
-                                                        <div className="course-title">
-                                                          {submission.userFullName} - User #
-                                                          {submission.userId}
-                                                        </div>
-
-                                                        <div className="course-description">
-                                                          {submission.answer}
-                                                        </div>
-
-                                                        <div className="course-actions">
-                                                          <button
-                                                              className="edit-button"
-                                                              onClick={() =>
-                                                                  handleToggleFeedback(submission.id)
-                                                              }
+                                                  {submissions.map(
+                                                      (submission, submissionIndex) => (
+                                                          <li
+                                                              key={submission.id}
+                                                              className="course-item"
                                                           >
+                                                            <div className="course-id">
+                                                              Submission #{submissionIndex + 1} - Task #
+                                                              {taskIndex + 1}
+                                                            </div>
+
+                                                            <div className="course-title">
+                                                              {submission.userFullName}
+                                                            </div>
+
+                                                            <div className="course-description">
+                                                              {submission.answer}
+                                                            </div>
+
+                                                            <div className="course-actions">
+                                                              <button
+                                                                  className="edit-button"
+                                                                  onClick={() =>
+                                                                      handleToggleFeedback(submission.id)
+                                                                  }
+                                                              >
+                                                                {openFeedbackSubmissionId ===
+                                                                submission.id
+                                                                    ? 'Hide Feedback'
+                                                                    : 'View Feedback'}
+                                                              </button>
+                                                            </div>
+
+                                                            {/* ---- Feedback panel for this submission ---- */}
                                                             {openFeedbackSubmissionId ===
-                                                            submission.id
-                                                                ? 'Hide Feedback'
-                                                                : 'View Feedback'}
-                                                          </button>
-                                                        </div>
+                                                                submission.id && (
+                                                                    <div className="sub-panel">
+                                                                      <h4 className="panel-title">
+                                                                        Feedback
+                                                                      </h4>
 
-                                                        {/* ---- Feedback panel for this submission ---- */}
-                                                        {openFeedbackSubmissionId ===
-                                                            submission.id && (
-                                                                <div className="sub-panel">
-                                                                  <h4 className="panel-title">
-                                                                    Feedback
-                                                                  </h4>
-
-                                                                  {feedbackLoading && (
-                                                                      <p>Loading feedback...</p>
-                                                                  )}
-
-                                                                  {feedbackError && (
-                                                                      <p className="login-error">
-                                                                        {feedbackError}
-                                                                      </p>
-                                                                  )}
-
-                                                                  {feedbackDeleteError && (
-                                                                      <p className="login-error">
-                                                                        {feedbackDeleteError}
-                                                                      </p>
-                                                                  )}
-
-                                                                  {!feedbackLoading &&
-                                                                      !feedbackError &&
-                                                                      feedback && (
-                                                                          <>
-                                                                            {editingFeedback ? (
-                                                                                <>
-                                                                                  <label className="login-label">
-                                                                                    Comment
-                                                                                    <textarea
-                                                                                        value={
-                                                                                          editFeedbackComment
-                                                                                        }
-                                                                                        onChange={(event) => {
-                                                                                          setEditFeedbackComment(
-                                                                                              event.target.value
-                                                                                          )
-                                                                                          setFeedbackSaveError('')
-                                                                                          setSuccessMessage('')
-                                                                                        }}
-                                                                                        rows={3}
-                                                                                    />
-                                                                                  </label>
-
-                                                                                  {feedbackSaveError && (
-                                                                                      <p className="login-error">
-                                                                                        {feedbackSaveError}
-                                                                                      </p>
-                                                                                  )}
-
-                                                                                  <div className="course-actions">
-                                                                                    <button
-                                                                                        className="login-button"
-                                                                                        onClick={() =>
-                                                                                            handleSaveFeedback(
-                                                                                                submission.id,
-                                                                                                feedback.id
-                                                                                            )
-                                                                                        }
-                                                                                        disabled={savingFeedback}
-                                                                                    >
-                                                                                      {savingFeedback
-                                                                                          ? 'Saving...'
-                                                                                          : 'Save'}
-                                                                                    </button>
-
-                                                                                    <button
-                                                                                        className="cancel-button"
-                                                                                        onClick={
-                                                                                          handleCancelEditFeedback
-                                                                                        }
-                                                                                        disabled={savingFeedback}
-                                                                                    >
-                                                                                      Cancel
-                                                                                    </button>
-                                                                                  </div>
-                                                                                </>
-                                                                            ) : (
-                                                                                <>
-                                                                                  <div className="course-description">
-                                                                                    {feedback.comment}
-                                                                                  </div>
-
-                                                                                  <div className="course-id">
-                                                                                    by{' '}
-                                                                                    {feedback.trainerFullName}
-                                                                                  </div>
-
-                                                                                  <div className="course-actions">
-                                                                                    <button
-                                                                                        className="edit-button"
-                                                                                        onClick={
-                                                                                          handleStartEditFeedback
-                                                                                        }
-                                                                                    >
-                                                                                      Edit Feedback
-                                                                                    </button>
-
-                                                                                    <button
-                                                                                        className="delete-button"
-                                                                                        onClick={() =>
-                                                                                            handleDeleteFeedback(
-                                                                                                feedback.id,
-                                                                                                submission.id
-                                                                                            )
-                                                                                        }
-                                                                                        disabled={
-                                                                                          deletingFeedback
-                                                                                        }
-                                                                                    >
-                                                                                      {deletingFeedback
-                                                                                          ? 'Deleting...'
-                                                                                          : 'Delete Feedback'}
-                                                                                    </button>
-                                                                                  </div>
-                                                                                </>
-                                                                            )}
-                                                                          </>
+                                                                      {feedbackLoading && (
+                                                                          <p>Loading feedback...</p>
                                                                       )}
 
-                                                                  {!feedbackLoading &&
-                                                                      !feedbackError &&
-                                                                      !feedback && (
-                                                                          <>
-                                                                            <p className="empty-state">
-                                                                              No feedback yet. Create
-                                                                              feedback for this submission.
-                                                                            </p>
+                                                                      {feedbackError && (
+                                                                          <p className="login-error">
+                                                                            {feedbackError}
+                                                                          </p>
+                                                                      )}
 
-                                                                            <label className="login-label">
-                                                                              Comment
-                                                                              <textarea
-                                                                                  value={newFeedbackComment}
-                                                                                  onChange={(event) => {
-                                                                                    setNewFeedbackComment(
-                                                                                        event.target.value
-                                                                                    )
-                                                                                    setFeedbackCreateError('')
-                                                                                    setSuccessMessage('')
-                                                                                  }}
-                                                                                  placeholder="Write feedback for this submission"
-                                                                                  rows={3}
-                                                                              />
-                                                                            </label>
+                                                                      {feedbackDeleteError && (
+                                                                          <p className="login-error">
+                                                                            {feedbackDeleteError}
+                                                                          </p>
+                                                                      )}
 
-                                                                            {feedbackCreateError && (
-                                                                                <p className="login-error">
-                                                                                  {feedbackCreateError}
+                                                                      {!feedbackLoading &&
+                                                                          !feedbackError &&
+                                                                          feedback && (
+                                                                              <>
+                                                                                {editingFeedback ? (
+                                                                                    <>
+                                                                                      <label className="login-label">
+                                                                                        Comment
+                                                                                        <textarea
+                                                                                            value={
+                                                                                              editFeedbackComment
+                                                                                            }
+                                                                                            onChange={(event) => {
+                                                                                              setEditFeedbackComment(
+                                                                                                  event.target.value
+                                                                                              )
+                                                                                              setFeedbackSaveError('')
+                                                                                              setSuccessMessage('')
+                                                                                            }}
+                                                                                            rows={3}
+                                                                                        />
+                                                                                      </label>
+
+                                                                                      {feedbackSaveError && (
+                                                                                          <p className="login-error">
+                                                                                            {feedbackSaveError}
+                                                                                          </p>
+                                                                                      )}
+
+                                                                                      <div className="course-actions">
+                                                                                        <button
+                                                                                            className="login-button"
+                                                                                            onClick={() =>
+                                                                                                handleSaveFeedback(
+                                                                                                    submission.id,
+                                                                                                    feedback.id
+                                                                                                )
+                                                                                            }
+                                                                                            disabled={savingFeedback}
+                                                                                        >
+                                                                                          {savingFeedback
+                                                                                              ? 'Saving...'
+                                                                                              : 'Save'}
+                                                                                        </button>
+
+                                                                                        <button
+                                                                                            className="cancel-button"
+                                                                                            onClick={
+                                                                                              handleCancelEditFeedback
+                                                                                            }
+                                                                                            disabled={savingFeedback}
+                                                                                        >
+                                                                                          Cancel
+                                                                                        </button>
+                                                                                      </div>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                      <div className="course-description">
+                                                                                        {feedback.comment}
+                                                                                      </div>
+
+                                                                                      <div className="course-id">
+                                                                                        by{' '}
+                                                                                        {feedback.trainerFullName}
+                                                                                      </div>
+
+                                                                                      <div className="course-actions">
+                                                                                        <button
+                                                                                            className="edit-button"
+                                                                                            onClick={
+                                                                                              handleStartEditFeedback
+                                                                                            }
+                                                                                        >
+                                                                                          Edit Feedback
+                                                                                        </button>
+
+                                                                                        <button
+                                                                                            className="delete-button"
+                                                                                            onClick={() =>
+                                                                                                handleDeleteFeedback(
+                                                                                                    feedback.id,
+                                                                                                    submission.id
+                                                                                                )
+                                                                                            }
+                                                                                            disabled={
+                                                                                              deletingFeedback
+                                                                                            }
+                                                                                        >
+                                                                                          {deletingFeedback
+                                                                                              ? 'Deleting...'
+                                                                                              : 'Delete Feedback'}
+                                                                                        </button>
+                                                                                      </div>
+                                                                                    </>
+                                                                                )}
+                                                                              </>
+                                                                          )}
+
+                                                                      {!feedbackLoading &&
+                                                                          !feedbackError &&
+                                                                          !feedback && (
+                                                                              <>
+                                                                                <p className="empty-state">
+                                                                                  No feedback yet. Create
+                                                                                  feedback for this submission.
                                                                                 </p>
-                                                                            )}
 
-                                                                            <button
-                                                                                className="login-button"
-                                                                                onClick={() =>
-                                                                                    handleCreateFeedback(
-                                                                                        submission.id
-                                                                                    )
-                                                                                }
-                                                                                disabled={creatingFeedback}
-                                                                            >
-                                                                              {creatingFeedback
-                                                                                  ? 'Creating...'
-                                                                                  : 'Create Feedback'}
-                                                                            </button>
-                                                                          </>
-                                                                      )}
-                                                                </div>
-                                                            )}
-                                                      </li>
-                                                  ))}
+                                                                                <label className="login-label">
+                                                                                  Comment
+                                                                                  <textarea
+                                                                                      value={newFeedbackComment}
+                                                                                      onChange={(event) => {
+                                                                                        setNewFeedbackComment(
+                                                                                            event.target.value
+                                                                                        )
+                                                                                        setFeedbackCreateError('')
+                                                                                        setSuccessMessage('')
+                                                                                      }}
+                                                                                      placeholder="Write feedback for this submission"
+                                                                                      rows={3}
+                                                                                  />
+                                                                                </label>
+
+                                                                                {feedbackCreateError && (
+                                                                                    <p className="login-error">
+                                                                                      {feedbackCreateError}
+                                                                                    </p>
+                                                                                )}
+
+                                                                                <button
+                                                                                    className="login-button"
+                                                                                    onClick={() =>
+                                                                                        handleCreateFeedback(
+                                                                                            submission.id
+                                                                                        )
+                                                                                    }
+                                                                                    disabled={creatingFeedback}
+                                                                                >
+                                                                                  {creatingFeedback
+                                                                                      ? 'Creating...'
+                                                                                      : 'Create Feedback'}
+                                                                                </button>
+                                                                              </>
+                                                                          )}
+                                                                    </div>
+                                                                )}
+                                                          </li>
+                                                      )
+                                                  )}
                                                 </ul>
                                             ))}
                                       </div>

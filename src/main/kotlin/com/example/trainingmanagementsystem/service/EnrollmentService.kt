@@ -2,7 +2,9 @@ package com.example.trainingmanagementsystem.service
 
 import com.example.trainingmanagementsystem.dto.EnrollmentRequest
 import com.example.trainingmanagementsystem.dto.EnrollmentResponse
+import com.example.trainingmanagementsystem.entity.CourseEntity
 import com.example.trainingmanagementsystem.entity.EnrollmentEntity
+import com.example.trainingmanagementsystem.entity.UserEntity
 import com.example.trainingmanagementsystem.repository.CourseRepository
 import com.example.trainingmanagementsystem.repository.EnrollmentRepository
 import com.example.trainingmanagementsystem.repository.UserRepository
@@ -18,16 +20,14 @@ class EnrollmentService(
 ) {
 
     fun createEnrollment(enrollmentRequest: EnrollmentRequest): EnrollmentResponse {
-        val userEntity = userRepository.findById(enrollmentRequest.userId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        }
-
-        val courseEntity = courseRepository.findById(enrollmentRequest.courseId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
-        }
+        val userEntity = findUserEntityById(enrollmentRequest.userId)
+        val courseEntity = findCourseEntityById(enrollmentRequest.courseId)
 
         if (enrollmentRepository.existsByUserIdAndCourseId(userEntity.id, courseEntity.id)) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "User is already enrolled in this course")
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "This trainee is already enrolled in this course."
+            )
         }
 
         val enrollmentEntity = EnrollmentEntity(
@@ -45,9 +45,7 @@ class EnrollmentService(
         }
 
     fun getEnrollmentsByUserId(userId: Long): List<EnrollmentResponse> {
-        if (!userRepository.existsById(userId)) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        }
+        findUserEntityById(userId)
 
         return enrollmentRepository.findByUserId(userId).map { enrollmentEntity ->
             enrollmentEntity.toEnrollmentResponse()
@@ -55,9 +53,7 @@ class EnrollmentService(
     }
 
     fun getEnrollmentsByCourseId(courseId: Long): List<EnrollmentResponse> {
-        if (!courseRepository.existsById(courseId)) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found")
-        }
+        findCourseEntityById(courseId)
 
         return enrollmentRepository.findByCourseId(courseId).map { enrollmentEntity ->
             enrollmentEntity.toEnrollmentResponse()
@@ -65,12 +61,24 @@ class EnrollmentService(
     }
 
     fun deleteEnrollment(enrollmentId: Long) {
-        val enrollmentEntity = enrollmentRepository.findById(enrollmentId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found")
-        }
-
+        val enrollmentEntity = findEnrollmentEntityById(enrollmentId)
         enrollmentRepository.delete(enrollmentEntity)
     }
+
+    private fun findUserEntityById(userId: Long): UserEntity =
+        userRepository.findById(userId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
+        }
+
+    private fun findCourseEntityById(courseId: Long): CourseEntity =
+        courseRepository.findById(courseId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found.")
+        }
+
+    private fun findEnrollmentEntityById(enrollmentId: Long): EnrollmentEntity =
+        enrollmentRepository.findById(enrollmentId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found.")
+        }
 
     private fun EnrollmentEntity.toEnrollmentResponse(): EnrollmentResponse =
         EnrollmentResponse(
