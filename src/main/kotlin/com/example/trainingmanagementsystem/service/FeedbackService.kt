@@ -3,6 +3,7 @@ package com.example.trainingmanagementsystem.service
 import com.example.trainingmanagementsystem.dto.FeedbackRequest
 import com.example.trainingmanagementsystem.dto.FeedbackResponse
 import com.example.trainingmanagementsystem.entity.FeedbackEntity
+import com.example.trainingmanagementsystem.entity.SubmissionEntity
 import com.example.trainingmanagementsystem.entity.UserEntity
 import com.example.trainingmanagementsystem.enums.UserRole
 import com.example.trainingmanagementsystem.repository.FeedbackRepository
@@ -21,18 +22,16 @@ class FeedbackService(
 ) {
 
     fun createFeedback(submissionId: Long, feedbackRequest: FeedbackRequest): FeedbackResponse {
-        val submissionEntity = submissionRepository.findById(submissionId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found")
-        }
+        val submissionEntity = findSubmissionEntityById(submissionId)
 
-        val trainerEntity = findTrainerById(feedbackRequest.trainerId)
+        val trainerEntity = findTrainerEntityById(feedbackRequest.trainerId)
 
         if (feedbackRepository.existsBySubmissionId(submissionId)) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback already exists for this submission")
         }
 
         val feedbackEntity = FeedbackEntity(
-            comment = feedbackRequest.comment,
+            comment = feedbackRequest.comment.trim(),
             givenAt = LocalDateTime.now(),
             submission = submissionEntity,
             trainer = trainerEntity
@@ -52,7 +51,7 @@ class FeedbackService(
     }
 
     fun getFeedbackByTrainerId(trainerId: Long): List<FeedbackResponse> {
-        findTrainerById(trainerId)
+        findTrainerEntityById(trainerId)
 
         return feedbackRepository.findByTrainerId(trainerId).map { feedbackEntity ->
             feedbackEntity.toFeedbackResponse()
@@ -60,9 +59,7 @@ class FeedbackService(
     }
 
     fun getFeedbackById(feedbackId: Long): FeedbackResponse =
-        feedbackRepository.findById(feedbackId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Feedback not found")
-        }.toFeedbackResponse()
+        findFeedbackEntityById(feedbackId).toFeedbackResponse()
 
     fun updateFeedback(
         submissionId: Long,
@@ -75,7 +72,7 @@ class FeedbackService(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Feedback trainer cannot be changed")
         }
 
-        feedbackEntity.comment = feedbackRequest.comment
+        feedbackEntity.comment = feedbackRequest.comment.trim()
         feedbackEntity.givenAt = LocalDateTime.now()
 
         val updatedFeedback = feedbackRepository.save(feedbackEntity)
@@ -83,9 +80,7 @@ class FeedbackService(
     }
 
     fun deleteFeedback(feedbackId: Long) {
-        val feedbackEntity = feedbackRepository.findById(feedbackId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Feedback not found")
-        }
+        val feedbackEntity = findFeedbackEntityById(feedbackId)
 
         feedbackRepository.delete(feedbackEntity)
     }
@@ -96,7 +91,12 @@ class FeedbackService(
         }
     }
 
-    private fun findTrainerById(trainerId: Long): UserEntity {
+    private fun findSubmissionEntityById(submissionId: Long): SubmissionEntity =
+        submissionRepository.findById(submissionId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found")
+        }
+
+    private fun findTrainerEntityById(trainerId: Long): UserEntity {
         val trainerEntity = userRepository.findById(trainerId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer not found")
         }
@@ -108,15 +108,18 @@ class FeedbackService(
         return trainerEntity
     }
 
+    private fun findFeedbackEntityById(feedbackId: Long): FeedbackEntity =
+        feedbackRepository.findById(feedbackId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Feedback not found")
+        }
+
     private fun findFeedbackEntityByIdAndSubmissionId(
         submissionId: Long,
         feedbackId: Long
     ): FeedbackEntity {
         validateSubmissionExists(submissionId)
 
-        val feedbackEntity = feedbackRepository.findById(feedbackId).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Feedback not found")
-        }
+        val feedbackEntity = findFeedbackEntityById(feedbackId)
 
         if (feedbackEntity.submission?.id != submissionId) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Feedback not found for this submission")

@@ -4,11 +4,13 @@ import com.example.trainingmanagementsystem.dto.SubmissionRequest
 import com.example.trainingmanagementsystem.dto.SubmissionResponse
 import com.example.trainingmanagementsystem.entity.SubmissionEntity
 import com.example.trainingmanagementsystem.enums.UserRole
+import com.example.trainingmanagementsystem.repository.FeedbackRepository
 import com.example.trainingmanagementsystem.repository.SubmissionRepository
 import com.example.trainingmanagementsystem.repository.TaskRepository
 import com.example.trainingmanagementsystem.repository.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 
@@ -16,7 +18,8 @@ import java.time.LocalDateTime
 class SubmissionService(
     private val submissionRepository: SubmissionRepository,
     private val taskRepository: TaskRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val feedbackRepository: FeedbackRepository
 ) {
 
     fun createSubmission(taskId: Long, submissionRequest: SubmissionRequest): SubmissionResponse {
@@ -37,7 +40,7 @@ class SubmissionService(
         }
 
         val submissionEntity = SubmissionEntity(
-            answer = submissionRequest.answer,
+            answer = submissionRequest.answer.trim(),
             submittedAt = LocalDateTime.now(),
             task = taskEntity,
             user = userEntity
@@ -77,16 +80,24 @@ class SubmissionService(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Submission user cannot be changed")
         }
 
-        submissionEntity.answer = submissionRequest.answer
+        submissionEntity.answer = submissionRequest.answer.trim()
         submissionEntity.submittedAt = LocalDateTime.now()
 
         val updatedSubmission = submissionRepository.save(submissionEntity)
         return updatedSubmission.toSubmissionResponse()
     }
 
+    @Transactional
     fun deleteSubmission(submissionId: Long) {
         val submissionEntity = submissionRepository.findById(submissionId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Submission not found")
+        }
+
+        // Remove the linked feedback first (if any) so deleting the submission
+        // does not fail on the feedback -> submission foreign key.
+        val feedbackEntity = feedbackRepository.findBySubmissionId(submissionId)
+        if (feedbackEntity != null) {
+            feedbackRepository.delete(feedbackEntity)
         }
 
         submissionRepository.delete(submissionEntity)
