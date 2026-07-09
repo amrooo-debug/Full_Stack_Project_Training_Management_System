@@ -48,9 +48,10 @@ class UserService(
         val normalizedEmail = userRequest.email.trim()
         val normalizedFullName = userRequest.fullName.trim()
 
-        val emailUsedByAnotherUser = userRepository.findAll().any { existingUser ->
-            existingUser.email == normalizedEmail && existingUser.id != userId
-        }
+        val emailUsedByAnotherUser = userRepository.existsByEmailAndIdNot(
+            normalizedEmail,
+            userId
+        )
 
         if (emailUsedByAnotherUser) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Email already exists.")
