@@ -2,7 +2,11 @@
 // This keeps the base URL and the auth token in ONE place, so the
 // dashboards don't each repeat the same fetch + header code.
 
-const BASE_URL = 'http://localhost:8080'
+// The backend base URL can be set with a Vite env var (VITE_API_BASE_URL).
+// When it is not set (e.g. normal local development) we fall back to the
+// same localhost URL as before, so nothing changes when running locally.
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
 // Build the headers for a request.
 // We always attach the JWT token (if we have one) so the backend knows who we are.
@@ -25,13 +29,13 @@ function buildHeaders(hasBody: boolean) {
 // can still use response.ok, response.status, and response.json() as before.
 
 export function apiGet(path: string) {
-  return fetch(`${BASE_URL}${path}`, {
+  return fetch(`${API_BASE_URL}${path}`, {
     headers: buildHeaders(false),
   })
 }
 
 export function apiPost(path: string, body: unknown) {
-  return fetch(`${BASE_URL}${path}`, {
+  return fetch(`${API_BASE_URL}${path}`, {
     method: 'POST',
     headers: buildHeaders(true),
     body: JSON.stringify(body),
@@ -39,7 +43,7 @@ export function apiPost(path: string, body: unknown) {
 }
 
 export function apiPut(path: string, body: unknown) {
-  return fetch(`${BASE_URL}${path}`, {
+  return fetch(`${API_BASE_URL}${path}`, {
     method: 'PUT',
     headers: buildHeaders(true),
     body: JSON.stringify(body),
@@ -47,7 +51,7 @@ export function apiPut(path: string, body: unknown) {
 }
 
 export function apiDelete(path: string) {
-  return fetch(`${BASE_URL}${path}`, {
+  return fetch(`${API_BASE_URL}${path}`, {
     method: 'DELETE',
     headers: buildHeaders(false),
   })
