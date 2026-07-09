@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type SyntheticEvent } from 'react'
 import { apiGet, apiPost, apiPut, apiDelete } from './api'
 import type { Course, Enrollment, User, UserRole } from './types'
 import DashboardHeader from './components/DashboardHeader'
@@ -192,13 +192,13 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
 
     useEffect(() => {
-        loadCourses()
-        loadUsers()
-        loadEnrollments()
+        void loadCourses()
+        void loadUsers()
+        void loadEnrollments()
     }, [])
 
     // ================= Courses: create / edit / delete =================
-    async function handleCreateCourse(event: FormEvent) {
+    async function handleCreateCourse(event: SyntheticEvent<HTMLFormElement>) {
         event.preventDefault()
         setSuccessMessage('')
 
@@ -326,7 +326,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
 
     // ================= Users: create / edit / delete =================
-    async function handleCreateUser(event: FormEvent) {
+    async function handleCreateUser(event: SyntheticEvent<HTMLFormElement>) {
         event.preventDefault()
         setSuccessMessage('')
 
@@ -465,7 +465,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
     }
 
     // ================= Enrollments: create / delete =================
-    async function handleCreateEnrollment(event: FormEvent) {
+    async function handleCreateEnrollment(event: SyntheticEvent<HTMLFormElement>) {
         event.preventDefault()
         setSuccessMessage('')
 

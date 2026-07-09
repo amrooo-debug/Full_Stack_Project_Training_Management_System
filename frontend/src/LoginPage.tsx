@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type SyntheticEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiPost } from './api'
 import './App.css'
@@ -32,7 +32,7 @@ function LoginPage() {
   }, [navigate])
 
   // Runs when the Login button is clicked / form is submitted
-  async function handleLogin(event: React.FormEvent) {
+  async function handleLogin(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault() // stop the page from reloading
 
     if (email === '' || password === '') {

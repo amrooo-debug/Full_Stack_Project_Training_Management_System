@@ -109,8 +109,8 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
     }
 
     useEffect(() => {
-        loadCourses()
-        loadEnrollments()
+        void loadCourses()
+        void loadEnrollments()
     }, [])
 
     // True if the trainee is already enrolled in this course
@@ -157,9 +157,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
         setLessons([])
         setTasks([])
         setMySubmissions([])
-        loadLessons(course.id)
-        loadTasks(course.id)
-        loadMySubmissions()
+        void loadLessons(course.id)
+        void loadTasks(course.id)
+        void loadMySubmissions()
     }
 
     // ================= Lessons / Tasks =================
@@ -350,7 +350,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
         }
 
         setOpenFeedbackSubmissionId(submissionId)
-        loadFeedback(submissionId)
+        void loadFeedback(submissionId)
     }
 
     async function loadFeedback(submissionId: number) {

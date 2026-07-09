@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type SyntheticEvent } from 'react'
 import { apiGet, apiPost, apiPut, apiDelete } from './api'
 import type { Course, Lesson, Task, Submission, Feedback } from './types'
 import DashboardHeader from './components/DashboardHeader'
@@ -160,7 +160,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   }
 
   useEffect(() => {
-    loadCourses()
+    void loadCourses()
   }, [])
 
   // When a course is selected, load its lessons and tasks
@@ -173,8 +173,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setOpenFeedbackSubmissionId(null)
     setSubmissions([])
     setFeedback(null)
-    loadLessons(course.id)
-    loadTasks(course.id)
+    void loadLessons(course.id)
+    void loadTasks(course.id)
   }
 
   // ================= Lessons: load / create / edit / delete =================
@@ -203,7 +203,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     }
   }
 
-  async function handleCreateLesson(event: FormEvent) {
+  async function handleCreateLesson(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
     setSuccessMessage('')
 
@@ -369,7 +369,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     }
   }
 
-  async function handleCreateTask(event: FormEvent) {
+  async function handleCreateTask(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
     setSuccessMessage('')
 
@@ -525,7 +525,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setOpenFeedbackSubmissionId(null)
     setFeedback(null)
     setOpenSubmissionsTaskId(taskId)
-    loadSubmissions(taskId)
+    void loadSubmissions(taskId)
   }
 
   async function loadSubmissions(taskId: number) {
@@ -568,7 +568,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
     setNewFeedbackComment('')
     setFeedbackCreateError('')
     setOpenFeedbackSubmissionId(submissionId)
-    loadFeedback(submissionId)
+    void loadFeedback(submissionId)
   }
 
   async function loadFeedback(submissionId: number) {
