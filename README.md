@@ -151,6 +151,9 @@ training-management-system
 
 ## Local Setup
 
+> **Presenting or demoing locally?** For a step-by-step local demo startup guide,
+> see [docs/LOCAL_DEMO_RUNBOOK.md](docs/LOCAL_DEMO_RUNBOOK.md).
+
 ### 1. Prerequisites
 
 Make sure the following are installed:
