@@ -25,7 +25,9 @@ is protected with JWT authentication and role-based permissions.
   - [4. Backend Setup and Run](#4-backend-setup-and-run)
   - [5. Frontend Setup and Run](#5-frontend-setup-and-run)
 - [Application URLs](#application-urls)
+- [Seeding Demo Data / First Login](#seeding-demo-data--first-login)
 - [Test Login Accounts](#test-login-accounts)
+- [Running Tests](#running-tests)
 - [Frontend Environment Variable](#frontend-environment-variable)
 - [Screenshots](#screenshots)
 - [Recently Improved](#recently-improved)
@@ -106,34 +108,39 @@ The trainee learns from courses and submits work.
 ```text
 training-management-system
 │
-├── src/main/kotlin/com/example/trainingmanagementsystem
-│   ├── config          # Security config and JWT filter
-│   ├── controller      # REST controllers (API endpoints)
-│   ├── dto             # Request/response data classes
-│   ├── entity          # JPA entities (database tables)
-│   ├── enums           # UserRole enum
-│   ├── exception       # Global exception handler
-│   ├── repository      # Spring Data JPA repositories
-│   └── service         # Business logic
-│
-├── src/main/resources/application.properties
+├── src
+│   ├── main/kotlin/com/example/trainingmanagementsystem
+│   │   ├── config          # Security config and JWT filter
+│   │   ├── controller      # REST controllers (API endpoints)
+│   │   ├── dto             # Request/response data classes
+│   │   ├── entity          # JPA entities (database tables)
+│   │   ├── enums           # UserRole enum
+│   │   ├── exception       # Global exception handler
+│   │   ├── repository      # Spring Data JPA repositories
+│   │   └── service         # Business logic
+│   ├── main/resources/application.properties
+│   └── test/kotlin/...     # Backend service unit tests + contextLoads
 │
 ├── frontend
-│   └── src
-│       ├── components/DashboardHeader.tsx
-│       ├── AdminDashboard.tsx
-│       ├── TrainerDashboard.tsx
-│       ├── TraineeDashboard.tsx
-│       ├── LoginPage.tsx
-│       ├── api.ts             # Shared fetch helper + base URL
-│       ├── errors.ts          # Shared getErrorMessage helper
-│       ├── dashboardPaths.ts  # Role -> dashboard path helper
-│       ├── types.ts           # Shared TypeScript types
-│       ├── App.tsx
-│       ├── App.css
-│       └── index.css
+│   ├── src
+│   │   ├── components/DashboardHeader.tsx
+│   │   ├── AdminDashboard.tsx
+│   │   ├── TrainerDashboard.tsx
+│   │   ├── TraineeDashboard.tsx
+│   │   ├── LoginPage.tsx
+│   │   ├── api.ts             # Shared fetch helper + base URL
+│   │   ├── errors.ts          # Shared getErrorMessage helper
+│   │   ├── dashboardPaths.ts  # Role -> dashboard path helper
+│   │   ├── types.ts           # Shared TypeScript types
+│   │   ├── api.test.ts        # Vitest unit test
+│   │   ├── App.tsx
+│   │   ├── App.css
+│   │   └── index.css
+│   ├── e2e                    # Playwright end-to-end specs
 │   ├── .env.example
 │   └── package.json
+│
+├── docs/screenshots           # Screenshots used in this README
 │
 ├── build.gradle.kts
 ├── settings.gradle.kts
@@ -149,7 +156,7 @@ training-management-system
 Make sure the following are installed:
 
 - **Java 21** (JDK 21)
-- **Node.js** (18 or newer) and **npm**
+- **Node.js 20.19+ or 22.12+** and **npm** (required by the current Vite version)
 - **PostgreSQL**
 - **Git**
 
@@ -205,11 +212,14 @@ From the project root, set the environment variables and start the backend
 
 ```powershell
 cd "C:\Users\Amro Folowise\IdeaProjects\training-management-system"
-$env:JWT_SECRET="my-local-training-management-system-secret-key-123456789"
-$env:DB_PASSWORD="123321"
-$env:SPRING_DATASOURCE_PASSWORD="123321"
+$env:JWT_SECRET="a-long-random-local-development-secret-change-me"
+$env:DB_PASSWORD="your_local_db_password"
 .\gradlew bootRun --no-daemon
 ```
+
+Replace the values above with your own local PostgreSQL password and a long,
+random JWT secret. These are local development values only — never reuse them
+in production.
 
 The backend starts on **http://localhost:8080**.
 
@@ -250,15 +260,89 @@ npm run build
 
 ---
 
+## Seeding Demo Data / First Login
+
+Before starting the backend, make sure **PostgreSQL is running** and the
+`training_db` database exists (see [PostgreSQL Database](#2-postgresql-database)).
+
+On the first run, Hibernate creates the tables automatically because
+`spring.jpa.hibernate.ddl-auto=update` is set — but it only creates **empty
+tables**. It does not insert any users. The application also has no public
+self-registration endpoint; the only public endpoint is `POST /auth/login`, and
+user creation (`POST /users`) requires an existing Admin.
+
+This means the demo accounts below are expected to **already exist in your local
+`training_db`** — they were created during development and live only in the local
+database (which is not committed to source control). There is currently no
+automated seed script.
+
+If you are starting from a completely empty database, create the first **Admin**
+user directly in PostgreSQL (passwords are stored bcrypt-hashed, so insert a
+bcrypt hash rather than plain text), then sign in as that Admin and use the Admin
+Dashboard to create the Trainer and Trainee users. Automating this with a seed
+script is listed under [Future Improvements](#future-improvements).
+
+---
+
 ## Test Login Accounts
 
-Use these accounts to sign in and explore each role:
+The accounts below are **local demo credentials only** — they exist purely to
+explore each role on a local machine and must **never** be used in production.
 
 | Role    | Email                     | Password |
 | ------- | ------------------------- | -------- |
 | Admin   | admin@test.com            | 123456   |
 | Trainer | login.trainer@test.com    | 123456   |
 | Trainee | login.trainee@test.com    | 123456   |
+
+---
+
+## Running Tests
+
+The project includes backend unit tests, frontend unit tests, and end-to-end
+tests. Run them from the locations shown below.
+
+**Backend — Kotlin service/unit tests** (from the project root):
+
+```powershell
+.\gradlew test
+```
+
+Runs the Kotlin service unit tests (`CourseServiceTest`, `FeedbackServiceTest`,
+`SubmissionServiceTest`) together with the Spring `contextLoads` application test.
+Because the context test boots the full application, it needs PostgreSQL running
+and the `DB_PASSWORD` and `JWT_SECRET` environment variables set, just like a
+normal backend run.
+
+**Frontend — unit tests** (from the `frontend` folder):
+
+```bash
+npm test
+```
+
+Runs the Vitest unit tests only (`src/**/*.test.ts`). These do not require the
+backend or the dev server to be running. Playwright end-to-end specs are
+excluded from this command.
+
+**Frontend — end-to-end tests** (from the `frontend` folder):
+
+```bash
+npm run test:e2e
+```
+
+Runs the Playwright end-to-end tests. The Playwright config does **not** start
+any servers itself, so before running this you must already have the **backend
+running on http://localhost:8080** and the **frontend dev server running on
+http://localhost:5173**, with the demo accounts available in the database.
+
+**Frontend — production build** (from the `frontend` folder):
+
+```bash
+npm run build
+```
+
+Runs the TypeScript project build (`tsc -b`) followed by the Vite production
+build, producing the optimized static output in `frontend/dist`.
 
 ---
 
@@ -326,6 +410,16 @@ value. A real `.env` file is git-ignored and should not be committed.
 
 ## Future Improvements
 
-- Add automated backend tests (unit and integration).
-- Add deployment instructions (backend, frontend, and database hosting).
-- Add more reusable frontend components to simplify the dashboards.
+Backend service unit tests, frontend unit tests, and Playwright end-to-end tests
+already exist (see [Running Tests](#running-tests)). Planned next steps build on
+top of that foundation:
+
+- **Testing** – expand overall test coverage, add controller/integration tests
+  for the REST endpoints, and add a CI pipeline to run the test suites
+  automatically.
+- **Demo data** – add an automated seed script so a fresh database has the demo
+  Admin/Trainer/Trainee accounts without manual setup.
+- **Frontend** – extract more reusable components to simplify the dashboards.
+- **Deployment (future phase)** – the project currently runs locally only;
+  cloud deployment for the backend, frontend, and database is planned as a later
+  phase, with hosting and environment instructions to follow.
