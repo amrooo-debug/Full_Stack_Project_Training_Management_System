@@ -9,6 +9,7 @@ import type {
     Feedback,
 } from './types'
 import DashboardHeader from './components/DashboardHeader'
+import SummaryCard from './components/SummaryCard'
 
 type TraineeDashboardProps = {
     fullName: string | null
@@ -411,30 +412,11 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                 {successMessage && <p className="success-message">{successMessage}</p>}
 
                 <div className="summary-grid">
-                    <div className="summary-card">
-                        <span className="summary-label">Courses</span>
-                        <strong className="summary-value">{totalCourses}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Enrolled</span>
-                        <strong className="summary-value">{totalEnrolledCourses}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Lessons</span>
-                        <strong className="summary-value">{totalLessons}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Tasks</span>
-                        <strong className="summary-value">{totalTasks}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Submissions</span>
-                        <strong className="summary-value">{totalSubmissions}</strong>
-                    </div>
+                    <SummaryCard label="Courses" value={totalCourses} />
+                    <SummaryCard label="Enrolled" value={totalEnrolledCourses} />
+                    <SummaryCard label="Lessons" value={totalLessons} />
+                    <SummaryCard label="Tasks" value={totalTasks} />
+                    <SummaryCard label="Submissions" value={totalSubmissions} />
                 </div>
 
                 {/* ---- Courses ---- */}

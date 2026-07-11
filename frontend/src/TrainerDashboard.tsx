@@ -3,6 +3,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from './api'
 import { getErrorMessage } from './errors'
 import type { Course, Lesson, Task, Submission, Feedback } from './types'
 import DashboardHeader from './components/DashboardHeader'
+import SummaryCard from './components/SummaryCard'
 
 // Props passed in from App
 type TrainerDashboardProps = {
@@ -714,30 +715,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
           {successMessage && <p className="success-message">{successMessage}</p>}
 
           <div className="summary-grid">
-            <div className="summary-card">
-              <span className="summary-label">Courses</span>
-              <strong className="summary-value">{totalCourses}</strong>
-            </div>
-
-            <div className="summary-card">
-              <span className="summary-label">Lessons</span>
-              <strong className="summary-value">{totalLessons}</strong>
-            </div>
-
-            <div className="summary-card">
-              <span className="summary-label">Tasks</span>
-              <strong className="summary-value">{totalTasks}</strong>
-            </div>
-
-            <div className="summary-card">
-              <span className="summary-label">Submissions</span>
-              <strong className="summary-value">{totalSubmissions}</strong>
-            </div>
-
-            <div className="summary-card">
-              <span className="summary-label">Feedback</span>
-              <strong className="summary-value">{totalFeedback}</strong>
-            </div>
+            <SummaryCard label="Courses" value={totalCourses} />
+            <SummaryCard label="Lessons" value={totalLessons} />
+            <SummaryCard label="Tasks" value={totalTasks} />
+            <SummaryCard label="Submissions" value={totalSubmissions} />
+            <SummaryCard label="Feedback" value={totalFeedback} />
           </div>
 
           {/* ---- Courses ---- */}

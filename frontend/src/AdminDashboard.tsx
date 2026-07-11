@@ -3,6 +3,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from './api'
 import { getErrorMessage } from './errors'
 import type { Course, Enrollment, User, UserRole } from './types'
 import DashboardHeader from './components/DashboardHeader'
+import SummaryCard from './components/SummaryCard'
 
 type AdminDashboardProps = {
     fullName: string | null
@@ -553,30 +554,11 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                 {successMessage && <p className="success-message">{successMessage}</p>}
 
                 <div className="summary-grid">
-                    <div className="summary-card">
-                        <span className="summary-label">Courses</span>
-                        <strong className="summary-value">{totalCourses}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Users</span>
-                        <strong className="summary-value">{totalUsers}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Enrollments</span>
-                        <strong className="summary-value">{totalEnrollments}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Trainers</span>
-                        <strong className="summary-value">{totalTrainers}</strong>
-                    </div>
-
-                    <div className="summary-card">
-                        <span className="summary-label">Trainees</span>
-                        <strong className="summary-value">{totalTrainees}</strong>
-                    </div>
+                    <SummaryCard label="Courses" value={totalCourses} />
+                    <SummaryCard label="Users" value={totalUsers} />
+                    <SummaryCard label="Enrollments" value={totalEnrollments} />
+                    <SummaryCard label="Trainers" value={totalTrainers} />
+                    <SummaryCard label="Trainees" value={totalTrainees} />
                 </div>
 
                 {/* ---- Create Course form ---- */}
