@@ -1,0 +1,65 @@
+/* =========================================================
+   Shared design tokens (theme) for the Training Management
+   System frontend. Single source of truth for colors, radius
+   and shadows.
+
+   NOTE: values here are UNCHANGED from before. This file only
+   centralizes literals that were previously repeated across
+   index.css / App.css, so the CSS can reference tokens instead
+   of hardcoded values. No colors were invented or redesigned.
+   ========================================================= */
+
+:root {
+  /* ---- Surfaces & background ---- */
+  --bg: #eef1f6;
+  --surface: #ffffff;
+  --surface-soft: #f9fafb;
+
+  /* ---- Borders ---- */
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+
+  /* ---- Text ---- */
+  --text: #1f2937;
+  --text-strong: #374151;
+  --text-body: #4b5563;
+  --text-muted: #6b7280;
+  --text-faint: #9ca3af;
+
+  /* ---- Primary ---- */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #93c5fd;
+
+  /* ---- Danger / error ---- */
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-soft: #fca5a5;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+
+  /* ---- Success ---- */
+  --success: #166534;
+  --success-bg: #f0fdf4;
+  --success-border: #bbf7d0;
+
+  /* ---- Info ---- */
+  --info: #1e40af;
+  --info-bg: #eff6ff;
+  --info-border: #bfdbfe;
+
+  /* ---- Neutral (gray buttons) ---- */
+  --gray: #6b7280;
+  --gray-hover: #4b5563;
+
+  /* ---- Radius ---- */
+  --radius: 10px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* ---- Shadows ---- */
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 4px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}

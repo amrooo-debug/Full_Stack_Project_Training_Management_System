@@ -43,7 +43,7 @@
   gap: 0.4rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-strong);
 }
 
 .login-label input,
@@ -52,7 +52,7 @@
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   font-family: inherit;
   color: var(--text);
@@ -70,7 +70,7 @@
 .login-label textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: var(--focus-ring);
 }
 
 .field-hint {
@@ -95,9 +95,9 @@
 .login-error {
   margin: 0;
   padding: 0.5rem 0.75rem;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
+  background-color: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-sm);
   color: var(--danger);
   font-size: 0.9rem;
 }
@@ -105,10 +105,10 @@
 .success-message {
   margin: 1rem 0 0.5rem;
   padding: 0.6rem 0.8rem;
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  color: #166534;
+  background-color: var(--success-bg);
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-sm);
+  color: var(--success);
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -119,7 +119,7 @@
   padding: 0.85rem 1rem;
   background-color: var(--surface-soft);
   border: 1px dashed var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: var(--text-muted);
   font-size: 0.95rem;
 }
@@ -129,7 +129,7 @@
 .login-button {
   padding: 0.7rem 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background-color: var(--primary);
   color: #ffffff;
   font-size: 1rem;
@@ -148,7 +148,7 @@
 .cancel-button {
   padding: 0.45rem 0.85rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: #ffffff;
   font-size: 0.85rem;
   font-weight: 500;
@@ -232,7 +232,7 @@ button:disabled:hover,
 }
 
 .cancel-button:disabled {
-  background-color: #d1d5db;
+  background-color: var(--border-strong);
 }
 
 /* ---------- Dashboard shell ---------- */
@@ -291,10 +291,10 @@ button:disabled:hover,
 .selected-course-note {
   margin: 0 0 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  color: #1e40af;
+  background-color: var(--info-bg);
+  border: 1px solid var(--info-border);
+  border-radius: var(--radius-sm);
+  color: var(--info);
   font-size: 0.95rem;
 }
 
@@ -323,7 +323,7 @@ button:disabled:hover,
 
 .selected-course-stat {
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background-color: #ffffff;
   color: #334155;
   font-size: 13px;
@@ -348,7 +348,7 @@ button:disabled:hover,
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .summary-label {
@@ -388,8 +388,8 @@ button:disabled:hover,
 }
 
 .course-item:hover {
-  border-color: #d1d5db;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .course-id {
@@ -409,7 +409,7 @@ button:disabled:hover,
 .course-description {
   margin-top: 0.3rem;
   font-size: 0.92rem;
-  color: #4b5563;
+  color: var(--text-body);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -427,7 +427,7 @@ button:disabled:hover,
   margin-top: 0.4rem;
   display: inline-block;
   padding: 0.15rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -457,14 +457,14 @@ button:disabled:hover,
   padding: 0.85rem 1rem;
   border-left: 3px solid var(--primary);
   background-color: var(--surface-soft);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .panel-title {
   margin: 0 0 0.6rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-strong);
 }
 
 /* ---------- Dashboard footer ---------- */
