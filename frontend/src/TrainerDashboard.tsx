@@ -5,6 +5,7 @@ import type { Course, Lesson, Task, Submission, Feedback } from './types'
 import DashboardHeader from './components/DashboardHeader'
 import SummaryCard from './components/SummaryCard'
 import EmptyState from './components/EmptyState'
+import MessageBox from './components/MessageBox'
 
 // Props passed in from App
 type TrainerDashboardProps = {
@@ -713,7 +714,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
               onLogout={onLogout}
           />
 
-          {successMessage && <p className="success-message">{successMessage}</p>}
+          {successMessage && <MessageBox type="success">{successMessage}</MessageBox>}
 
           <div className="summary-grid">
             <SummaryCard label="Courses" value={totalCourses} />
@@ -727,7 +728,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
           <h2 className="dashboard-subtitle">Courses</h2>
 
           {coursesLoading && <p>Loading courses...</p>}
-          {coursesError && <p className="login-error">{coursesError}</p>}
+          {coursesError && <MessageBox type="error">{coursesError}</MessageBox>}
 
           {!coursesLoading && !coursesError && (
               <>
@@ -814,7 +815,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                   </label>
 
                   {lessonCreateError && (
-                      <p className="login-error">{lessonCreateError}</p>
+                      <MessageBox type="error">{lessonCreateError}</MessageBox>
                   )}
 
                   <button
@@ -827,9 +828,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                 </form>
 
                 {lessonsLoading && <p>Loading lessons...</p>}
-                {lessonsError && <p className="login-error">{lessonsError}</p>}
+                {lessonsError && <MessageBox type="error">{lessonsError}</MessageBox>}
                 {lessonDeleteError && (
-                    <p className="login-error">{lessonDeleteError}</p>
+                    <MessageBox type="error">{lessonDeleteError}</MessageBox>
                 )}
 
                 {!lessonsLoading && !lessonsError && (
@@ -871,7 +872,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                         </label>
 
                                         {lessonSaveError && (
-                                            <p className="login-error">{lessonSaveError}</p>
+                                            <MessageBox type="error">{lessonSaveError}</MessageBox>
                                         )}
 
                                         <div className="course-actions">
@@ -959,7 +960,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                   </label>
 
                   {taskCreateError && (
-                      <p className="login-error">{taskCreateError}</p>
+                      <MessageBox type="error">{taskCreateError}</MessageBox>
                   )}
 
                   <button
@@ -972,8 +973,8 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                 </form>
 
                 {tasksLoading && <p>Loading tasks...</p>}
-                {tasksError && <p className="login-error">{tasksError}</p>}
-                {taskDeleteError && <p className="login-error">{taskDeleteError}</p>}
+                {tasksError && <MessageBox type="error">{tasksError}</MessageBox>}
+                {taskDeleteError && <MessageBox type="error">{taskDeleteError}</MessageBox>}
 
                 {!tasksLoading && !tasksError && (
                     <>
@@ -1014,7 +1015,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                         </label>
 
                                         {taskSaveError && (
-                                            <p className="login-error">{taskSaveError}</p>
+                                            <MessageBox type="error">{taskSaveError}</MessageBox>
                                         )}
 
                                         <div className="course-actions">
@@ -1079,7 +1080,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
 
                                         {submissionsLoading && <p>Loading submissions...</p>}
                                         {submissionsError && (
-                                            <p className="login-error">{submissionsError}</p>
+                                            <MessageBox type="error">{submissionsError}</MessageBox>
                                         )}
 
                                         {!submissionsLoading &&
@@ -1134,15 +1135,11 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                       )}
 
                                                                       {feedbackError && (
-                                                                          <p className="login-error">
-                                                                            {feedbackError}
-                                                                          </p>
+                                                                          <MessageBox type="error">{feedbackError}</MessageBox>
                                                                       )}
 
                                                                       {feedbackDeleteError && (
-                                                                          <p className="login-error">
-                                                                            {feedbackDeleteError}
-                                                                          </p>
+                                                                          <MessageBox type="error">{feedbackDeleteError}</MessageBox>
                                                                       )}
 
                                                                       {!feedbackLoading &&
@@ -1169,9 +1166,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                                       </label>
 
                                                                                       {feedbackSaveError && (
-                                                                                          <p className="login-error">
-                                                                                            {feedbackSaveError}
-                                                                                          </p>
+                                                                                          <MessageBox type="error">{feedbackSaveError}</MessageBox>
                                                                                       )}
 
                                                                                       <div className="course-actions">
@@ -1267,9 +1262,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                                 </label>
 
                                                                                 {feedbackCreateError && (
-                                                                                    <p className="login-error">
-                                                                                      {feedbackCreateError}
-                                                                                    </p>
+                                                                                    <MessageBox type="error">{feedbackCreateError}</MessageBox>
                                                                                 )}
 
                                                                                 <button

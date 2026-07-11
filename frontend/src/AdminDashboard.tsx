@@ -5,6 +5,7 @@ import type { Course, Enrollment, User, UserRole } from './types'
 import DashboardHeader from './components/DashboardHeader'
 import SummaryCard from './components/SummaryCard'
 import EmptyState from './components/EmptyState'
+import MessageBox from './components/MessageBox'
 
 type AdminDashboardProps = {
     fullName: string | null
@@ -552,7 +553,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                     onLogout={onLogout}
                 />
 
-                {successMessage && <p className="success-message">{successMessage}</p>}
+                {successMessage && <MessageBox type="success">{successMessage}</MessageBox>}
 
                 <div className="summary-grid">
                     <SummaryCard label="Courses" value={totalCourses} />
@@ -594,7 +595,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                         />
                     </label>
 
-                    {createError && <p className="login-error">{createError}</p>}
+                    {createError && <MessageBox type="error">{createError}</MessageBox>}
 
                     <button type="submit" className="login-button" disabled={creating}>
                         {creating ? 'Creating...' : 'Create Course'}
@@ -605,8 +606,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                 <h2 className="dashboard-subtitle">Courses</h2>
 
                 {loading && <p>Loading courses...</p>}
-                {error && <p className="login-error">{error}</p>}
-                {deleteError && <p className="login-error">{deleteError}</p>}
+                {error && <MessageBox type="error">{error}</MessageBox>}
+                {deleteError && <MessageBox type="error">{deleteError}</MessageBox>}
 
                 {!loading && !error && (
                     <>
@@ -646,7 +647,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                                     />
                                                 </label>
 
-                                                {saveError && <p className="login-error">{saveError}</p>}
+                                                {saveError && <MessageBox type="error">{saveError}</MessageBox>}
 
                                                 <div className="course-actions">
                                                     <button
@@ -762,7 +763,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                         </select>
                     </label>
 
-                    {userCreateError && <p className="login-error">{userCreateError}</p>}
+                    {userCreateError && <MessageBox type="error">{userCreateError}</MessageBox>}
 
                     <button type="submit" className="login-button" disabled={creatingUser}>
                         {creatingUser ? 'Creating...' : 'Create User'}
@@ -772,8 +773,8 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                 <h2 className="dashboard-subtitle">Users</h2>
 
                 {usersLoading && <p>Loading users...</p>}
-                {usersError && <p className="login-error">{usersError}</p>}
-                {userDeleteError && <p className="login-error">{userDeleteError}</p>}
+                {usersError && <MessageBox type="error">{usersError}</MessageBox>}
+                {userDeleteError && <MessageBox type="error">{userDeleteError}</MessageBox>}
 
                 {!usersLoading && !usersError && (
                     <>
@@ -848,7 +849,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                                                 </label>
 
                                                 {userSaveError && (
-                                                    <p className="login-error">{userSaveError}</p>
+                                                    <MessageBox type="error">{userSaveError}</MessageBox>
                                                 )}
 
                                                 <div className="course-actions">
@@ -948,7 +949,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                     </label>
 
                     {enrollmentCreateError && (
-                        <p className="login-error">{enrollmentCreateError}</p>
+                        <MessageBox type="error">{enrollmentCreateError}</MessageBox>
                     )}
 
                     <button
@@ -964,10 +965,10 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
 
                 {enrollmentsLoading && <p>Loading enrollments...</p>}
                 {enrollmentsError && (
-                    <p className="login-error">{enrollmentsError}</p>
+                    <MessageBox type="error">{enrollmentsError}</MessageBox>
                 )}
                 {enrollmentDeleteError && (
-                    <p className="login-error">{enrollmentDeleteError}</p>
+                    <MessageBox type="error">{enrollmentDeleteError}</MessageBox>
                 )}
 
                 {!enrollmentsLoading && !enrollmentsError && (

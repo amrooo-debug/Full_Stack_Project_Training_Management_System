@@ -11,6 +11,7 @@ import type {
 import DashboardHeader from './components/DashboardHeader'
 import SummaryCard from './components/SummaryCard'
 import EmptyState from './components/EmptyState'
+import MessageBox from './components/MessageBox'
 
 type TraineeDashboardProps = {
     fullName: string | null
@@ -410,7 +411,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                     onLogout={onLogout}
                 />
 
-                {successMessage && <p className="success-message">{successMessage}</p>}
+                {successMessage && <MessageBox type="success">{successMessage}</MessageBox>}
 
                 <div className="summary-grid">
                     <SummaryCard label="Courses" value={totalCourses} />
@@ -424,8 +425,8 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                 <h2 className="dashboard-subtitle">Courses</h2>
 
                 {coursesLoading && <p>Loading courses...</p>}
-                {coursesError && <p className="login-error">{coursesError}</p>}
-                {enrollError && <p className="login-error">{enrollError}</p>}
+                {coursesError && <MessageBox type="error">{coursesError}</MessageBox>}
+                {enrollError && <MessageBox type="error">{enrollError}</MessageBox>}
 
                 {!coursesLoading && !coursesError && (
                     <>
@@ -502,7 +503,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                         <h2 className="dashboard-subtitle">Lessons</h2>
 
                         {lessonsLoading && <p>Loading lessons...</p>}
-                        {lessonsError && <p className="login-error">{lessonsError}</p>}
+                        {lessonsError && <MessageBox type="error">{lessonsError}</MessageBox>}
 
                         {!lessonsLoading && !lessonsError && (
                             <>
@@ -528,9 +529,9 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                         <h2 className="dashboard-subtitle">Tasks</h2>
 
                         {tasksLoading && <p>Loading tasks...</p>}
-                        {tasksError && <p className="login-error">{tasksError}</p>}
+                        {tasksError && <MessageBox type="error">{tasksError}</MessageBox>}
                         {submissionsError && (
-                            <p className="login-error">{submissionsError}</p>
+                            <MessageBox type="error">{submissionsError}</MessageBox>
                         )}
 
                         {!tasksLoading && !tasksError && (
@@ -573,9 +574,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                                                                 </label>
 
                                                                 {submitErrors[task.id] && (
-                                                                    <p className="login-error">
-                                                                        {submitErrors[task.id]}
-                                                                    </p>
+                                                                    <MessageBox type="error">{submitErrors[task.id]}</MessageBox>
                                                                 )}
 
                                                                 <button
@@ -608,9 +607,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                                                                         </label>
 
                                                                         {submissionSaveError && (
-                                                                            <p className="login-error">
-                                                                                {submissionSaveError}
-                                                                            </p>
+                                                                            <MessageBox type="error">{submissionSaveError}</MessageBox>
                                                                         )}
 
                                                                         <div className="course-actions">
@@ -676,9 +673,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                                                                                     )}
 
                                                                                     {feedbackError && (
-                                                                                        <p className="login-error">
-                                                                                            {feedbackError}
-                                                                                        </p>
+                                                                                        <MessageBox type="error">{feedbackError}</MessageBox>
                                                                                     )}
 
                                                                                     {!feedbackLoading &&

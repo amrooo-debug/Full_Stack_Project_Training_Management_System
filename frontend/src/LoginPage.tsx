@@ -2,6 +2,7 @@ import { useEffect, useState, type SyntheticEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiPost } from './api'
 import { dashboardPathForRole } from './dashboardPaths'
+import MessageBox from './components/MessageBox'
 import './App.css'
 
 function LoginPage() {
@@ -87,7 +88,7 @@ function LoginPage() {
         </label>
 
         {/* Error message area (only shows when there is an error) */}
-        {error && <p className="login-error">{error}</p>}
+        {error && <MessageBox type="error">{error}</MessageBox>}
 
         <button type="submit" className="login-button" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
