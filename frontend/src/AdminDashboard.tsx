@@ -4,6 +4,7 @@ import { getErrorMessage } from './errors'
 import type { Course, Enrollment, User, UserRole } from './types'
 import DashboardHeader from './components/DashboardHeader'
 import SummaryCard from './components/SummaryCard'
+import EmptyState from './components/EmptyState'
 
 type AdminDashboardProps = {
     fullName: string | null
@@ -610,9 +611,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                 {!loading && !error && (
                     <>
                         {courses.length === 0 ? (
-                            <p className="empty-state">
-                                No courses yet. Create the first course to get started.
-                            </p>
+                            <EmptyState>No courses yet. Create the first course to get started.</EmptyState>
                         ) : (
                             <ul className="course-list">
                                 {courses.map((course, courseIndex) => (
@@ -779,9 +778,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                 {!usersLoading && !usersError && (
                     <>
                         {users.length === 0 ? (
-                            <p className="empty-state">
-                                No users yet. Create the first user to get started.
-                            </p>
+                            <EmptyState>No users yet. Create the first user to get started.</EmptyState>
                         ) : (
                             <ul className="course-list">
                                 {users.map((user, userIndex) => (
@@ -976,10 +973,7 @@ function AdminDashboard({ fullName, onLogout }: AdminDashboardProps) {
                 {!enrollmentsLoading && !enrollmentsError && (
                     <>
                         {enrollments.length === 0 ? (
-                            <p className="empty-state">
-                                No enrollments yet. Create an enrollment to assign a trainee to a
-                                course.
-                            </p>
+                            <EmptyState>No enrollments yet. Create an enrollment to assign a trainee to a course.</EmptyState>
                         ) : (
                             <ul className="course-list">
                                 {enrollments.map((enrollment, enrollmentIndex) => (

@@ -4,6 +4,7 @@ import { getErrorMessage } from './errors'
 import type { Course, Lesson, Task, Submission, Feedback } from './types'
 import DashboardHeader from './components/DashboardHeader'
 import SummaryCard from './components/SummaryCard'
+import EmptyState from './components/EmptyState'
 
 // Props passed in from App
 type TrainerDashboardProps = {
@@ -731,9 +732,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
           {!coursesLoading && !coursesError && (
               <>
                 {courses.length === 0 ? (
-                    <p className="empty-state">
-                      No courses yet. Ask an admin to create a course first.
-                    </p>
+                    <EmptyState>No courses yet. Ask an admin to create a course first.</EmptyState>
                 ) : (
                     <ul className="course-list">
                       {courses.map((course, courseIndex) => (
@@ -836,9 +835,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                 {!lessonsLoading && !lessonsError && (
                     <>
                       {lessons.length === 0 ? (
-                          <p className="empty-state">
-                            No lessons yet. Create the first lesson for this course.
-                          </p>
+                          <EmptyState>No lessons yet. Create the first lesson for this course.</EmptyState>
                       ) : (
                           <ul className="course-list">
                             {lessons.map((lesson, lessonIndex) => (
@@ -981,9 +978,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                 {!tasksLoading && !tasksError && (
                     <>
                       {tasks.length === 0 ? (
-                          <p className="empty-state">
-                            No tasks yet. Create the first task for this course.
-                          </p>
+                          <EmptyState>No tasks yet. Create the first task for this course.</EmptyState>
                       ) : (
                           <ul className="course-list">
                             {tasks.map((task, taskIndex) => (
@@ -1090,10 +1085,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                         {!submissionsLoading &&
                                             !submissionsError &&
                                             (submissions.length === 0 ? (
-                                                <p className="empty-state">
-                                                  No submissions yet. Trainees have not submitted
-                                                  work for this task.
-                                                </p>
+                                                <EmptyState>No submissions yet. Trainees have not submitted work for this task.</EmptyState>
                                             ) : (
                                                 <ul className="course-list">
                                                   {submissions.map(
@@ -1256,10 +1248,7 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                           !feedbackError &&
                                                                           !feedback && (
                                                                               <>
-                                                                                <p className="empty-state">
-                                                                                  No feedback yet. Create
-                                                                                  feedback for this submission.
-                                                                                </p>
+                                                                                <EmptyState>No feedback yet. Create feedback for this submission.</EmptyState>
 
                                                                                 <label className="login-label">
                                                                                   Comment

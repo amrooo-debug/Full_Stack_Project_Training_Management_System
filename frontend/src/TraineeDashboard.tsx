@@ -10,6 +10,7 @@ import type {
 } from './types'
 import DashboardHeader from './components/DashboardHeader'
 import SummaryCard from './components/SummaryCard'
+import EmptyState from './components/EmptyState'
 
 type TraineeDashboardProps = {
     fullName: string | null
@@ -429,9 +430,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                 {!coursesLoading && !coursesError && (
                     <>
                         {courses.length === 0 ? (
-                            <p className="empty-state">
-                                No courses yet. Ask an admin to create a course first.
-                            </p>
+                            <EmptyState>No courses yet. Ask an admin to create a course first.</EmptyState>
                         ) : (
                             <ul className="course-list">
                                 {courses.map((course, courseIndex) => (
@@ -508,10 +507,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                         {!lessonsLoading && !lessonsError && (
                             <>
                                 {lessons.length === 0 ? (
-                                    <p className="empty-state">
-                                        No lessons yet. The trainer has not added lessons for this
-                                        course.
-                                    </p>
+                                    <EmptyState>No lessons yet. The trainer has not added lessons for this course.</EmptyState>
                                 ) : (
                                     <ul className="course-list">
                                         {lessons.map((lesson, lessonIndex) => (
@@ -540,10 +536,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                         {!tasksLoading && !tasksError && (
                             <>
                                 {tasks.length === 0 ? (
-                                    <p className="empty-state">
-                                        No tasks yet. The trainer has not added tasks for this
-                                        course.
-                                    </p>
+                                    <EmptyState>No tasks yet. The trainer has not added tasks for this course.</EmptyState>
                                 ) : (
                                     <ul className="course-list">
                                         {tasks.map((task, taskIndex) => {
@@ -565,9 +558,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
 
                                                         {!submissionsLoading && !mySubmission && (
                                                             <>
-                                                                <p className="empty-state">
-                                                                    You have not submitted work for this task yet.
-                                                                </p>
+                                                                <EmptyState>You have not submitted work for this task yet.</EmptyState>
 
                                                                 <label className="login-label">
                                                                     Your answer
@@ -707,10 +698,7 @@ function TraineeDashboard({ fullName, onLogout }: TraineeDashboardProps) {
                                                                                     {!feedbackLoading &&
                                                                                         !feedbackError &&
                                                                                         !feedback && (
-                                                                                            <p className="empty-state">
-                                                                                                No feedback yet. The trainer has
-                                                                                                not reviewed this submission yet.
-                                                                                            </p>
+                                                                                            <EmptyState>No feedback yet. The trainer has not reviewed this submission yet.</EmptyState>
                                                                                         )}
                                                                                 </div>
                                                                             )}
