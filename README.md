@@ -11,6 +11,7 @@ is protected with JWT authentication and role-based permissions.
 
 ## Table of Contents
 
+- [Live Deployment](#live-deployment)
 - [Main Features](#main-features)
 - [User Roles](#user-roles)
   - [Admin](#admin)
@@ -32,6 +33,21 @@ is protected with JWT authentication and role-based permissions.
 - [Screenshots](#screenshots)
 - [Recently Improved](#recently-improved)
 - [Future Improvements](#future-improvements)
+
+---
+
+## Live Deployment
+
+The application is deployed and available online:
+
+| What        | URL                                                        |
+| ----------- | ---------------------------------------------------------- |
+| Frontend    | https://training-management-frontend-lime.vercel.app       |
+| Login page  | https://training-management-frontend-lime.vercel.app/login |
+| Backend API | https://training-management-backend-fkpp.onrender.com      |
+
+> **Note:** The backend is hosted on Render's free plan. After inactivity, the
+> first request may take around one minute while the service wakes up.
 
 ---
 
