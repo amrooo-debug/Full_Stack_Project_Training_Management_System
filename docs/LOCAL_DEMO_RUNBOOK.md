@@ -96,16 +96,14 @@ When logged in, you should see this clean data:
 - Kotlin Backend Basics
 - Build REST APIs with Kotlin, Spring Boot, and PostgreSQL.
 
-**Lessons**
+**Lessons (3 total)**
+- Lesson 1 - Introduction to Spring Boot
 - Working with Spring Data JPA
 - Securing Endpoints with JWT
 
-**Tasks**
+**Tasks (2 total)**
 - Add JWT Authentication to an Endpoint
 - Build a CRUD REST API
-
-> (There is also a third lesson, "Lesson 1 - Introduction to Spring Boot", which
-> is fine to show.)
 
 ---
 
