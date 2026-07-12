@@ -1,5 +1,6 @@
 package com.example.trainingmanagementsystem.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -17,7 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableMethodSecurity
 class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    @Value("\${app.cors.allowed-origins}") private val allowedOrigins: String
 ) {
 
     @Bean
@@ -59,11 +61,17 @@ class SecurityConfig(
     fun passwordEncoder(): PasswordEncoder =
         BCryptPasswordEncoder()
 
-    // Allow the frontend Vite dev server to call the backend API from the browser.
+    // Allow the configured frontend origins (Vite dev server locally, deployed
+    // frontend in production) to call the backend API from the browser.
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
+        val origins = allowedOrigins
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:5173")
+        configuration.allowedOrigins = origins
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
