@@ -77,6 +77,12 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
   const [submissionsLoading, setSubmissionsLoading] = useState(false)
   const [submissionsError, setSubmissionsError] = useState('')
 
+  // Delete submission
+  const [deletingSubmissionId, setDeletingSubmissionId] = useState<
+      number | null
+  >(null)
+  const [submissionDeleteError, setSubmissionDeleteError] = useState('')
+
   // ================= Feedback =================
   const [openFeedbackSubmissionId, setOpenFeedbackSubmissionId] = useState<
       number | null
@@ -517,6 +523,43 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
       setSubmissionsError('Could not reach the server. Please try again.')
     } finally {
       setSubmissionsLoading(false)
+    }
+  }
+
+  async function handleDeleteSubmission(submissionId: number, taskId: number) {
+    if (!window.confirm('Are you sure you want to delete this submission?')) {
+      return
+    }
+
+    setSuccessMessage('')
+    setSubmissionDeleteError('')
+    setDeletingSubmissionId(submissionId)
+
+    try {
+      const response = await apiDelete(`/submissions/${submissionId}`)
+
+      if (!response.ok) {
+        const message = await getErrorMessage(
+            response,
+            'Could not delete the submission. Please try again.'
+        )
+        setSubmissionDeleteError(message)
+        return
+      }
+
+      // Deleting a submission also removes its feedback on the server, so close
+      // the feedback panel if it was open for this submission.
+      if (openFeedbackSubmissionId === submissionId) {
+        setOpenFeedbackSubmissionId(null)
+        setFeedback(null)
+      }
+
+      await loadSubmissions(taskId)
+      setSuccessMessage('Submission deleted successfully.')
+    } catch {
+      setSubmissionDeleteError('Could not reach the server. Please try again.')
+    } finally {
+      setDeletingSubmissionId(null)
     }
   }
 
@@ -1082,6 +1125,9 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                         {submissionsError && (
                                             <MessageBox type="error">{submissionsError}</MessageBox>
                                         )}
+                                        {submissionDeleteError && (
+                                            <MessageBox type="error">{submissionDeleteError}</MessageBox>
+                                        )}
 
                                         {!submissionsLoading &&
                                             !submissionsError &&
@@ -1119,6 +1165,25 @@ function TrainerDashboard({ fullName, onLogout }: TrainerDashboardProps) {
                                                                 submission.id
                                                                     ? 'Hide Feedback'
                                                                     : 'View Feedback'}
+                                                              </button>
+
+                                                              <button
+                                                                  className="delete-button"
+                                                                  onClick={() =>
+                                                                      handleDeleteSubmission(
+                                                                          submission.id,
+                                                                          task.id
+                                                                      )
+                                                                  }
+                                                                  disabled={
+                                                                    deletingSubmissionId ===
+                                                                    submission.id
+                                                                  }
+                                                              >
+                                                                {deletingSubmissionId ===
+                                                                submission.id
+                                                                    ? 'Deleting...'
+                                                                    : 'Delete Submission'}
                                                               </button>
                                                             </div>
 

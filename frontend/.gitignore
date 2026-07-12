@@ -15,6 +15,8 @@ dist-ssr
 # Playwright
 test-results/
 playwright-report/
+test-results-prod/
+playwright-report-prod/
 
 # Editor directories and files
 .vscode/*
